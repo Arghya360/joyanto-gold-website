@@ -35,7 +35,7 @@ export function renderOffersPage(props: OffersPageProps): string {
           
           <!-- Exclusive Discounts Banner -->
           <div class="offers-hero-banner">
-            <h1 class="offers-hero-title">Exclusive Discounts – Limited Time Only!</h1>
+            <h1 class="offers-hero-title">Special Allocations &amp; Sovereign Coins</h1>
           </div>
 
           <!-- 5-Column Products Grid -->
@@ -46,7 +46,7 @@ export function renderOffersPage(props: OffersPageProps): string {
           <!-- More Products CTA Button -->
           <div class="offers-more-wrap">
             <button class="btn-offers-more" id="btn-offers-more-products" data-nav="Shop">
-              More Products
+              View Full Catalogue
             </button>
           </div>
 

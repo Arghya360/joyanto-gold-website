@@ -330,7 +330,7 @@ function renderCartDrawerAndModals(): string {
             <img src="${item.product.image}" alt="${item.product.title}" />
             <div class="side-cart-item-info">
               <div class="side-cart-item-title">${item.product.title}</div>
-              <div class="side-cart-item-price">${item.product.price} ৳ × ${item.quantity} = ${item.product.price * item.quantity} ৳</div>
+              <div class="side-cart-item-price">AED ${item.product.price} × ${item.quantity} = AED ${item.product.price * item.quantity}</div>
               <div class="side-cart-qty-ctrl">
                 <button data-dec="${item.product.id}">-</button>
                 <span>${item.quantity}</span>
@@ -345,11 +345,11 @@ function renderCartDrawerAndModals(): string {
       ${cartItems.length > 0 ? `
         <div class="side-cart-footer">
           <div class="side-cart-subtotal-row">
-            <span>Subtotal:</span>
-            <span style="color: #0d874c;">${cartSubtotal} ৳</span>
+            <span>Metal Value Subtotal:</span>
+            <span style="color: #0d874c;">AED ${cartSubtotal}</span>
           </div>
           <button class="side-cart-checkout-btn" id="btn-open-cart-page">
-            View Shopping Cart
+            View Allocation Cart
           </button>
         </div>
       ` : ''}
@@ -359,52 +359,52 @@ function renderCartDrawerAndModals(): string {
     <div class="checkout-modal-backdrop ${isCheckoutOpen ? 'open' : ''}" id="checkout-modal">
       <div class="checkout-modal-box">
         <div class="checkout-modal-header">
-          <h3 style="font-size: 17px; font-weight: 700; color: #111827;">ক্যাশ অন ডেলিভারি অর্ডার (Cash on Delivery)</h3>
+          <h3 style="font-size: 17px; font-weight: 700; color: #111827;">Direct Order &amp; Allocation Settlement</h3>
           <button id="btn-close-checkout-modal" style="font-size: 22px; cursor: pointer; border: none; background: none; color: #6b7280;">&times;</button>
         </div>
         <div class="checkout-modal-body" id="checkout-body-content">
           <form id="order-form">
             <div class="checkout-input-group">
-              <label class="checkout-label">আপনার নাম *</label>
-              <input type="text" id="order-name" class="checkout-input" placeholder="আপনার সম্পূর্ণ নাম লিখুন" required />
+              <label class="checkout-label">Full Legal Name *</label>
+              <input type="text" id="order-name" class="checkout-input" placeholder="Enter your full legal name" required />
             </div>
             <div class="checkout-input-group">
-              <label class="checkout-label">মোবাইল নম্বর *</label>
-              <input type="tel" id="order-phone" class="checkout-input" placeholder="01XXXXXXXXX" required />
+              <label class="checkout-label">Contact Number *</label>
+              <input type="tel" id="order-phone" class="checkout-input" placeholder="+971 XX XXX XXXX" required />
             </div>
             <div class="checkout-input-group">
-              <label class="checkout-label">ডেলিভারি ঠিকানা *</label>
-              <textarea id="order-address" class="checkout-input" rows="2" placeholder="বাড়ি/রোড/এলাকা/জেলা" required></textarea>
+              <label class="checkout-label">Delivery / Depository Address *</label>
+              <textarea id="order-address" class="checkout-input" rows="2" placeholder="Building, suite, street or depository box" required></textarea>
             </div>
             <div class="checkout-input-group">
-              <label class="checkout-label">ডেলিভারি এরিয়া</label>
+              <label class="checkout-label">Transit Tier</label>
               <div style="display: flex; gap: 16px; margin-top: 4px;">
                 <label style="display:flex; align-items:center; gap: 6px; font-size: 13.5px; cursor: pointer;">
-                  <input type="radio" name="area" value="inside" checked /> ঢাকার ভেতর (৭০ ৳)
+                  <input type="radio" name="area" value="inside" checked /> UAE Domestic / Vault (AED 70)
                 </label>
                 <label style="display:flex; align-items:center; gap: 6px; font-size: 13.5px; cursor: pointer;">
-                  <input type="radio" name="area" value="outside" /> ঢাকার বাইরে (১৩০ ৳)
+                  <input type="radio" name="area" value="outside" /> International Insured (AED 130)
                 </label>
               </div>
             </div>
 
             <div style="background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 6px; padding: 14px; margin: 16px 0; font-size: 14px;">
               <div style="display:flex; justify-content:space-between; margin-bottom: 6px; color: #4b5563;">
-                <span>মোট পণ্যের মূল্য:</span>
-                <span>${cartSubtotal} ৳</span>
+                <span>Metal Value Subtotal:</span>
+                <span>AED ${cartSubtotal}</span>
               </div>
               <div style="display:flex; justify-content:space-between; margin-bottom: 6px; color: #4b5563;">
-                <span>ডেলিভারি চার্জ:</span>
-                <span id="display-delivery-fee">৭০ ৳</span>
+                <span>Insured Freight:</span>
+                <span id="display-delivery-fee">AED 70</span>
               </div>
               <div style="display:flex; justify-content:space-between; font-weight:700; color:#0d874c; font-size:16px; border-top:1px dashed #D1D5DB; padding-top:8px;">
-                <span>সর্বমোট:</span>
-                <span id="display-grand-total">${cartSubtotal + 70} ৳</span>
+                <span>Total Invoice:</span>
+                <span id="display-grand-total">AED ${cartSubtotal + 70}</span>
               </div>
             </div>
 
             <button type="submit" class="side-cart-checkout-btn" style="padding: 13px;">
-              অর্ডার নিশ্চিত করুন (Confirm Order)
+              Confirm Allocation Order
             </button>
           </form>
         </div>
@@ -1676,7 +1676,7 @@ function attachCartAndModalListeners() {
       ['Email', String(formData.get('email') || '')],
       ['Phone', String(formData.get('phone') || '')],
       ['Address', String(formData.get('address') || '')],
-      ['Payment', 'Cash on delivery'],
+      ['Payment', 'Verified Wire / Depository Handover'],
     ];
     const orderId = `ORD-${Math.floor(100000 + Math.random() * 900000)}`;
     const layout = form.closest('.checkout-page-layout');
@@ -1688,12 +1688,12 @@ function attachCartAndModalListeners() {
     const success = document.createElement('section');
     success.className = 'checkout-success-panel';
     const heading = document.createElement('h2');
-    heading.textContent = 'Order placed successfully!';
+    heading.textContent = 'Allocation Order Confirmed!';
     const confirmation = document.createElement('p');
-    confirmation.textContent = `Order ID: #${orderId}`;
+    confirmation.textContent = `Reference ID: #${orderId}`;
     const disclosure = document.createElement('p');
     disclosure.className = 'checkout-client-order-note';
-    disclosure.textContent = 'Your order confirmation is shown for this session. Online order processing is not connected.';
+    disclosure.textContent = 'Your bullion allocation request has been registered for this session. A Montague Cole depository officer will confirm settlement coordinates.';
     const detailList = document.createElement('div');
     detailList.className = 'checkout-success-details';
     for (const [label, value] of details) {
@@ -1705,7 +1705,7 @@ function attachCartAndModalListeners() {
     }
     const continueButton = document.createElement('button');
     continueButton.className = 'product-detail-add-button';
-    continueButton.textContent = 'Continue Shopping';
+    continueButton.textContent = 'Return to Catalogue';
     continueButton.addEventListener('click', () => {
       navigateTo('home');
     });
@@ -1734,15 +1734,15 @@ function attachCartAndModalListeners() {
           <div style="width: 60px; height: 60px; background: #ECFDF5; color: #0D874C; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 26px; font-weight: 700;">
             ✓
           </div>
-          <h3 style="font-size: 20px; font-weight: 700; color: #111827; margin-bottom: 8px;">অর্ডার সফল হয়েছে! (Order Placed)</h3>
-          <p style="font-size: 14px; color: #4B5563; margin-bottom: 16px;">Order ID: <b>#${orderId}</b></p>
+          <h3 style="font-size: 20px; font-weight: 700; color: #111827; margin-bottom: 8px;">Allocation Confirmed</h3>
+          <p style="font-size: 14px; color: #4B5563; margin-bottom: 16px;">Reference: <b>#${orderId}</b></p>
           <div style="background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 8px; padding: 14px; text-align: left; font-size: 13.5px; line-height: 1.7; margin-bottom: 22px;">
-            <div><b>নাম:</b> ${name}</div>
-            <div><b>মোবাইল:</b> ${phone}</div>
-            <div><b>ঠিকানা:</b> ${address}</div>
-            <div><b>পেমেন্ট:</b> ক্যাশ অন ডেলিভারি (Cash on Delivery)</div>
+            <div><b>Client:</b> ${name}</div>
+            <div><b>Phone:</b> ${phone}</div>
+            <div><b>Destination:</b> ${address}</div>
+            <div><b>Settlement:</b> Verified Wire / Depository Handover</div>
           </div>
-          <button class="side-cart-checkout-btn" id="btn-finish-order">Continue Shopping</button>
+          <button class="side-cart-checkout-btn" id="btn-finish-order">Return to Catalogue</button>
         </div>
       `;
       cartStore.clear();

@@ -33,9 +33,9 @@ export function renderNewArrivalsPage(props: NewArrivalsPageProps): string {
       <main class="new-arrivals-main-content">
         <div class="shop-container new-arrivals-container">
           
-          <!-- Green Header Bar with "New Arrivals" & "View All ➔" -->
+          <!-- Header Bar with "New Releases" & "View All ➔" -->
           <div class="new-arrivals-header-bar">
-            <h1 class="new-arrivals-title">New Arrivals</h1>
+            <h1 class="new-arrivals-title">New Releases &amp; Minted Bullion</h1>
             <a href="#" class="btn-new-arrivals-view-all" data-nav="Shop" aria-label="View All New Arrivals">
               <span>View All</span>
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
@@ -53,7 +53,7 @@ export function renderNewArrivalsPage(props: NewArrivalsPageProps): string {
           <!-- More Products CTA Button -->
           <div class="new-arrivals-more-wrap">
             <button class="btn-new-arrivals-more" id="btn-new-arrivals-more-products" data-nav="Shop">
-              More Products
+              View Full Catalogue
             </button>
           </div>
 

@@ -51,13 +51,13 @@ export function renderCartPage(props: CartPageProps): string {
                     <h2><a href="/product/${product.slug}" data-product-id="${product.id}">${product.title}</a></h2>
                     <p>${product.packSize ?? 'Product'}</p>
                   </div>
-                  <strong class="cart-page-unit-price">${product.price}৳</strong>
+                  <strong class="cart-page-unit-price">AED ${product.price}</strong>
                   <div class="commerce-quantity-control" aria-label="Quantity for ${product.title}">
                     <button type="button" data-dec="${product.id}" aria-label="Decrease quantity">−</button>
                     <output>${quantity}</output>
                     <button type="button" data-inc="${product.id}" aria-label="Increase quantity">+</button>
                   </div>
-                  <strong class="cart-page-item-subtotal">${product.price * quantity}৳</strong>
+                  <strong class="cart-page-item-subtotal">AED ${product.price * quantity}</strong>
                 </article>
               `).join('')}
             </section>
@@ -73,21 +73,21 @@ export function renderCartPage(props: CartPageProps): string {
           </div>
 
           <aside class="cart-summary">
-            <h2>Cart Totals</h2>
-            <div class="cart-summary-row"><span>Subtotal</span><strong>${subtotal}৳</strong></div>
+            <h2>Order Valuation</h2>
+            <div class="cart-summary-row"><span>Metal Value Subtotal</span><strong>AED ${subtotal}</strong></div>
             <div class="cart-shipping-section">
-              <h3>Shipment</h3>
-              <strong class="cart-shipping-current">Shipping · ${deliveryFee}৳</strong>
-              <p>Shipping to ${deliveryZone === 'inside_dhaka' ? 'Dhaka' : 'outside Dhaka'}.</p>
-              <button type="button" class="cart-change-address" id="btn-cart-change-address">Change address</button>
+              <h3>Shipment &amp; Insurance</h3>
+              <strong class="cart-shipping-current">Insured Delivery · AED ${deliveryFee}</strong>
+              <p>Delivery: ${deliveryZone === 'inside_dhaka' ? 'UAE Domestic / Vault Custody' : 'International Insured Courier'}.</p>
+              <button type="button" class="cart-change-address" id="btn-cart-change-address">Change destination</button>
               <fieldset class="cart-delivery-options" id="cart-delivery-options">
-                <legend>Delivery area</legend>
-                <label><input type="radio" name="cart-area" value="inside_dhaka" ${deliveryZone === 'inside_dhaka' ? 'checked' : ''} /> Inside Dhaka · 70৳</label>
-                <label><input type="radio" name="cart-area" value="outside_dhaka" ${deliveryZone === 'outside_dhaka' ? 'checked' : ''} /> Outside Dhaka · 130৳</label>
+                <legend>Delivery &amp; Transit Method</legend>
+                <label><input type="radio" name="cart-area" value="inside_dhaka" ${deliveryZone === 'inside_dhaka' ? 'checked' : ''} /> UAE Domestic / Depository · AED 70</label>
+                <label><input type="radio" name="cart-area" value="outside_dhaka" ${deliveryZone === 'outside_dhaka' ? 'checked' : ''} /> International Insured Freight · AED 130</label>
               </fieldset>
             </div>
-            ${couponCode ? `<div class="cart-summary-row cart-discount-row"><span>Discount (${couponCode})</span><strong>−${discountTotal}৳</strong></div>` : ''}
-            <div class="cart-summary-row cart-total-row"><span>Total</span><strong>${total}৳</strong></div>
+            ${couponCode ? `<div class="cart-summary-row cart-discount-row"><span>Concession (${couponCode})</span><strong>−AED ${discountTotal}</strong></div>` : ''}
+            <div class="cart-summary-row cart-total-row"><span>Total Invoice</span><strong>AED ${total}</strong></div>
             <button type="button" class="product-detail-add-button cart-checkout-button" id="btn-cart-proceed-checkout">PROCEED TO CHECKOUT</button>
           </aside>
         </div>

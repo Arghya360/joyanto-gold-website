@@ -25,22 +25,22 @@ export function renderLoginPage(props: LoginPageProps): string {
         <div class="shop-container customer-login-container">
           
           <div class="customer-login-card">
-            <h1 class="customer-login-title">Login</h1>
+            <h1 class="customer-login-title">MC Reserve Portal</h1>
             <p class="customer-login-subtitle">
-              Sign in to your account to continue shopping, track orders, and manage your profile.
+              Sign in to manage your allocated vault holdings, depository certificates, and confidential advisory services.
             </p>
 
             <form class="customer-login-form" id="customer-login-form">
-              <!-- Phone Number Input -->
+              <!-- Phone / Client Identifier Input -->
               <div class="login-field-group">
                 <label class="login-field-label" for="login-phone">
-                  Your Phone Number <span class="login-star">*</span>
+                  Registered Mobile or Client ID <span class="login-star">*</span>
                 </label>
                 <input 
                   type="tel" 
                   id="login-phone" 
                   class="login-field-input" 
-                  placeholder="Your phone number" 
+                  placeholder="+971 XX XXX XXXX or Client ID" 
                   required 
                   autocomplete="tel"
                 />
@@ -49,14 +49,14 @@ export function renderLoginPage(props: LoginPageProps): string {
               <!-- Password Input with Toggle -->
               <div class="login-field-group">
                 <label class="login-field-label" for="login-password">
-                  Password <span class="login-star">*</span>
+                  Security Password <span class="login-star">*</span>
                 </label>
                 <div class="login-password-box">
                   <input 
                     type="password" 
                     id="login-password" 
                     class="login-field-input login-password-input" 
-                    placeholder="Enter your password" 
+                    placeholder="Enter your security password" 
                     required 
                     autocomplete="current-password"
                   />
@@ -78,23 +78,23 @@ export function renderLoginPage(props: LoginPageProps): string {
               <div class="login-remember-row">
                 <label class="remember-checkbox-wrapper" for="login-remember">
                   <input type="checkbox" id="login-remember" class="remember-checkbox-input" checked />
-                  <span class="remember-text">Remember me</span>
+                  <span class="remember-text">Remember this terminal</span>
                 </label>
               </div>
 
               <!-- Log In Button -->
               <button type="submit" class="btn-customer-login-submit" id="btn-customer-login-submit">
-                LOG IN
+                SIGN IN TO MC RESERVE
               </button>
 
               <!-- Lost Password -->
               <div class="login-lost-pwd-wrap">
-                <a href="#" class="link-lost-password" id="btn-lost-password">Lost your password?</a>
+                <a href="#" class="link-lost-password" id="btn-lost-password">Forgotten credential or need depository assistance?</a>
               </div>
 
               <!-- Create Account Button -->
               <button type="button" class="btn-create-account-outline" id="btn-create-account-view">
-                CREATE NEW ACCOUNT
+                REQUEST MC RESERVE MEMBERSHIP
               </button>
             </form>
 

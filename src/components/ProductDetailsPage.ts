@@ -63,16 +63,16 @@ export function renderProductDetailsPage(props: ProductDetailsPageProps): string
             <a href="#product-tabs" data-product-tab-link="reviews">${product.reviewCount ?? 0} reviews</a>
           </div>
           <div class="product-detail-price">
-            ${originalPrice ? `<del>${originalPrice}৳</del>` : ''}
-            <strong>${product.price}৳</strong>
+            ${originalPrice ? `<del>AED ${originalPrice}</del>` : ''}
+            <strong>${product.priceDisplay || `AED ${product.price}`}</strong>
             ${product.packSize ? `<span class="product-detail-size">${product.packSize}</span>` : ''}
           </div>
-          <p class="product-detail-description">${product.description || `${product.title} — carefully selected and packed by Falaq Food.`}</p>
+          <p class="product-detail-description">${product.description || `${product.title} — certified physical precious metal allocation by Montague Cole Bullion, Dubai.`}</p>
 
           <dl class="product-detail-facts">
             <div><dt>Category</dt><dd>${categoryName}</dd></div>
-            <div><dt>Weight / Size</dt><dd>${product.packSize ?? 'See product packaging'}</dd></div>
-            <div><dt>Availability</dt><dd class="${product.inStock === false ? 'out-of-stock' : 'in-stock'}">${product.inStock === false ? 'Out of stock' : 'In stock'}</dd></div>
+            <div><dt>Weight / Denomination</dt><dd>${product.packSize ?? 'See assay certificate'}</dd></div>
+            <div><dt>Availability</dt><dd class="${product.inStock === false ? 'out-of-stock' : 'in-stock'}">${product.inStock === false ? 'Out of stock' : (product.badge || 'In stock')}</dd></div>
           </dl>
 
           <div class="product-detail-purchase">
@@ -82,7 +82,7 @@ export function renderProductDetailsPage(props: ProductDetailsPageProps): string
               <button type="button" data-detail-quantity="increase" aria-label="Increase quantity">+</button>
             </div>
             <button class="product-detail-add-button" id="btn-detail-add-to-cart" ${product.inStock === false ? 'disabled' : ''}>
-              Add to Cart
+              ${product.price === 0 ? 'Enquiry Only' : 'Add to Cart'}
             </button>
           </div>
 
@@ -106,8 +106,8 @@ export function renderProductDetailsPage(props: ProductDetailsPageProps): string
         ${activeTab === 'description' ? `
           <div class="product-tab-content">
             <h2>Product Description</h2>
-            <p>${product.description || `${product.title} — carefully selected and packed by Falaq Food.`}</p>
-            <h3>Key Features &amp; Specifications</h3>
+            <p>${product.description || `${product.title} — certified physical bullion allocation by Montague Cole Bullion, Dubai.`}</p>
+            <h3>Assay &amp; Allocation Specifications</h3>
             <ul class="product-feature-list">${features.map(feature => `<li>${feature}</li>`).join('')}</ul>
           </div>
         ` : `
