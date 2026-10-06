@@ -22,8 +22,8 @@ export function renderProductCard(product: Product): string {
         
         <div class="shop-product-price">
           ${isDiscounted ? `
-            <span class="price-old">${product.oldPrice}৳</span>
-            <span class="price-current">${product.price}৳</span>
+            <span class="price-old">AED ${product.oldPrice}</span>
+            <span class="price-current">AED ${product.price}</span>
           ` : `
             <span class="price-current">${product.priceDisplay}</span>
           `}
