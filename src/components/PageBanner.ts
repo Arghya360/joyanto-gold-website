@@ -3,7 +3,7 @@ export interface PageBannerProps {
 }
 
 export function renderPageBanner(props?: PageBannerProps): string {
-  const title = props?.title || 'Archives: Shop';
+  const title = props?.title || 'Montague Cole Bullion Catalogue';
   return `
     <div class="shop-title-banner-wrap">
       <div class="shop-container">

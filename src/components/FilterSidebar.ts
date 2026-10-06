@@ -15,7 +15,7 @@ export interface FilterSidebarProps {
   expandedSections: string[];
 }
 
-const PACK_SIZES = ['100g', '200g', '250g', '400g', '500g', '1kg', '2kg', '5kg', '1L'];
+const PACK_SIZES = ['1 g', '5 g', '10 g', '20 g', '50 g', '100 g', '250 g', '500 g', '1 kg', '1/4 oz', '1 oz'];
 
 export function renderFilterSidebar(props: FilterSidebarProps): string {
   const { filters, expandedSections } = props;
@@ -37,7 +37,7 @@ export function renderFilterSidebar(props: FilterSidebarProps): string {
             type="text"
             id="sidebar-search-input"
             class="sidebar-search-input"
-            placeholder="Find your product..."
+            placeholder="Find bullion or coin..." 
             value="${filters.searchQuery}"
             autocomplete="off"
           />
@@ -89,7 +89,7 @@ export function renderFilterSidebar(props: FilterSidebarProps): string {
       <!-- Collapsible: Pack Size -->
       <div class="filter-section collapsible-filter ${packSizeExpanded ? 'open' : ''}">
         <div class="filter-section-header" data-toggle="pack-size">
-          <h3 class="filter-section-heading">Pack Size</h3>
+          <h3 class="filter-section-heading">Weight / Denomination</h3>
           <button class="filter-toggle-btn ${packSizeExpanded ? 'minus' : 'plus'}" aria-label="Toggle pack size" data-toggle="pack-size">
             ${packSizeExpanded
               ? `<svg width="11" height="3" viewBox="0 0 11 3"><rect y="0.5" width="11" height="2" rx="1" fill="#078B4B"/></svg>`
@@ -126,13 +126,13 @@ export function renderFilterSidebar(props: FilterSidebarProps): string {
           <div class="price-range-content">
             <div class="price-inputs-row">
               <div class="price-input-group">
-                <label>Min ৳</label>
-                <input type="number" id="price-min-input" class="price-input" value="${filters.priceMin || 0}" min="0" max="5000" placeholder="0" />
+                <label>Min AED</label>
+                <input type="number" id="price-min-input" class="price-input" value="${filters.priceMin || 0}" min="0" max="100000" placeholder="0" />
               </div>
               <span class="price-dash">—</span>
               <div class="price-input-group">
-                <label>Max ৳</label>
-                <input type="number" id="price-max-input" class="price-input" value="${filters.priceMax || 5000}" min="0" max="5000" placeholder="5000" />
+                <label>Max AED</label>
+                <input type="number" id="price-max-input" class="price-input" value="${filters.priceMax || 100000}" min="0" max="100000" placeholder="100000" />
               </div>
             </div>
             <input

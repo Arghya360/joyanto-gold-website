@@ -27,7 +27,7 @@ export function renderHeader(props: HeaderProps): string {
 
           <!-- Left: Logo -->
           <a href="#" class="shop-brand-logo" id="header-brand-logo">
-            <img src="/logo.png" alt="E-Commerce Shopping" class="brand-logo-img" />
+            <img src="/logo.png" alt="Montague Cole Bullion" class="brand-logo-img" />
           </a>
 
           <!-- Navigation Links -->
@@ -55,7 +55,7 @@ export function renderHeader(props: HeaderProps): string {
                 type="text" 
                 id="top-search-input" 
                 class="header-search-input" 
-                placeholder="Search for Products..." 
+                placeholder="Search gold, silver, coins..." 
                 value="${searchQuery}" 
                 autocomplete="off"
                 role="combobox"
@@ -125,17 +125,17 @@ export function renderHeader(props: HeaderProps): string {
       <!-- Mobile Navigation Drawer -->
       <div class="mobile-nav-drawer" id="mobile-nav-drawer">
         <div class="mobile-drawer-header">
-          <img src="/logo.png" alt="E-Commerce Shopping" style="height: 36px; object-fit: contain;" />
+          <img src="/logo.png" alt="Montague Cole Bullion" style="height: 36px; object-fit: contain;" />
           <button class="drawer-close-btn" id="btn-close-mobile-nav" aria-label="Close menu">&times;</button>
         </div>
         <ul class="mobile-menu-links">
           <li><a href="#" class="mobile-link ${activeNav === 'Home' ? 'active' : ''}" data-nav="Home">Home</a></li>
-          <li><a href="#" class="mobile-link ${activeNav === 'Shop' ? 'active' : ''}" data-nav="Shop">Shop</a></li>
-          <li><a href="#" class="mobile-link ${activeNav === 'Offers' ? 'active' : ''}" data-nav="Offers">Offers</a></li>
-          <li><a href="#" class="mobile-link ${activeNav === 'New Arrivals' ? 'active' : ''}" data-nav="New Arrivals">New Arrivals</a></li>
-          <li><a href="#" class="mobile-link ${activeNav === 'Login' ? 'active' : ''}" data-nav="Login">Customer Login</a></li>
-          <li><a href="#" class="mobile-link" data-route="cart">Shopping Cart</a></li>
-          <li><a href="#" class="mobile-link" data-route="wishlist">Wishlist</a></li>
+          <li><a href="#" class="mobile-link ${activeNav === 'Shop' ? 'active' : ''}" data-nav="Shop">Catalogue</a></li>
+          <li><a href="#" class="mobile-link ${activeNav === 'Offers' ? 'active' : ''}" data-nav="Offers">Allocations</a></li>
+          <li><a href="#" class="mobile-link ${activeNav === 'New Arrivals' ? 'active' : ''}" data-nav="New Arrivals">New Releases</a></li>
+          <li><a href="#" class="mobile-link ${activeNav === 'Login' ? 'active' : ''}" data-nav="Login">MC Reserve Sign-In</a></li>
+          <li><a href="#" class="mobile-link" data-route="cart">Vault Order &amp; Cart</a></li>
+          <li><a href="#" class="mobile-link" data-route="wishlist">Saved Allocations</a></li>
         </ul>
         <div class="mobile-drawer-categories">
           <h4>Categories</h4>

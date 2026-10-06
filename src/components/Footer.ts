@@ -9,17 +9,17 @@ export function renderFalaqFooter(): string {
           <!-- Left Column: Brand Logo, Heading, Newsletter, Socials, App Badges, We Accept -->
           <div class="footer-newsletter-col">
             <!-- Brand Logo -->
-            <a href="#" class="footer-brand-logo" data-nav="Home" aria-label="E-Commerce Shopping Home">
-              <img src="/logo.png" alt="E-Commerce Shopping" class="footer-brand-logo-img" />
+            <a href="#" class="footer-brand-logo" data-nav="Home" aria-label="Montague Cole Bullion Home">
+              <img src="/logo.png" alt="Montague Cole Bullion" class="footer-brand-logo-img" />
             </a>
 
             <!-- Big Newsletter Heading -->
             <h2 class="footer-inbox-heading">
-              GET FRESH FOOD<br />IN YOUR INBOX
+              DUBAI BULLION<br />GLOBAL DELIVERY
             </h2>
 
             <!-- Newsletter Input Form -->
-            <form class="footer-subscribe-form" id="footer-newsletter-form" onsubmit="event.preventDefault(); const toast = document.querySelector('.shop-toast-notification'); if(toast){ toast.textContent = 'Thank you for subscribing!'; toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 3000); } this.reset();">
+            <form class="footer-subscribe-form" id="footer-newsletter-form" onsubmit="event.preventDefault(); const toast = document.querySelector('.shop-toast-notification'); if(toast){ toast.textContent = 'Thank you for subscribing to depository dispatches.'; toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 3000); } this.reset();">
               <div class="footer-input-wrapper">
                 <input 
                   type="email" 
@@ -93,52 +93,52 @@ export function renderFalaqFooter(): string {
             <!-- We Accept Payment Section -->
             <div class="footer-we-accept-wrap">
               <span class="footer-we-accept-text">We Accept</span>
-              <img src="/uploads/assets/paywith_ssl.png" alt="Payment Methods" class="footer-paywith-ssl-img" />
+              <img src="/uploads/assets/paywith_ssl.png" alt="Payment &amp; Custodial Settlement Methods" class="footer-paywith-ssl-img" />
             </div>
           </div>
 
-          <!-- Right 3 Navigation Columns: SHOP, LEARN, ABOUT -->
+          <!-- Right 3 Navigation Columns: BULLION, SERVICES, LEGAL & TRUST -->
           <div class="footer-links-grid">
-            <!-- Column 1: SHOP -->
+            <!-- Column 1: BULLION -->
             <div class="footer-nav-col">
-              <h3 class="footer-nav-col-title">SHOP</h3>
+              <h3 class="footer-nav-col-title">BULLION</h3>
               <ul class="footer-col-nav-links">
-                <li><a href="#" class="footer-nav-item-link" data-nav="Shop">All Products</a></li>
-                <li><a href="#" class="footer-nav-item-link" data-nav="Shop">Fresh Fruits</a></li>
-                <li><a href="#" class="footer-nav-item-link" data-nav="Shop">Vegetables</a></li>
-                <li><a href="#" class="footer-nav-item-link" data-nav="Shop">Dairy &amp; Eggs</a></li>
-                <li><a href="#" class="footer-nav-item-link" data-nav="Shop">Meat &amp; Seafood</a></li>
-                <li><a href="#" class="footer-nav-item-link" data-nav="Shop">Bakery</a></li>
-                <li><a href="#" class="footer-nav-item-link" data-nav="Shop">Gift Cards</a></li>
+                <li><a href="#" class="footer-nav-item-link" data-nav="Shop">All Bullion</a></li>
+                <li><a href="#" class="footer-nav-item-link" data-cat-nav="bars">Gold Bars</a></li>
+                <li><a href="#" class="footer-nav-item-link" data-cat-nav="bars">Silver Bars</a></li>
+                <li><a href="#" class="footer-nav-item-link" data-cat-nav="coins">Sovereign Coins</a></li>
+                <li><a href="#" class="footer-nav-item-link" data-cat-nav="dubai-collection">Dubai Collection</a></li>
+                <li><a href="#" class="footer-nav-item-link" data-cat-nav="prices">Live Prices</a></li>
+                <li><a href="#" class="footer-nav-item-link" data-cat-nav="sell">Sell to Us</a></li>
               </ul>
             </div>
 
-            <!-- Column 2: LEARN -->
+            <!-- Column 2: SERVICES -->
             <div class="footer-nav-col">
-              <h3 class="footer-nav-col-title">LEARN</h3>
+              <h3 class="footer-nav-col-title">SERVICES</h3>
               <ul class="footer-col-nav-links">
-                <li><a href="#" class="footer-nav-item-link">About Us</a></li>
-                <li><a href="#" class="footer-nav-item-link">Blog</a></li>
-                <li><a href="#" class="footer-nav-item-link">Healthy Recipes</a></li>
-                <li><a href="#" class="footer-nav-item-link">Organic Guide</a></li>
-                <li><a href="#" class="footer-nav-item-link">Nutrition Tips</a></li>
-                <li><a href="#" class="footer-nav-item-link">Help &amp; FAQ</a></li>
-                <li><a href="#" class="footer-nav-item-link">Store Locator</a></li>
+                <li><a href="#" class="footer-nav-item-link" data-cat-nav="about">About Our House</a></li>
+                <li><a href="#" class="footer-nav-item-link" data-cat-nav="mc-reserve">MC Reserve</a></li>
+                <li><a href="#" class="footer-nav-item-link" data-cat-nav="storage">Allocated Storage</a></li>
+                <li><a href="#" class="footer-nav-item-link" data-cat-nav="private-assets">Private Assets</a></li>
+                <li><a href="#" class="footer-nav-item-link">Depository Standards</a></li>
+                <li><a href="#" class="footer-nav-item-link">Insured Transit</a></li>
+                <li><a href="#" class="footer-nav-item-link" data-cat-nav="contact">Private Consultation</a></li>
               </ul>
             </div>
 
-            <!-- Column 3: ABOUT -->
+            <!-- Column 3: LEGAL & TRUST -->
             <div class="footer-nav-col">
-              <h3 class="footer-nav-col-title">ABOUT</h3>
+              <h3 class="footer-nav-col-title">LEGAL &amp; TRUST</h3>
               <ul class="footer-col-nav-links">
-                <li><a href="#" class="footer-nav-item-link">Our Story</a></li>
-                <li><a href="#" class="footer-nav-item-link">Careers</a></li>
-                <li><a href="#" class="footer-nav-item-link">Track Your Order</a></li>
-                <li><a href="#" class="footer-nav-item-link">Shipping &amp; Returns</a></li>
-                <li><a href="#" class="footer-nav-item-link">Contact Us</a></li>
-                <li><a href="#" class="footer-nav-item-link">Open Your Store</a></li>
-                <li><a href="#" class="footer-nav-item-link">Privacy Policy</a></li>
-                <li><a href="#" class="footer-nav-item-link">Terms of Service</a></li>
+                <li><a href="#" class="footer-nav-item-link">Terms of Sale [PENDING LEGAL REVIEW]</a></li>
+                <li><a href="#" class="footer-nav-item-link">Privacy Policy [PENDING LEGAL REVIEW]</a></li>
+                <li><a href="#" class="footer-nav-item-link">Price-Lock Terms [PENDING LEGAL REVIEW]</a></li>
+                <li><a href="#" class="footer-nav-item-link">Returns &amp; Cancellation [PENDING LEGAL REVIEW]</a></li>
+                <li><a href="#" class="footer-nav-item-link">Complaints Procedure [PENDING LEGAL REVIEW]</a></li>
+                <li><a href="#" class="footer-nav-item-link">Cookie Policy [PENDING LEGAL REVIEW]</a></li>
+                <li><a href="#" class="footer-nav-item-link" data-cat-nav="contact">Dubai Depository Address</a></li>
+                <li><a href="#" class="footer-nav-item-link">Regulatory Disclosures [PENDING LEGAL REVIEW]</a></li>
               </ul>
             </div>
           </div>
@@ -150,10 +150,10 @@ export function renderFalaqFooter(): string {
           <!-- Left: Country/Currency Selector -->
           <div class="footer-currency-box">
             <select class="footer-currency-dropdown" aria-label="Select Country and Currency">
-              <option value="Bangladesh (USD $)" selected>Bangladesh (USD $)</option>
-              <option value="Bangladesh (BDT ৳)">Bangladesh (BDT ৳)</option>
+              <option value="United Arab Emirates (AED د.إ)" selected>United Arab Emirates (AED د.إ)</option>
               <option value="United States (USD $)">United States (USD $)</option>
               <option value="United Kingdom (GBP £)">United Kingdom (GBP £)</option>
+              <option value="European Union (EUR €)">European Union (EUR €)</option>
             </select>
             <span class="currency-dropdown-arrow">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -162,18 +162,18 @@ export function renderFalaqFooter(): string {
             </span>
           </div>
 
-          <!-- Center: Designed & Developed by Arghya Biswas -->
+          <!-- Center: Designed & Developed Attribution -->
           <div class="footer-developer-credit">
             Designed &amp; Developed by <a href="https://www.linkedin.com/in/arghyabiswas360/" target="_blank" rel="noreferrer" class="developer-profile-link">Arghya Biswas</a>
           </div>
 
           <!-- Right: Copyright & Terms -->
           <div class="footer-copyright-terms-right">
-            <span>© 2026 Fresh Food. All rights reserved.</span>
+            <span>© 2026 Montague Cole Bullion. All rights reserved.</span>
             <span class="copy-sep">|</span>
-            <a href="#" class="copy-link">Privacy</a>
+            <a href="#" class="copy-link">Privacy [PENDING LEGAL REVIEW]</a>
             <span class="copy-sep">|</span>
-            <a href="#" class="copy-link">Terms</a>
+            <a href="#" class="copy-link">Terms [PENDING LEGAL REVIEW]</a>
           </div>
         </div>
 
