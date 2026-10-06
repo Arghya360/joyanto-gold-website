@@ -4,10 +4,10 @@ import { REVIEWS } from '../data/reviews';
 import { renderFalaqFooter } from './Footer';
 
 const HERO_SLIDES = [
-  { img: "/uploads/assets/banner-1.png", title: "খাঁটি ঘি ও প্রাকৃতিক খাবার" },
-  { img: "/uploads/assets/banner-3.png", title: "খাঁটি সুন্দরবনের মধু" },
-  { img: "/uploads/assets/banner-2.png", title: "কাঠিগানি ভাঙা খাঁটি সরিষার তেল" },
-  { img: "/uploads/assets/banner-4.png", title: "অর্গানিক সুপারফুড ও বাদাম" },
+  { img: "/uploads/assets/banner-1.png", title: "Montague Cole Bullion — Dubai Bullion. Global Delivery. A Higher Standard." },
+  { img: "/uploads/assets/banner-3.png", title: "Certified Gold and Silver Bars with Insured Worldwide Delivery" },
+  { img: "/uploads/assets/banner-2.png", title: "The Dubai Collection — Proprietary Architecture-Inspired Bullion" },
+  { img: "/uploads/assets/banner-4.png", title: "MC Reserve — Allocated Vault Custody and Private Asset Advisory" },
 ];
 
 const HOME_CATEGORIES = [
@@ -32,9 +32,9 @@ export interface HomePageProps {
 export function renderHomePage(props: HomePageProps): string {
   const { currentSlide } = props;
 
-  // Recent 16 products in exact original order 1 to 16 matching screenshot
+  // Recent 8 products matching client specification
   const recentProducts = [...PRODUCTS]
-    .filter(p => p.id >= 1 && p.id <= 16)
+    .filter(p => p.id >= 1 && p.id <= 8)
     .sort((a, b) => a.id - b.id);
 
   return `
@@ -62,11 +62,11 @@ export function renderHomePage(props: HomePageProps): string {
 
             <!-- Side 2 Promos -->
             <div class="hero-side-promos">
-              <div class="side-promo-box" data-promo-cat="cooking-oil">
-                <img src="/uploads/assets/promo-1.png" alt="ঘানিভাঙা সরিষার তেল ও অন্যান্য পণ্য" />
+              <div class="side-promo-box" data-promo-cat="bars">
+                <img src="/uploads/assets/promo-1.png" alt="Certified Investment Gold and Silver Vault Bars" />
               </div>
-              <div class="side-promo-box" data-promo-cat="honey">
-                <img src="/uploads/assets/promo-2.png" alt="খাঁটি গাওয়া ঘি ও মধু" />
+              <div class="side-promo-box" data-promo-cat="dubai-collection">
+                <img src="/uploads/assets/promo-2.png" alt="Dubai Collection Limited Architectural Bullion Release" />
               </div>
             </div>
           </div>
@@ -119,7 +119,7 @@ export function renderHomePage(props: HomePageProps): string {
                 <div class="product-card-rating" aria-label="${p.rating ?? 5} out of 5 stars">${'★'.repeat(Math.round(p.rating ?? 5))}${'☆'.repeat(5 - Math.round(p.rating ?? 5))} <span>(${p.reviewCount ?? 0})</span></div>
                 <div class="product-price">
                   <span class="product-price-desktop">${p.priceDisplay}</span>
-                  <span class="product-price-mobile">${getProductOriginalPrice(p) ? `<del>${getProductOriginalPrice(p)}৳</del> ` : ''}${p.price}৳</span>
+                  <span class="product-price-mobile">${getProductOriginalPrice(p) ? `<del>AED ${getProductOriginalPrice(p)}</del> ` : ''}${p.priceDisplay}</span>
                 </div>
                 <button class="btn-add-to-cart" data-add="${p.id}" aria-label="Add ${p.title} to cart">
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 5L19 12H7.37671M20 16H8L6 3H3M16 5.5H13.5M13.5 5.5H11M13.5 5.5V8M13.5 5.5V3M9 20C9 20.5523 8.55228 21 8 21C7.44772 21 7 20.5523 7 20C7 19.4477 7.44772 19 8 19C8.55228 19 9 19.4477 9 20ZM20 20C20 20.5523 19.5523 21 19 21C18.4477 21 18 20.5523 18 20C18 19.4477 18.4477 19 19 19C19.5523 19 20 19.4477 20 20Z"></path></svg>
@@ -138,10 +138,10 @@ export function renderHomePage(props: HomePageProps): string {
         </div>
       </section>
 
-      <!-- ── নতুন ব্লগ পড়ুন (3 Articles) ── -->
+      <!-- ── Market Insights & Depository Notes (3 Articles) ── -->
       <section class="blogs-section">
         <div class="elementor-container">
-          <h2 class="elementor-heading-title" style="text-align: center; font-size: 24px; font-weight: 700; margin-bottom: 24px;">নতুন ব্লগ পড়ুন</h2>
+          <h2 class="elementor-heading-title" style="text-align: center; font-size: 24px; font-weight: 700; margin-bottom: 24px;">Market Insights &amp; Depository Notes</h2>
           <div class="blogs-grid">
             ${BLOG_POSTS.map(blog => `
               <div class="blog-card">
@@ -170,13 +170,13 @@ export function renderHomePage(props: HomePageProps): string {
         </div>
       </section>
 
-      <!-- ── CUSTOMER REVIEWS (আমাদের গ্রাহকদের অভিজ্ঞতা) ── -->
+      <!-- ── CLIENT REVIEWS ── -->
       <section class="reviews-section">
         <div class="elementor-container">
           <div class="reviews-divider">
-            <span>CUSTOMER REVIEWS</span>
+            <span>CLIENT REVIEWS</span>
           </div>
-          <h2 class="elementor-heading-title" style="text-align: center; margin-bottom: 24px; color: #0d874c; font-size: 24px; font-weight: 700;">আমাদের গ্রাহকদের অভিজ্ঞতা</h2>
+          <h2 class="elementor-heading-title" style="text-align: center; margin-bottom: 24px; color: #0d874c; font-size: 24px; font-weight: 700;">Client Experiences &amp; Allocations</h2>
           
           <div class="reviews-carousel-wrapper">
             <button class="review-carousel-btn btn-prev" id="review-prev" aria-label="Previous reviews">
@@ -220,28 +220,28 @@ export function renderHomePage(props: HomePageProps): string {
         </div>
       </section>
 
-      <!-- ── BOTTOM PROMO ARTWORK (4 Banners matching screenshot) ── -->
+      <!-- ── BOTTOM PROMO ARTWORK (4 Banners) ── -->
       <section class="bottom-banners-section">
         <div class="elementor-container">
           <div class="bottom-banners-layout">
             <!-- Left side: top wide banner + bottom 2 square banners -->
             <div class="bottom-banners-left">
               <div class="banner-top-wide">
-                <img src="/uploads/assets/bottom-1.png" alt="চিয়া সিড পুষ্টিগুণ" />
+                <img src="/uploads/assets/bottom-1.png" alt="Dubai Good Delivery Certified Products — Montague Cole Bullion" />
               </div>
               <div class="banner-bottom-squares">
                 <div class="banner-square">
-                  <img src="/uploads/assets/bottom-3.png" alt="প্রাকৃতিক লিচু ফুলের মধু" />
+                  <img src="/uploads/assets/bottom-3.png" alt="Secure Allocated Vault Storage in Dubai Free Zone" />
                 </div>
                 <div class="banner-square">
-                  <img src="/uploads/assets/bottom-2.png" alt="মাস্টার্ড অয়েল ও খাঁটি খাবার কম্বো" />
+                  <img src="/uploads/assets/bottom-2.png" alt="Transparent Pricing &amp; Guaranteed Buy-Back Framework" />
                 </div>
               </div>
             </div>
             <!-- Right side: tall delivery banner -->
             <div class="bottom-banners-right">
               <div class="banner-tall">
-                <img src="/uploads/assets/bottom-4.png" alt="দেশের যে কোন প্রান্তে পৌঁছে যাই আমরা - ফলক ফুড" />
+                <img src="/uploads/assets/bottom-4.png" alt="Global Insured Delivery — Montague Cole Bullion, Dubai" />
               </div>
             </div>
           </div>

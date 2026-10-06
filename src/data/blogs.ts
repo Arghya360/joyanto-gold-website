@@ -12,54 +12,56 @@ export interface BlogPost {
 export const BLOG_POSTS: BlogPost[] = [
   {
     id: 1,
-    title: "খাঁটি মধু চেনার সহজ উপায় ও গুরুত্বপূর্ণ টিপস",
-    excerpt: "মধু আমাদের দৈনন্দিন খাবারের একটি জনপ্রিয় প্রাকৃতিক উপাদান। চা, নাশতা, ডেজার্ট কিংবা বিভিন্ন রেসিপিতে মধু ব্যবহার করা হয়। তবে বাজারে ভেজালের ভিড়ে খাঁটি মধু চেনার উপায়গুলো জেনে রাখা জরুরি।",
-    content: `মধু আমাদের দৈনন্দিন খাবারের একটি জনপ্রিয় প্রাকৃতিক উপাদান। চা, নাশতা, ডেজার্ট কিংবা বিভিন্ন রেসিপিতে মধু ব্যবহার করা হয়। তবে বাজারে ভেজালের ভিড়ে খাঁটি মধু চেনার উপায়গুলো জানা অত্যন্ত প্রয়োজন।
+    title: "Understanding Bullion Fineness and the Dubai Good Delivery Standard",
+    excerpt: "Physical precious metals represent timeless wealth preservation. Understanding refiner accreditation, assay fineness and serialised verification ensures complete allocation integrity.",
+    content: `Physical precious metals represent timeless capital preservation. When allocating into investment-grade gold or silver, verifying mint accreditation and certified assay standards is paramount.
 
-১. পানির পরীক্ষা: এক গ্লাস সাধারণ পানিতে এক চামচ মধু ঢালুন। খাঁটি মধু পানির নিচে থিতিয়ে জমাট বাঁধবে এবং সহজে পানিতে দ্রবীভূত হবে না। ভেজাল মধু সাথে সাথেই পানিতে গুলে যেতে শুরু করবে।
+1. Assay Fineness: Investment-grade gold is minted to 999.9 parts per thousand (24 karat), while institutional silver bars trade at 999.0 purity. Every bar in our inventory carries assayer certification guaranteeing its elemental purity.
 
-২. বৃদ্ধাঙ্গুলির পরীক্ষা: এক ফোঁটা মধু আপনার বৃদ্ধাঙ্গুলির ওপর নিন। খাঁটি মধু সহজে গড়িয়ে পড়বে না বা ছড়িয়ে যাবে না, এটি ঘন এবং আঠালো হয়ে লেগে থাকবে।
+2. Dubai Good Delivery (DGD): Initiated by the Dubai Multi Commodities Centre (DMCC), the Dubai Good Delivery standard mirrors the international LBMA framework, providing global benchmark quality, verifiable ethical sourcing, and international liquidity.
 
-৩. আগুনের পরীক্ষা: একটি তুলার সলতে মধুতে ডুবিয়ে তাতে দেশলাই দিয়ে আগুন জ্বালানোর চেষ্টা করুন। খাঁটি মধু থাকলে তুলাটি সহজে জ্বলে উঠবে। মধুতে অতিরিক্ত পানি বা চিনির সিরা মেশানো থাকলে তা সহজে জ্বলবে না।
+3. Chain of Custody: From initial refinery melt to sealed CertiCard or armored depository intake, serialised identification ensures that your metal remains verifiably uncompromised throughout its lifecycle.
 
-ফলক ফুড সরাসরি সুন্দরবন ও পাহাড়ি মৌচাক থেকে সংগৃহীত শতভাগ খাঁটি ও প্রাকৃতিক মধু সরবরাহ করে।`,
-    date: "August 28, 2026",
+Montague Cole Bullion maintains direct supply relationships with accredited international and regional refineries, ensuring guaranteed provenance on every delivery.`,
+    date: "October 02, 2026",
     image: "/uploads/assets/blog-1.webp",
-    author: "Falaq Food Nutritionist",
-    category: "স্বাস্থ্য ও পুষ্টি"
+    author: "Montague Cole Bullion Research",
+    category: "Bullion Advisory"
   },
   {
     id: 2,
-    title: "সরিষার তেল কেন প্রতিদিনের রান্নায় জনপ্রিয় ও স্বাস্থ্যকর",
-    excerpt: "সরিষার তেল বাংলাদেশের রান্নাঘরের অত্যন্ত পরিচিত একটি উপাদান। ভর্তা, ভাজি, মাছ, মাংস, আচার কিংবা বিভিন্ন ঐতিহ্যবাহী রেসিপিতে সরিষার তেলের ঝাঁঝালো স্বাদ ও স্বাস্থ্য উপকারিতা অতুলনীয়।",
-    content: `সরিষার তেল বাংলাদেশের রান্নাঘরের অত্যন্ত পরিচিত একটি উপাদান। ভর্তা, ভাজি, মাছ, মাংস, আচার কিংবা বিভিন্ন ঐতিহ্যবাহী রেসিপিতে সরিষার তেলের ব্যবহার শতাব্দীর পর শতাব্দী ধরে চলে আসছে।
+    title: "Allocated Vault Custody vs Insured Global Delivery",
+    excerpt: "A structured assessment of holding physical bullion in allocated Dubai depository custody versus private physical possession via insured courier dispatch.",
+    content: `When acquiring substantial physical gold or silver holdings, private clients evaluate the operational balance between direct possession and institutional vault custody.
 
-১. হৃদরোগের ঝুঁকি কমায়: সরিষার তেলে থাকা ওমেগা-৩ ও ওমেগা-৬ ফ্যাটি এসিড কোলেস্টেরল নিয়ন্ত্রণে রাখতে সাহায্য করে।
+1. Allocated and Segregated Depository: Under allocated custody inside our Dubai Free Zone facilities, physical bars remain your unencumbered legal property. Each piece is recorded by unique serial number and kept segregated from institutional balance sheets.
 
-২. হজমশক্তি বৃদ্ধি করে: এর প্রাকৃতিক অ্যান্টি-ব্যাকটেরিয়াল বৈশিষ্ট্য পেট পরিষ্কার রাখতে এবং পরিপাকতন্ত্র সক্রিয় রাখতে সহায়ক।
+2. Global Insured Transport: For clients preferring private domestic custody, deliveries are executed via specialised armoured courier with comprehensive transit insurance. Shipments remain fully insured until personal signature confirmation.
 
-৩. ত্বকের যত্নে: কাঁচা ঘানিভাঙা সরিষার তেল ত্বকের রুক্ষতা দূর করতে এবং শীতকালীন সুরক্ষায় অত্যন্ত কার্যকর।
+3. Complete Liquidity & Buy-Back: Holders of Montague Cole certified bullion benefit from our transparent buy-back framework. Custodial assets can be liquidated directly upon quote confirmation, while physical returns undergo laboratory assay and settlement.
 
-ফলক ফুডের কাঠিগানি ভাঙা সরিষার তেল সম্পূর্ণ কেমিক্যাল ও প্রিজারভেটিভমুক্ত। এতে কোনো কৃত্রিম ঘ্রাণ বা রঙ ব্যবহার করা হয় না।`,
-    date: "August 28, 2026",
+Clients may arrange private advisory appointments with our Dubai specialists to structure custody suited to their jurisdiction and family governance framework.`,
+    date: "September 24, 2026",
     image: "/uploads/assets/blog-2.avif",
-    author: "Falaq Food Editorial",
-    category: "রান্না ও স্বাস্থ্য"
+    author: "Depository Custody Team",
+    category: "Custody & Vaulting"
   },
   {
     id: 3,
-    title: "ঘি, মধু ও মসলার সঠিক সংরক্ষণ পদ্ধতি",
-    excerpt: "ঘি, মধু ও মসলা আমাদের রান্নাঘরের খুব পরিচিত ও প্রয়োজনীয় উপাদান। এগুলোর স্বাদ, ঘ্রাণ এবং খাদ্যমান দীর্ঘদিন অক্ষুণ্ণ রাখতে সঠিক উপায়ে বাতাসমুক্ত ও শুষ্ক স্থানে সংরক্ষণ করা জরুরি।",
-    content: `ঘি, মধু ও মসলা আমাদের রান্নাঘরের খুব পরিচিত ও প্রয়োজনীয় উপাদান। এগুলোর স্বাদ, ঘ্রাণ এবং গুণমান দীর্ঘদিন ভালো রাখতে হলে সঠিক উপায়ে সংরক্ষণ করা জরুরি।
+    title: "The Pricing Architecture of Physical Precious Metals",
+    excerpt: "A transparent overview of how live spot valuations, manufacturing premiums, delivery logistics, and insurance combine to form our clear client pricing.",
+    content: `Montague Cole Bullion operates on a transparent, institutional pricing framework. Clear mechanics govern every trade without speculative promises or urgency gimmicks.
 
-১. ঘি সংরক্ষণ: ঘি কাচের বৈয়ামে ঘরের স্বাভাবিক তাপমাত্রায় শুষ্ক স্থানে রাখুন। ফ্রিজে রাখার প্রয়োজন হয় না। খেয়াল রাখবেন যেন কখনও ভেজা চামচ ঘির ভেতর না দেওয়া হয়।
+1. Live Spot Value: Physical bullion is anchored to the global spot metal market. As global interbank benchmark rates fluctuate, indicative catalogue values reflect prevailing metal value.
 
-২. মধু সংরক্ষণ: মধু কখনই ফ্রিজে রাখা উচিত নয়, এতে জমে গিয়ে দানাদার হয়ে যেতে পারে। বাতাস চলাচল করে এমন স্বাভাবিক তাপমাত্রায় রাখাই উত্তম।
+2. Product Premium: Minting and fabrication require precise metallurgical engineering. Premiums cover accredited refining, stamping, assay certification, and tamper-resistant security packaging.
 
-৩. গুঁড়া মসলা: রোদের তাপে বা চুলার কাছে মসলা রাখবেন না। এতে মসলার প্রাকৃতিক সুগন্ধ ও ঝাঁঝ নষ্ট হয়ে যায়। এয়ারটাইট বয়ামে অন্ধকার ও শীতল স্থানে রাখলে মসলার মান দীর্ঘদিন চমৎকার থাকে।`,
-    date: "August 28, 2026",
+3. Delivery & Insurance: Physical bullion freight requires specialised transport logistics and underwriters. Every shipment includes comprehensive transit cover until signed handover.
+
+Final invoice calculation formula: Sell Price = Live Metal Value + Product Premium + Delivery + Insurance + Applicable Taxes. We never promise returns or future appreciation; we deliver verified physical ownership.`,
+    date: "September 15, 2026",
     image: "/uploads/assets/blog-3.jpg",
-    author: "Chef & Quality Team",
-    category: "কিচেন টিপস"
+    author: "Trading & Execution Desk",
+    category: "Market Standards"
   }
 ];
