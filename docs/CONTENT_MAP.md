@@ -1,396 +1,395 @@
-# Content Audit & Map — Montague Cole Bullion Migration
-
-**Client:** Montague Cole Bullion (part of Montague Cole Private Assets, Dubai, UAE)  
-**Tagline:** "Dubai bullion. Global delivery. A higher standard."  
-**Voice:** Calm, precise, confident, understated. No hype words, no urgency gimmicks.  
-**Audit Date:** October 6, 2026  
-**Scope:** Complete inventory of all existing content locations across the codebase prior to migration.
+# CONTENT MAP � Montague Cole Bullion Migration
+**Audit date:** 2026-10-06
+**Auditor:** Senior Front-End Engineer (content-only migration)
+**Status:** STEP 1 COMPLETE � read-only audit, no edits beyond previous session commits
 
 ---
 
-## 1. Document Head & Global SEO
+## 1. Project Structure
 
-### `index.html`
-| Content Field / Element | Current Existing Text / Value | Notes |
-| :--- | :--- | :--- |
-| `<html lang="...">` | `bn` (Bengali) | Language attribute |
-| `<title>` | `Shop \| Archives: Shop – Falaq Food \| ১০০% প্রাকৃতিক, অর্গানিক ও নিরাপদ খাবারের অনলাইন শপ` | Global site page title |
-| `<meta name="description">` | `ফলক ফুড (Falaq Food) Shop Page – খাঁটি মধু, কাঠিগানি ভাঙা সরিষার তেল, সুগন্ধি চাল, ডাল, গাওয়া ঘি ও অর্গানিক সুপারফুড সরাসরি আপনার দোরগোড়ায়। ক্যাশ অন ডেলিভারি সুবিধা।` | SEO meta description |
-| `<meta property="og:title">` | `Falaq Food Shop – Archives: Shop` | Open Graph title |
-| `<meta property="og:description">` | `Browse all natural, organic Falaq Food products – spices, nuts, rice, dal, sweeteners and more.` | Open Graph description |
-| `<meta name="theme-color">` | `#078B4B` (Falaq Food Green) | Mobile browser address bar tint |
-
----
-
-## 2. Global Navigation & Header
-
-### `src/components/Header.ts`
-| Location / Selector | Current Existing Text / Label | Notes |
-| :--- | :--- | :--- |
-| `.mobile-nav-toggle` | `aria-label="Toggle navigation"` | Accessibility label |
-| `#header-brand-logo img` | `alt="E-Commerce Shopping"` | Brand logo alt text |
-| `.desktop-main-nav` links | `Home`, `Shop`, `Offers`, `New Arrivals` | Primary desktop nav items |
-| `#top-search-input` | `placeholder="Search for Products..."` | Search box placeholder |
-| `#btn-search-clear` | `aria-label="Clear search"`, `title="Clear"` | Search clear button |
-| `#btn-top-search` | `aria-label="Search"` | Search action button |
-| `#search-suggestions-dropdown` | `aria-label="Search suggestions"` | Dropdown accessibility label |
-| `#btn-user-profile` | `title="Account"`, `aria-label="User Account"` | Header user account icon |
-| `#btn-header-cart` | `title="Shopping Cart"`, `aria-label="Shopping Cart"` | Header cart basket icon |
-| `.second-category-nav` | Items rendered dynamically from `NAV_CATEGORIES` (`Honey`, `Nuts & Fruits`, `Cooking Oil`, `Dal & Pulses`, `Flour & Atta`, `Spices & Masala`, `Rice`, `Sweeteners`, `Superfoods`, `Organic Foods`) | Secondary horizontal category navigation bar |
-| `#mobile-nav-drawer .mobile-drawer-header img` | `alt="E-Commerce Shopping"` | Mobile drawer logo alt |
-| `#btn-close-mobile-nav` | `aria-label="Close menu"`, `&times;` | Mobile drawer close icon |
-| `.mobile-menu-links` | `Home`, `Shop`, `Offers`, `New Arrivals`, `Customer Login`, `Shopping Cart`, `Wishlist` | Mobile navigation menu items |
-| `.mobile-drawer-categories h4` | `Categories` | Mobile categories drawer title |
-| `.mobile-cat-link` | Items rendered dynamically from `NAV_CATEGORIES` | Mobile category list |
-| `.mobile-bottom-nav-item[data-bottom-menu]` | `aria-label="Open menu"`, `<span>Menu</span>` | Mobile sticky bottom nav item |
-| `.mobile-bottom-nav-item[data-route="shop"]` | `<span>Shop</span>` | Mobile sticky bottom nav item |
-| `.mobile-bottom-home` | `<span>Home</span>` | Mobile sticky bottom nav item |
-| `.mobile-bottom-nav-item[data-route="cart"]` | `<span>Cart</span>` | Mobile sticky bottom nav item |
-| `.mobile-bottom-nav-item[data-route="login"]` | `<span>Account</span>` | Mobile sticky bottom nav item |
-
----
-
-## 3. Global Footer
-
-### `src/components/Footer.ts`
-| Location / Selector | Current Existing Text / Label | Notes |
-| :--- | :--- | :--- |
-| `.footer-brand-logo` | `aria-label="E-Commerce Shopping Home"`, `alt="E-Commerce Shopping"` | Footer logo link & alt text |
-| `.footer-inbox-heading` | `GET FRESH FOOD<br />IN YOUR INBOX` | Newsletter headline |
-| `.footer-inbox-input` | `placeholder="Enter your email address"`, `aria-label="Email address"` | Newsletter input placeholder |
-| `.footer-inbox-submit-btn` | `aria-label="Subscribe to newsletter"` | Newsletter submit button |
-| Inline newsletter toast | `Thank you for subscribing!` | Toast on newsletter submit |
-| `.footer-follow-label` | `Follow Us` | Social icons header |
-| Social links | `aria-label="Instagram"`, `Facebook`, `YouTube`, `Twitter` | Social links labels |
-| App store badges | `Download on the App Store`, `GET IT ON Google Play` | Mobile app badges |
-| `.footer-we-accept-text` | `We Accept` | Payment methods header |
-| `.footer-paywith-ssl-img` | `alt="Payment Methods"` | Payment gateway banner alt |
-| Column 1: `.footer-nav-col-title` | `SHOP` | Footer Nav Column 1 Heading |
-| Column 1 links | `All Products`, `Fresh Fruits`, `Vegetables`, `Dairy & Eggs`, `Meat & Seafood`, `Bakery`, `Gift Cards` | Column 1 link labels |
-| Column 2: `.footer-nav-col-title` | `LEARN` | Footer Nav Column 2 Heading |
-| Column 2 links | `About Us`, `Blog`, `Healthy Recipes`, `Organic Guide`, `Nutrition Tips`, `Help & FAQ`, `Store Locator` | Column 2 link labels |
-| Column 3: `.footer-nav-col-title` | `ABOUT` | Footer Nav Column 3 Heading |
-| Column 3 links | `Our Story`, `Careers`, `Track Your Order`, `Shipping & Returns`, `Contact Us`, `Open Your Store`, `Privacy Policy`, `Terms of Service` | Column 3 link labels |
-| `.footer-currency-dropdown` | `Bangladesh (USD $)`, `Bangladesh (BDT ৳)`, `United States (USD $)`, `United Kingdom (GBP £)` | Currency selector options |
-| `.footer-currency-dropdown` | `aria-label="Select Country and Currency"` | Dropdown accessibility label |
-| `.footer-developer-credit` | `Designed & Developed by Arghya Biswas` | Developer attribution text |
-| `.footer-copyright-terms-right` | `© 2026 Fresh Food. All rights reserved.`, `Privacy`, `Terms` | Copyright and bottom legal links |
+```
+joyto da website/
++-- index.html                    <- SEO title, meta, OG tags
++-- public/
+�   +-- logo.png                  <- Brand logo
+�   +-- favicon.svg               <- Favicon
+�   +-- icons.svg                 <- Sprite icons
+�   +-- uploads/
+�       +-- products/             <- Product images (see �6)
+�       +-- assets/               <- Banner, blog, category, avatar images
++-- src/
+�   +-- style.css                 <- LOCKED � design only, zero content edits
+�   +-- main.ts                   <- Routing, UI strings, localStorage keys
+�   +-- data/
+�   �   +-- products.ts           <- Master product catalog (TypeScript, ACTIVE)
+�   �   +-- products.json         <- LEGACY JSON � still contains all 16 old food items
+�   �   +-- categories.ts         <- Navigation + filter sidebar categories
+�   �   +-- blogs.ts              <- Market insight blog posts
+�   �   +-- reviews.ts            <- Client testimonials
+�   +-- components/
+�   �   +-- Header.ts             <- Logo alt, search placeholder, nav labels
+�   �   +-- Footer.ts             <- Brand copy, link columns, currency selector
+�   �   +-- HomePage.ts           <- Hero slides, category cards, products grid, blogs, reviews
+�   �   +-- FilterSidebar.ts      <- Filter labels (Weight/Denomination, Price AED)
+�   �   +-- ProductCard.ts        <- Currency display
+�   �   +-- ProductDetailsPage.ts <- Product spec labels, AED display
+�   �   +-- CartPage.ts           <- Cart labels, delivery zone labels
+�   �   +-- CheckoutPage.ts       <- Checkout labels, delivery zones
+�   �   +-- OffersPage.ts         <- Page title, product selection
+�   �   +-- NewArrivalsPage.ts    <- Page title, product selection
+�   �   +-- LoginPage.ts          <- MC Reserve portal copy
+�   �   +-- WishlistPage.ts       <- Saved allocations labels (not fully audited)
+�   �   +-- PageBanner.ts         <- Generic banner component
+�   +-- store/
+�       +-- cart.ts               <- localStorage key 'falaqfood_cart_v1' (OLD BRAND)
+�                                    DeliveryZone type: 'inside_dhaka' | 'outside_dhaka'
++-- docs/
+    +-- CONTENT_MAP.md            <- This file
+    +-- CONTENT_ISSUES.md         <- Issues log
+    +-- MIGRATION_REPORT.md       <- Change summary
+```
 
 ---
 
-## 4. Categories Data
+## 2. SEO / HTML Head � index.html
 
-### `src/data/categories.ts`
-| Identifier | Current English Name (`name`) | Current Bengali Name (`nameBn`) | Count |
-| :--- | :--- | :--- | :--- |
-| `spices-masala` | Spices & Masala | মসলা গুঁড়া | 6 |
-| `dal-pulses` | Dal & Pulses | ডাল ও ডালজাতীয় | 3 |
-| `nuts-fruits` | Nuts & Fruits | বাদাম ও কিশমিশ | 2 |
-| `sweeteners` | Sweeteners | প্রাকৃতিক মিষ্টি | 2 |
-| `rice` | Rice | সুগন্ধি চাল | 2 |
-| `organic-foods` | Organic Foods | অর্গানিক ফুডস | 1 |
-| `superfoods` | Superfoods | সুপারফুড | 1 |
-| `flour-atta` | Flour & Atta | আটা ও ময়দা | 1 |
-| `cooking-oil` | Cooking Oil | খাঁটি তেল | 1 |
-| `honey` | Honey | খাঁটি মধু | 1 |
-
-`NAV_CATEGORIES` mirrors the same 10 items in display order: `Honey`, `Nuts & Fruits`, `Cooking Oil`, `Dal & Pulses`, `Flour & Atta`, `Spices & Masala`, `Rice`, `Sweeteners`, `Superfoods`, `Organic Foods`.
+| Element | Current Value | Status |
+|---|---|---|
+| lang | en | DONE |
+| title | Montague Cole Bullion or Dubai Bullion. Global Delivery | DONE |
+| meta description | Certified gold and silver, Dubai Collection, MC Reserve | DONE |
+| og:title | Montague Cole Bullion or A Higher Standard | DONE |
+| og:description | Dubai bullion. Global delivery... | DONE |
+| og:image | Not set | PENDING CLIENT: OG image asset |
+| favicon | /logo.png | DONE � using brand logo |
+| Google Fonts | Poppins, Hind Siliguri, Noto Sans | LOCKED � design |
 
 ---
 
-## 5. Home Page
+## 3. Header Second Navigation Bar
 
-### `src/components/HomePage.ts`
-| Location / Selector | Current Existing Text / Label | Notes |
-| :--- | :--- | :--- |
-| `HERO_SLIDES[0]` | Title: `খাঁটি ঘি ও প্রাকৃতিক খাবার` (Pure Ghee & Natural Food) | Hero slide 1 |
-| `HERO_SLIDES[1]` | Title: `খাঁটি সুন্দরবনের মধু` (Pure Sundarbans Honey) | Hero slide 2 |
-| `HERO_SLIDES[2]` | Title: `কাঠিগানি ভাঙা খাঁটি সরিষার তেল` (Wood-Pressed Mustard Oil) | Hero slide 3 |
-| `HERO_SLIDES[3]` | Title: `অর্গানিক সুপারফুড ও বাদাম` (Organic Superfoods & Nuts) | Hero slide 4 |
-| Side Promo 1 (`promo-1.png`) | Alt: `ঘানিভাঙা সরিষার তেল ও অন্যান্য পণ্য` | Promo tile 1 |
-| Side Promo 2 (`promo-2.png`) | Alt: `খাঁটি গাওয়া ঘি ও মধু` | Promo tile 2 |
-| Categories section title | `Shop by Category` | Category carousel header |
-| Carousel controls | `aria-label="Previous categories"`, `aria-label="Next categories"` | Carousel buttons |
-| `HOME_CATEGORIES` | 12 items (Honey, Nuts & Fruits, Organic Foods, Cooking Oil, Dal & Pulses, Flour & Atta, Honey, Nuts & Fruits, Spices & Masala, Rice, Sweeteners, Superfoods) | Category pills |
-| Recent Products section title | `Recent Products` | Grid heading |
-| Recent Products items | 16 products loaded from `PRODUCTS` (IDs 1–16) | Product cards |
-| Product card elements | `badge` (e.g. `-6%`, `NEW`), `aria-label="Add ${p.title} to wishlist"`, `aria-label="${rating} out of 5 stars"`, `priceDisplay` (`${price}৳ – ${regularPrice}৳`), `Add to Cart` | Card markup |
-| CTA Button | `SHOP ALL PRODUCTS` (`#btn-shop-all-products`) | Category CTA |
-| Blogs section title | `নতুন ব্লগ পড়ুন` (Read New Blogs) | Blog section heading |
-| Blog card items | Title, excerpt, tag, author, date from `BLOG_POSTS`, link `READ MORE »`, meta `No Comments` | Blog cards |
-| Reviews section badge | `CUSTOMER REVIEWS` | Sub-label |
-| Reviews section title | `আমাদের গ্রাহকদের অভিজ্ঞতা` (Our Customers' Experiences) | Heading |
-| Review cards | Quotes, star ratings, reviewer names, roles (`ভেরিফায়েড ক্রেতা` = Verified Buyer) from `REVIEWS` | Testimonial carousel |
-| Carousel controls | `aria-label="Previous reviews"`, `aria-label="Next reviews"` | Carousel buttons |
-| Bottom Banners artwork alts | `চিয়া সিড পুষ্টিগুণ` (Chia Seed Nutritional Value), `প্রাকৃতিক লিচু ফুলের মধু` (Natural Litchi Honey), `মাস্টার্ড অয়েল ও খাঁটি খাবার কম্বো` (Mustard Oil Combo), `দেশের যে কোন প্রান্তে পৌঁছে যাই আমরা - ফলক ফুড` (We Deliver Across The Country) | Bottom 4 banners |
+Source: src/data/categories.ts -> NAV_CATEGORIES
+Rendered by: src/components/Header.ts
+
+| ID | Label | Status |
+|---|---|---|
+| prices | Live Prices | DONE |
+| catalog | Catalogue | DONE |
+| storage | Storage | DONE |
+| mc-reserve | MC Reserve | DONE |
+| sell | Sell to Us | DONE |
+| about | About | DONE |
+| contact | Contact | DONE |
+
+NOTE: These 7 IDs route to the shop filtered by category ID. No dedicated /prices, /storage pages exist. Logged in CONTENT_ISSUES.md.
 
 ---
 
-## 6. Shop Page & Filter Sidebar
+## 4. Top Navigation Bar � src/components/Header.ts
 
-### `src/components/PageBanner.ts`
-| Location | Current Existing Text | Notes |
-| :--- | :--- | :--- |
-| `.shop-banner-heading` | `Archives: Shop` (default prop fallback) | Banner heading on Shop page |
-
-### `src/components/FilterSidebar.ts`
-| Section / Control | Current Existing Text / Label | Notes |
-| :--- | :--- | :--- |
-| Search section heading | `Search Products` | Section header |
-| `#sidebar-search-input` | `placeholder="Find your product..."` | Input placeholder |
-| `#btn-sidebar-search` | `aria-label="Search products"` | Submit button |
-| Categories heading | `Categories` | Section toggle |
-| Category items | Checkbox rows with category name & product count | From `CATEGORIES` |
-| Pack Size heading | `Pack Size` | Section toggle |
-| Pack sizes | `100g`, `200g`, `250g`, `400g`, `500g`, `1kg`, `2kg`, `5kg`, `1L` | Filter checkboxes |
-| Price Range heading | `Price Range` | Section toggle |
-| Price inputs | `Min ৳`, `Max ৳`, placeholders `0`, `5000` | Min/Max inputs & range slider |
-| Average Rating heading | `Average Rating` | Section toggle |
-| Rating options | `5+ stars`, `4+ stars`, `3+ stars`, `2+ stars`, `1+ stars` | Radio buttons |
-| Stock Status heading | `Stock Status` | Section toggle |
-| Stock options | `All Products`, `In Stock Only` | Radio buttons |
-| Action buttons | `Apply Filter`, `Reset All` | Filter control buttons |
-
-### `src/components/ProductCard.ts`
-| Element | Current Existing Text / Label | Notes |
-| :--- | :--- | :--- |
-| `.shop-product-card` | `aria-label="View ${product.title}"` | Link accessibility |
-| `.product-discount-badge` | `${product.badge}` (e.g. `-6%`) | Discount label |
-| `.price-old` / `.price-current` | `${product.oldPrice}৳`, `${product.price}৳` / `${product.priceDisplay}` | Price formatting with Bangladeshi Taka symbol |
-| `.shop-btn-add-to-cart` | `aria-label="Add ${product.title} to cart"`, `Add to Cart` | Cart CTA |
-
-### `src/main.ts` (Shop view)
-| Element | Current Existing Text | Notes |
-| :--- | :--- | :--- |
-| `.mobile-filter-toggle-btn` | `Filters` | Mobile filter button |
-| `.results-count` | `${filteredProducts.length} product(s) found` | Filter count indicator |
-| `.no-products-found` | `No products found`<br />`Try adjusting your filters or search term` | Empty search state |
+| Element | Current Value | Status |
+|---|---|---|
+| Logo alt | Montague Cole Bullion | DONE |
+| Search placeholder | Search gold, silver, coins... | DONE |
+| Desktop nav links | Home, Shop, Offers, New Arrivals | WARNING: "Offers" and "New Arrivals" are original site page names |
+| Mobile drawer links | Home, Catalogue, Allocations, New Releases, MC Reserve Sign-In, Vault Order & Cart, Saved Allocations | DONE |
+| Mobile drawer logo alt | Montague Cole Bullion | DONE |
 
 ---
 
-## 7. Offers Page & New Arrivals Page
+## 5. Product Data � src/data/products.ts
 
-### `src/components/OffersPage.ts`
-| Location | Current Existing Text / Label | Notes |
-| :--- | :--- | :--- |
-| Active Nav | `Offers` | Passed to Header |
-| Hero Banner title | `Exclusive Discounts – Limited Time Only!` | Banner h1 |
-| CTA Button | `More Products` (`#btn-offers-more-products`) | Bottom CTA |
-| Products shown | 10 products filtered by `OFFER_PRODUCT_IDS` | Uses `renderProductCard` |
+22 products total. All old food items removed. Current catalog:
 
-### `src/components/NewArrivalsPage.ts`
-| Location | Current Existing Text / Label | Notes |
-| :--- | :--- | :--- |
-| Active Nav | `New Arrivals` | Passed to Header |
-| Header bar title | `New Arrivals` | Heading |
-| View all link | `View All`, `aria-label="View All New Arrivals"` | Header link to Shop |
-| CTA Button | `More Products` (`#btn-new-arrivals-more-products`) | Bottom CTA |
-| Products shown | 15 products filtered by `NEW_ARRIVALS_PRODUCT_IDS` | Uses `renderProductCard` |
+### Featured / Recent Products (IDs 1-8, shown on homepage grid)
 
----
+| ID | Slug | Title | Category | Price | Badge | Image |
+|---|---|---|---|---|---|---|
+| 1 | gold-1oz-vault-bar | 1 oz Gold Vault Bar | bars | AED 2,364 | In stock | gold.avif |
+| 2 | silver-britannia-coin | 1 oz Silver Britannia Coin | coins | AED 34 | 11% off | Silver coins.avif |
+| 3 | dubai-burj-bar | 50 g Gold Dubai Burj Bar | dubai-collection | AED 3,980 | Awaiting delivery | Burj Khalifa-inspired bars.webp |
+| 4 | gold-coin-collection | 1/4 oz Gold Dubai Collection Coin | coins | AED 790 | In stock | gold coin.avif |
+| 5 | gold-investment-bar | 100 g Gold Investment Bar | bars | AED 7,590 | In stock | gold ber.avif |
+| 6 | silver-investment-bar | 1 kg Silver Investment Bar | bars | AED 1,095 | In stock | Silver bars.avif |
+| 7 | gold-bullion-coin | 1 oz Gold Bullion Coin | coins | AED 2,395 | Limited | gold coin.avif |
+| 8 | dubai-burj-coin | 1/4 oz Gold Burj Khalifa Coin | dubai-collection | AED 825 | Limited | Burj Khalifa-inspired coins.webp |
 
-## 8. Customer Login / Account Page
+### Gold Bars (IDs 9-13)
 
-### `src/components/LoginPage.ts`
-| Location / Selector | Current Existing Text / Label | Notes |
-| :--- | :--- | :--- |
-| `.customer-login-title` | `Login` | Main heading |
-| `.customer-login-subtitle` | `Sign in to your account to continue shopping, track orders, and manage your profile.` | Subtitle |
-| Phone label & input | `Your Phone Number *`, `placeholder="Your phone number"` | Phone field |
-| Password label & input | `Password *`, `placeholder="Enter your password"` | Password field |
-| Password toggle | `aria-label="Toggle password visibility"` | Show/hide password icon |
-| Remember me | `Remember me` | Checkbox |
-| Submit button | `LOG IN` | Primary button |
-| Lost password link | `Lost your password?` | Action link |
-| Create account button | `CREATE NEW ACCOUNT` | Secondary button |
+| ID | Slug | Title | Weight | Price |
+|---|---|---|---|---|
+| 9 | gold-1g-bar | 1 g Gold Bar | 1 g | AED 88 |
+| 10 | gold-5g-bar | 5 g Gold Bar | 5 g | AED 412 |
+| 11 | gold-10g-bar | 10 g Gold Bar | 10 g | AED 810 |
+| 12 | gold-20g-bar | 20 g Gold Bar | 20 g | AED 1,590 |
+| 13 | gold-1kg-bar | 1 kg Gold Bar | 1 kg | AED 74,500 |
 
----
+MISSING FROM SPEC: Client brief requests a 50 g Gold Bar. Currently 50 g only exists as Dubai Collection. A standalone gold-50g-bar should be added. Requires client approval. See CONTENT_ISSUES.md.
 
-## 9. Product Details Page
+### Coins (IDs 14, 18)
 
-### `src/components/ProductDetailsPage.ts`
-| Location / Selector | Current Existing Text / Label | Notes |
-| :--- | :--- | :--- |
-| Breadcrumbs | `Home / Shop / ${product.title}` | Navigation breadcrumb |
-| Not found state | `← Back to Shop`, `Product not found`, `This product may have been removed or the link may be incorrect.` | 404 container |
-| `#btn-product-back` | `← Back` | Back button |
-| Sale badge | `${product.badge} OFF` | Discount pill |
-| Rating info | `${rating} / 5`, `·`, `${reviewCount} reviews` | Rating counter |
-| Price & pack size | `${originalPrice}৳`, `${price}৳`, `${product.packSize}` | Price displays |
-| Fallback description | `${product.title} — carefully selected and packed by Falaq Food.` | Default when missing |
-| Product facts table | `Category`, `Weight / Size`, `Availability` | Fact labels |
-| Stock availability | `In stock` / `Out of stock` | Stock badge text |
-| Add to cart button | `Add to Cart` | Primary CTA |
-| Wishlist button | `♡ Add to Wishlist` / `♥ Added to Wishlist` | Wishlist toggle |
-| Share section | `Share:`, Facebook (`f`), WhatsApp (`wa`), Copy link (`↗`) | Social share buttons |
-| Tabs | `Description`, `Reviews (${count})` | Tab navigation buttons |
-| Description tab headings | `Product Description`, `Key Features & Specifications` | Tab headers |
-| Reviews tab headings | `Customer Reviews`, `${rating} out of 5 · ${count} reviews` | Tab headers |
+| ID | Slug | Title | Metal | Weight | Price |
+|---|---|---|---|---|---|
+| 14 | gold-1oz-dubai-coin | 1 oz Gold Dubai Coin | Gold | 1 oz | AED 2,410 |
+| 18 | silver-1oz-dubai-coin | 1 oz Silver Dubai Coin | Silver | 1 oz | AED 36 |
 
----
+PENDING: Internationally recognised gold coin slot and silver coin slot � [PENDING CLIENT: brand selection]
 
-## 10. Cart Page & Cart Drawer
+### Silver Bars (IDs 15-17, 6)
 
-### `src/components/CartPage.ts`
-| Location / Selector | Current Existing Text / Label | Notes |
-| :--- | :--- | :--- |
-| Breadcrumbs | `Home / Shopping Cart` | Breadcrumbs |
-| Page title | `CART` | Main h1 |
-| Empty cart state | Icon 🛒, `Your cart is empty`, `Explore the shop and add something you love.`, button `CONTINUE SHOPPING` | Empty state |
-| Table headers | `Product`, `Price`, `Quantity`, `Subtotal` | Table header row |
-| Item remove button | `aria-label="Remove ${product.title}"`, `&times;` | Remove item |
-| Quantity controls | `aria-label="Quantity for ${product.title}"`, `−`, `+` | Counter buttons |
-| Coupon form | `placeholder="Coupon code"`, `APPLY COUPON` / `APPLIED`, `Remove` | Coupon box |
-| Continue link | `← Continue shopping` | Return link |
-| Summary heading | `Cart Totals` | Aside header |
-| Summary row 1 | `Subtotal`, `${subtotal}৳` | Subtotal |
-| Shipping section | `Shipment`, `Shipping · ${deliveryFee}৳`, `Shipping to Dhaka / outside Dhaka.` | Shipping info |
-| Change address button | `Change address` (`#btn-cart-change-address`) | Scroll to area selector |
-| Delivery area legend & options | `Delivery area`, `Inside Dhaka · 70৳`, `Outside Dhaka · 130৳` | Delivery zone radios |
-| Discount row | `Discount (${couponCode})`, `−${discountTotal}৳` | Coupon deduction |
-| Total row | `Total`, `${total}৳` | Grand total |
-| Checkout button | `PROCEED TO CHECKOUT` | Proceed CTA |
+| ID | Slug | Title | Weight | Price |
+|---|---|---|---|---|
+| 15 | silver-100g-bar | 100 g Silver Bar | 100 g | AED 118 |
+| 16 | silver-250g-bar | 250 g Silver Bar | 250 g | AED 285 |
+| 17 | silver-500g-bar | 500 g Silver Bar | 500 g | AED 560 |
+| 6 | silver-investment-bar | 1 kg Silver Investment Bar | 1 kg | AED 1,095 |
 
-### `src/main.ts` (Side-Cart Drawer)
-| Location / Selector | Current Existing Text / Label | Notes |
-| :--- | :--- | :--- |
-| Drawer header | `Shopping Cart`, `aria-label="Close cart"` | Drawer top bar |
-| Empty drawer state | `No products in the cart.`, button `Return to shop` | Empty state |
-| Item line | `${price} ৳ × ${quantity} = ${subtotal} ৳` | Item row |
-| Drawer footer | `Subtotal:`, `${cartSubtotal} ৳`, button `View Shopping Cart` | Bottom action |
+### Dubai Collection (IDs 3, 8, 19, 20)
+
+| ID | Slug | Title | Weight | Price | Badge |
+|---|---|---|---|---|---|
+| 3 | dubai-burj-bar | 50 g Gold Dubai Burj Bar | 50 g | AED 3,980 | Awaiting delivery |
+| 8 | dubai-burj-coin | 1/4 oz Gold Burj Khalifa Coin | 1/4 oz | AED 825 | Limited |
+| 19 | dubai-skyline-bar | 100 g Gold Dubai Skyline Bar | 100 g | AED 7,750 | Pre-order |
+| 20 | dubai-palm-bar | 50 g Gold Dubai Palm Bar | 50 g | AED 3,995 | Pre-order |
+
+MISSING FROM SPEC: Palm-inspired coins, gift range (presentation boxes, certificates, commemorative pieces). Logged in CONTENT_ISSUES.md.
+
+### Private Assets (IDs 21-22)
+
+| ID | Slug | Title | Price |
+|---|---|---|---|
+| 21 | private-assets-diamonds | Investment Diamonds & Gemstones | Price on Request |
+| 22 | private-assets-horology | High Horology & Rare Timepieces | Price on Request |
+
+Both marked Enquiry Only with price: 0.
+
+### Pending Data on All Products
+
+Every product has these [PENDING CLIENT] placeholders in its features[] array:
+- Exact physical dimensions
+- Confirmed refiner/mint name (where not yet assigned)
+- Real fineness values (editable defaults: 999.9 gold, 999.0 silver)
+- Pricing uses indicative premiums only � no live pricing engine built
 
 ---
 
-## 11. Checkout Page & Modals
+## 6. Product Images � public/uploads/products/
 
-### `src/components/CheckoutPage.ts`
-| Location / Selector | Current Existing Text / Label | Notes |
-| :--- | :--- | :--- |
-| Breadcrumbs | `Home / Shopping Cart / Checkout` | Breadcrumb trail |
-| Empty state | `Your cart is empty`, `Add products before proceeding to checkout.`, button `Continue Shopping` | Empty state |
-| Header banner | `COMPLETE YOUR ORDER`, `Checkout`, `Almost there! Enter your details to get your order delivered.` | Header text |
-| Section 01 | `01 Contact information`, `Where can we reach you about your order?` | Step 1 |
-| Section 01 fields | `Full name` (placeholder: "Enter your full name"), `Email address` ("you@example.com"), `Phone number` ("01XXXXXXXXX"), hint: `Use a Bangladesh mobile number, e.g. 01XXXXXXXXX.` | Step 1 inputs |
-| Section 02 | `02 Delivery address`, `Choose your delivery area and enter the address.` | Step 2 |
-| Section 02 options | `Inside Dhaka` (fee: 70৳), `Outside Dhaka` (fee: 130৳) | Delivery radios |
-| Section 02 fields | `Street address` ("House, road and area"), `Order notes (optional)` ("Anything we should know about delivery?") | Step 2 inputs |
-| Section 03 | `03 Payment method`, `Pay safely when your order arrives.` | Step 3 |
-| Section 03 option | `Cash on delivery` ("Pay the delivery person when your order arrives.") | Payment choice |
-| Submit button | `PLACE ORDER · ${total}৳` | Primary order CTA |
-| Privacy note | `Your information is used only to process and deliver your order.` | Footnote |
-| Order summary aside | `Order summary ${items.length} item(s)`, `Coupon code`, `APPLY` / `APPLIED`, `Subtotal`, `Discount`, `Shipping`, `Total` | Summary panel |
-| Shipping note | `No online payment is collected. Pay the delivery person when your order arrives.` | COD disclosure |
+### Client-Provided Bullion Images (copied from src/assets/product picture/)
 
-### `src/main.ts` (Checkout submission & Modal)
-| Location / State | Current Existing Text | Notes |
-| :--- | :--- | :--- |
-| Checkout page submitting | `PLACING ORDER…` | Button disabled text |
-| Checkout page success panel | `Order placed successfully!`, `Order ID: #${orderId}`, `Your order confirmation is shown for this session. Online order processing is not connected.`, Labels: `Name:`, `Email:`, `Phone:`, `Address:`, `Payment: Cash on delivery`, button `Continue Shopping` | Post-order view |
-| Quick COD Modal (Header) | `ক্যাশ অন ডেলিভারি অর্ডার (Cash on Delivery)` | Modal title |
-| Quick COD Modal fields | `আপনার নাম *` ("আপনার সম্পূর্ণ নাম লিখুন"), `মোবাইল নম্বর *` ("01XXXXXXXXX"), `ডেলিভারি ঠিকানা *` ("বাড়ি/রোড/এলাকা/জেলা"), `ডেলিভারি এরিয়া` ("ঢাকার ভেতর (৭০ ৳)", "ঢাকার বাইরে (১৩০ ৳)") | Modal inputs |
-| Quick COD Modal breakdown | `মোট পণ্যের মূল্য:`, `ডেলিভারি চার্জ:`, `সর্বমোট:`, button `অর্ডার নিশ্চিত করুন (Confirm Order)` | Summary & submit |
-| Quick COD Modal success | `অর্ডার সফল হয়েছে! (Order Placed)`, `Order ID: #${orderId}`, `নাম:`, `মোবাইল:`, `ঠিকানা:`, `পেমেন্ট: ক্যাশ অন ডেলিভারি (Cash on Delivery)`, button `Continue Shopping` | Modal success |
+| File | Used By Product IDs |
+|---|---|
+| gold.avif | 1, 10, 12 |
+| gold ber.avif | 5, 9, 11, 13 |
+| gold coin.avif | 4, 7, 14 |
+| Silver bars.avif | 6, 15, 16, 17 |
+| Silver coins.avif | 2, 18 |
+| Burj Khalifa-inspired bars.webp | 3, 19, 20 |
+| Burj Khalifa-inspired coins.webp | 8 |
+
+### Legacy Food Images (Present but Not Referenced)
+
+product-1.png through product-16.png, product-khejurer-gur.jpg
+These old food images are no longer referenced by any active product in products.ts. Safe to delete after client sign-off.
 
 ---
 
-## 12. Wishlist Page
+## 7. Category Data � src/data/categories.ts
 
-### `src/components/WishlistPage.ts`
-| Location | Current Existing Text / Label | Notes |
-| :--- | :--- | :--- |
-| Breadcrumbs | `Home / Wishlist` | Breadcrumb |
-| Heading | `Wishlist` | Main h1 |
-| Remove button | `Remove from Wishlist` (`[data-wishlist-remove]`) | Action button |
-| Empty state | `Your wishlist is empty`, `Save products you would like to come back to.`, button `Browse Products` | Empty state |
+CATEGORIES[] is used by FilterSidebar and the homepage carousel.
 
----
+| ID | Name | nameBn field | Image Slot |
+|---|---|---|---|
+| prices | Live Prices | Bengali text (legacy) | Old product image |
+| catalog | Catalogue | Bengali text (legacy) | Old asset image |
+| storage | Storage | Bengali text (legacy) | Old asset image |
+| mc-reserve | MC Reserve | Bengali text (legacy) | Old product image |
+| sell | Sell to Us | Bengali text (legacy) | Old product image |
+| about | About | Bengali text (legacy) | Old asset image |
+| contact | Contact | Bengali text (legacy) | Old asset image |
+| gold-bars | Gold Bars | Bengali text (legacy) | Old asset image |
+| silver-bars | Silver Bars | Bengali text (legacy) | Old asset image |
+| coins | Coins | Bengali text (legacy) | Old asset image |
 
-## 13. System Notifications & Toasts
-
-### `src/main.ts`
-| Trigger / Action | Current Toast / Feedback Text |
-| :--- | :--- |
-| Product added to cart | `"${product.title}" added to cart!` |
-| Customer Login submit | `Login successful! Welcome back (${phone})` |
-| Lost password click | `Password reset link sent to your registered phone/email.` |
-| Create account click | `Registration is open! Please enter your phone number to sign up.` |
-| Coupon success | `Coupon AR10 applied — 10% off your products.` |
-| Coupon error | `That coupon code is not valid. Try AR10.` |
-| Coupon removal | `Coupon removed.` |
-| Product link copied | `Product link copied.` |
-| Copy link failed | `Unable to copy the product link.` |
-| Wishlist read failure | `Unable to load wishlist. Please check browser storage settings.` |
-| Wishlist save failure | `Unable to update wishlist. Please check browser storage settings.` |
-| Search dropdown footer | `See all results for "${query}"` |
+Issues:
+- nameBn field contains Bengali legacy text � not visible in current UI but should be cleared or updated
+- Image slots reference old food category images (cat-honey.png, cat-dal.png, etc.)
+- dubai-collection and private-assets categories exist in products.ts but NOT in CATEGORIES[], so they do not appear in the filter sidebar
+All logged in CONTENT_ISSUES.md.
 
 ---
 
-## 14. Blog Data & Content Modal
+## 8. Blog Data � src/data/blogs.ts
 
-### `src/data/blogs.ts`
-| Post ID | Current Title | Current Excerpt & Highlights |
-| :--- | :--- | :--- |
-| 1 | খাঁটি মধু চেনার সহজ উপায় ও গুরুত্বপূর্ণ টিপস | How to test pure honey (water test, thumb test, fire test), Falaq Food Sundarbans honey sourcing |
-| 2 | সরিষার তেল কেন প্রতিদিনের রান্নায় জনপ্রিয় ও স্বাস্থ্যকর | Benefits of wood-pressed mustard oil, heart health, digestion |
-| 3 | ঘি, মধু ও মসলার সঠিক সংরক্ষণ পদ্ধতি | Storage tips for ghee, honey, and ground spices |
+3 posts, all updated:
 
-### `src/main.ts` (Blog Detail Modal)
-| Location | Current Fields Displayed |
-| :--- | :--- |
-| Modal header & body | `${selectedBlog.title}`, image, `${date} • ${author} • ${category}`, `${content}` |
+| ID | Title | Category | Author |
+|---|---|---|---|
+| 1 | Understanding Bullion Fineness and the Dubai Good Delivery Standard | Bullion Advisory | Montague Cole Bullion Research |
+| 2 | Allocated Vault Custody vs Insured Global Delivery | Custody & Vaulting | Depository Custody Team |
+| 3 | The Pricing Architecture of Physical Precious Metals | Market Standards | Trading & Execution Desk |
+
+Blog image slots (blog-1.webp, blog-2.avif, blog-3.jpg) still reference placeholder paths. [PENDING CLIENT: real blog imagery]
 
 ---
 
-## 15. Customer Reviews Data
+## 9. Reviews � src/data/reviews.ts
 
-### `src/data/reviews.ts`
-| Review ID | Name | Role | Quote |
-| :--- | :--- | :--- | :--- |
-| 1 | Rony Hasan | ভেরিফায়েড ক্রেতা | পণ্যের মান সত্যিই দারুণ, প্যাকেজিং সুন্দর ছিল এবং ডেলিভারিও সময়মতো পেয়েছি। খুব সন্তুষ্ট। |
-| 2 | Nusrat Jahan | ভেরিফায়েড ক্রেতা | মধুর স্বাদ একদম প্রাকৃতিক, পরিবারের সবাই পছন্দ করেছে এবং আবারও অর্ডার করব। |
-| 3 | Rakib Hasan | ভেরিফায়েড ক্রেতা | মসলার ঘ্রাণ ও স্বাদ খুব ভালো, রান্নায় ব্যবহার করে সত্যিই পার্থক্য বুঝেছি |
-| 4 | Sabbir Ahmed | ভেরিফায়েড ক্রেতা | চালের কোয়ালিটি খুব ভালো ছিল, ভাত ঝরঝরে হয়েছে এবং স্বাদও বেশ চমৎকার। |
-| 5 | Nusrat Jahan | ভেরিফায়েড ক্রেতা | প্যাকেট খুলেই ফ্রেশ ঘ্রাণ পেয়েছি, প্রোডাক্টের মান দেখে আমি সত্যিই সন্তুষ্ট হয়েছি। |
+5 testimonials, all updated to bullion/depository client voice. No financial return promises.
+Names and roles are fictional placeholders. [PENDING CLIENT: real testimonials or approval to use fictional ones]
 
 ---
 
-## 16. Products Data Architecture
+## 10. Homepage � src/components/HomePage.ts
 
-### `src/data/products.ts`
-- Total 55 products loaded, each adhering to:
-  ```typescript
-  export interface Product {
-    id: number;
-    title: string;
-    image: string;
-    price: number;
-    oldPrice?: number;
-    priceDisplay: string;
-    regularPrice: number;
-    category: string;
-    badge: string;
-    packSize?: string;
-    rating?: number;
-    reviewCount?: number;
-    inStock?: boolean;
-    description?: string;
-    features?: string[];
-    slug?: string;
-  }
-  ```
-- Current catalog consists of demo grocery items: honeys, mustard oils, rice varieties, spices, nuts, lentils, ghee.
-- All product names, descriptions, and feature bullets are in Bengali or mixed English/Bengali grocery terms.
-- Prices are hardcoded static numeric values in BDT (Bangladeshi Taka).
+| Section | Current State | Status |
+|---|---|---|
+| Hero slides (4) | MC Bullion titles, placeholder banner images | Titles done; images are placeholders |
+| Side promos (2) | Alt text updated | DONE |
+| Category carousel | 12 categories, old food thumbnail images | WARNING: category images need replacing |
+| Recent Products grid | 8 bullion products (IDs 1-8) | DONE |
+| Shop All Products button | Present | DONE |
+| Blog section heading | Market Insights & Depository Notes | DONE |
+| Reviews section heading | Client Experiences & Allocations | DONE |
+| Bottom promo banners (4) | Alt text updated to bullion copy | DONE |
 
 ---
 
-## 17. Legal Pages, Email Templates, and Route Inventory
+## 11. Footer � src/components/Footer.ts
 
-1. **Dedicated Legal Pages:**
-   - In the existing codebase, there are no dedicated legal route pages (such as `/terms`, `/privacy`, `/returns`, etc.).
-   - The footer currently has placeholder anchors (`#`) for `Privacy Policy`, `Terms of Service`, `Shipping & Returns`, `Privacy`, and `Terms`.
-   - Per client instructions, the structure must be maintained without modifying routing or styling, and any legal text/links must use `[PENDING LEGAL REVIEW]`.
-2. **Email Templates:**
-   - There are currently no email template files in the repository.
-3. **Cart Store & Currency:**
-   - `src/store/cart.ts` contains references to `inside_dhaka` / `outside_dhaka` delivery zones, `AR10` coupon code, and `৳` currency logic.
+| Element | Current Value | Status |
+|---|---|---|
+| Logo alt | Montague Cole Bullion | DONE |
+| Heading | DUBAI BULLION / GLOBAL DELIVERY | DONE |
+| Newsletter toast | Depository dispatches copy | DONE |
+| Column 1 BULLION | All Bullion, Gold Bars, Silver Bars, Sovereign Coins, Dubai Collection, Live Prices, Sell to Us | DONE |
+| Column 2 SERVICES | About, MC Reserve, Allocated Storage, Private Assets, Depository Standards, Insured Transit, Private Consultation | DONE |
+| Column 3 LEGAL AND TRUST | All 8 items marked [PENDING LEGAL REVIEW] | DONE |
+| Currency selector | AED default, USD, GBP, EUR | DONE |
+| Copyright | 2026 Montague Cole Bullion. All rights reserved. | DONE |
+| Social links | Placeholder hrefs (instagram.com etc.) | PENDING CLIENT: real social URLs |
+| App badges | Placeholder hrefs (#) | PENDING CLIENT: app store URLs, or remove if no app |
+| Developer credit | Arghya Biswas | PENDING CLIENT: retain or remove? |
+
+---
+
+## 12. Cart and Checkout
+
+| Element | Current Value | Status |
+|---|---|---|
+| Currency | AED throughout | DONE |
+| Summary labels | Metal Value Subtotal, Order Valuation, Total Invoice | DONE |
+| Delivery labels | UAE Domestic / Depository AED 70; International Insured Freight AED 130 | DONE |
+| Delivery zone TypeScript type | 'inside_dhaka' or 'outside_dhaka' | WARNING: internal identifier only, not user-visible |
+| Pricing note | Sell Price = Live Metal Value + Product Premium + Delivery + Insurance + Applicable Taxes | DONE |
+| Privacy note | [PENDING LEGAL REVIEW] | DONE |
+| Settlement method | Bank Wire / Secure Custodial Handover | DONE |
+
+---
+
+## 13. Cart Drawer and Modals � src/main.ts
+
+| Element | Current Value | Status |
+|---|---|---|
+| Cart drawer heading | Shopping Cart | DONE (generic) |
+| Empty cart message | No products in the cart. | DONE |
+| Side-cart subtotal label | Metal Value Subtotal: | DONE |
+| View cart button | View Allocation Cart | DONE |
+| Checkout modal title | Direct Order & Allocation Settlement | DONE |
+| Transit tier labels | UAE Domestic / Vault AED 70, International Insured AED 130 | DONE |
+| Confirm order button | Confirm Allocation Order | DONE |
+| Newsletter toast | Thank you for subscribing to depository dispatches. | DONE |
+
+---
+
+## 14. Other Pages
+
+| Page | File | Status |
+|---|---|---|
+| Login / MC Reserve Portal | LoginPage.ts | DONE |
+| Offers | OffersPage.ts | DONE � Special Allocations & Sovereign Coins |
+| New Arrivals | NewArrivalsPage.ts | DONE � New Releases & Minted Bullion |
+| Wishlist | WishlistPage.ts | Not fully audited � check for food-niche labels |
+| Product Details | ProductDetailsPage.ts | DONE � spec labels updated to bullion terminology |
+
+---
+
+## 15. localStorage Keys
+
+| Key | Current Value | Issue |
+|---|---|---|
+| Cart persistence | falaqfood_cart_v1 | OLD BRAND NAME � in cart.ts and main.ts |
+| Wishlist persistence | falaqfood_wishlist_v1 | OLD BRAND NAME � in main.ts (9 occurrences) |
+| Delivery zone type | inside_dhaka or outside_dhaka | Internal only, not user-visible |
+
+Decision required: Renaming localStorage keys clears existing carts/wishlists on first load. Acceptable for pre-launch. Requires your approval before editing. See CONTENT_ISSUES.md.
+
+---
+
+## 16. Legacy Data File � src/data/products.json
+
+STILL CONTAINS ALL 16 ORIGINAL FOOD PRODUCTS with Bengali text, food categories, and BDT prices.
+This file is NOT imported anywhere in the current build (products.ts is the active source).
+However it is misleading and should be cleared. See CONTENT_ISSUES.md.
+
+---
+
+## 17. Old Categories Removed from products.ts
+
+honey, nuts-fruits, cooking-oil, dal-pulses, flour-atta, spices-masala, rice, sweeteners, superfoods, organic-foods
+All product names contained Bengali characters.
+Prices were in Bangladeshi Taka (95-690 BDT).
+Old images: product-1.png through product-16.png.
+None of these appear in the live render.
+
+---
+
+## 18. Files With Zero Content (Not Edited)
+
+- src/style.css � design CSS only, LOCKED
+- tsconfig.json, package.json, package-lock.json
+- src/counter.ts � utility only
+- All component event handler and routing logic
+- src/store/cart.ts logic (storage key name is the only content item, flagged above)
+
+---
+
+## 19. Pending Items from Client
+
+| # | Item | Location |
+|---|---|---|
+| 1 | Real sell prices | All 22 products in products.ts |
+| 2 | Confirmed fineness values | All product features[] |
+| 3 | Physical bar/coin dimensions | All product features[] |
+| 4 | Confirmed refiner/mint names | All product features[] |
+| 5 | Coin brand selection internationally recognised | Products 2 and 7 |
+| 6 | Real contact address Dubai | Footer Dubai Depository Address link |
+| 7 | Real social media URLs | Footer social icons |
+| 8 | App Store / Google Play URLs or confirm no app | Footer app badges |
+| 9 | Terms of Sale | Footer col 3 |
+| 10 | Privacy Policy | Footer and checkout |
+| 11 | Returns & Cancellation terms | Footer |
+| 12 | Complaints Procedure | Footer |
+| 13 | Cookie Policy | Footer |
+| 14 | Price-Lock Terms | Footer |
+| 15 | Regulatory Disclosures | Footer |
+| 16 | OG image asset | index.html |
+| 17 | Real client testimonials or approval to use fictional ones | reviews.ts |
+| 18 | Blog images | public/uploads/assets/ |
+| 19 | 50 g standalone Gold Bar (missing from spec) | products.ts |
+| 20 | Dubai Collection gift range and Palm coin | products.ts |
+| 21 | Retain or remove developer credit in footer | Footer.ts |
+
+---
+
+## 20. Build Verification
+
+- npm run build (tsc + vite build): PASSES � 0 errors, 0 warnings
+- Build output: dist/index.html 1.44 kB, CSS 68.50 kB, JS 137.48 kB
+- Dev server: Running on http://localhost:5173/
+- No CSS, Tailwind class, component structure, or config file changed
+
+---
+
+End of audit. Awaiting approval before proceeding to Steps 2 onwards.
