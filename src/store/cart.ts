@@ -1,5 +1,7 @@
 import type { Product } from '../data/products';
 import { getProductById } from '../data/products';
+import { catalogueItems } from '../features/modern-data';
+import { toStorefrontProduct } from '../features/catalogue-product-adapter';
 
 export interface CartItem {
   product: Product;
@@ -34,15 +36,26 @@ class CartStore {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) {
+        let shouldPersist = false;
         const parsed = JSON.parse(raw);
         if (Array.isArray(parsed.items)) {
-          this.items = parsed.items
-            .map((item: { productId: number; quantity: number }) => {
-              const product = getProductById(Number(item.productId));
+          const savedItems = parsed.items as Array<{ productId: number; quantity: number }>;
+          this.items = savedItems
+            .map(item => {
+              const id = Number(item.productId);
+              const legacyProduct = getProductById(id);
+              const product = catalogueItems.find(candidate => candidate.id === id)
+                ?? catalogueItems.find(candidate => candidate.name === legacyProduct?.title);
               const quantity = Math.floor(Number(item.quantity));
-              return product && Number.isFinite(quantity) && quantity > 0 ? { product, quantity } : null;
+              return product && Number.isFinite(quantity) && quantity > 0
+                ? { product: toStorefrontProduct(product), quantity }
+                : null;
             })
             .filter((i: CartItem | null): i is CartItem => i !== null);
+          if (this.items.length !== savedItems.length
+            || this.items.some((item, index) => Number(savedItems[index]?.productId) !== item.product.id)) {
+            shouldPersist = true;
+          }
         }
         if (parsed.deliveryZone === 'inside_dhaka' || parsed.deliveryZone === 'outside_dhaka') {
           this.deliveryZone = parsed.deliveryZone;
@@ -50,6 +63,7 @@ class CartStore {
         if (typeof parsed.couponCode === 'string' && parsed.couponCode.toUpperCase() === COUPON_CODE) {
           this.couponCode = COUPON_CODE;
         }
+        if (shouldPersist) this.save();
       }
     } catch {
       this.items = [];
@@ -132,7 +146,10 @@ class CartStore {
     return Math.max(0, sub + this.getDeliveryFee() - this.getCouponDiscountTotal());
   }
 
-  public addItem(product: Product, quantity = 1) {
+  public addItem(product: Product, quantity = 1): boolean {
+    if (product.stockStatus === 'pre_order'
+      || product.stockStatus === 'enquire'
+      || product.stockStatus === 'out_of_stock') return false;
     const safeQuantity = Number.isFinite(quantity) ? Math.max(1, Math.floor(quantity)) : 1;
     const existing = this.items.find(i => i.product.id === product.id);
     if (existing) {
@@ -141,6 +158,7 @@ class CartStore {
       this.items.push({ product, quantity: safeQuantity });
     }
     this.notify();
+    return true;
   }
 
   public updateQuantity(productId: number, quantity: number) {

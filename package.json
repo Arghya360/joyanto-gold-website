@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "test": "node --test src/features/market-terminal/data.test.mjs"
+    "test": "node --experimental-strip-types --test src/features/market-terminal/data.test.mjs src/features/shop-filters.test.mjs src/features/catalogue-filters.test.mjs src/features/home-products.test.mjs src/services/checkout.test.mjs"
   },
   "devDependencies": {
     "typescript": "~6.0.2",

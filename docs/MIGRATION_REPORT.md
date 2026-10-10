@@ -38,7 +38,7 @@
 - **Silver Bars:** 100 g, 250 g, 500 g, 1 kg
 - **Silver Coins:** 1 oz Dubai Silver Coin, 1 oz Sovereign Silver Coin
 - **Dubai Collection:** Burj Khalifa bars & coins, Dubai Skyline bar, Dubai Palm bar
-- **Private Assets (Enquiry Only):** Investment Diamonds & Gemstones, High Horology & Rare Timepieces
+- **Private Assets (Enquiry Only):** 0.5 Carat Diamond
 
 ---
 

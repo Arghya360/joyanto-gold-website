@@ -1,4 +1,4 @@
-import { NAV_CATEGORIES } from '../data/categories';
+import { SERVICE_NAV_ITEMS } from '../data/categories';
 
 export interface HeaderProps {
   activeNav: string;
@@ -8,13 +8,14 @@ export interface HeaderProps {
 }
 
 export function renderHeader(props: HeaderProps): string {
-  const { activeNav = 'Shop', cartCount = 0, searchQuery = '', selectedNavCategory = '' } = props;
+  const { activeNav = 'Shop', cartCount = 0, searchQuery = '' } = props;
+  const currentPath = window.location.pathname.replace(/\/+$/, '') || '/';
 
   return `
     <header class="shop-site-header">
       <!-- TOP HEADER -->
       <div class="top-header-bar">
-        <div class="shop-container top-header-inner">
+        <div class="shop-container wide-screen-container top-header-inner">
           
           <!-- Mobile Hamburger Toggle -->
           <button class="mobile-nav-toggle" id="btn-mobile-nav-toggle" aria-label="Toggle navigation">
@@ -37,7 +38,7 @@ export function renderHeader(props: HeaderProps): string {
                 <a href="#" class="nav-link ${activeNav === 'Home' ? 'active' : ''}" data-nav="Home">Home</a>
               </li>
               <li>
-                <a href="#" class="nav-link ${activeNav === 'Shop' ? 'active' : ''}" data-nav="Shop">Shop</a>
+                <a href="/shop" class="nav-link ${activeNav === 'Shop' ? 'active' : ''}" data-nav="Shop">Shop</a>
               </li>
               <li>
                 <a href="#" class="nav-link ${activeNav === 'Offers' ? 'active' : ''}" data-nav="Offers">Offers</a>
@@ -105,16 +106,17 @@ export function renderHeader(props: HeaderProps): string {
 
       <!-- SECOND CATEGORY NAVIGATION -->
       <nav class="second-category-nav">
-        <div class="shop-container category-nav-container">
+        <div class="shop-container wide-screen-container category-nav-container">
           <ul class="category-nav-list" id="category-nav-list">
-            ${NAV_CATEGORIES.map(cat => `
+            ${SERVICE_NAV_ITEMS.map(({ label, path }) => `
               <li class="category-nav-item">
-                <a 
-                  href="#" 
-                  class="category-nav-link ${selectedNavCategory === cat.id ? 'active' : ''}" 
-                  data-cat-nav="${cat.id}"
+                <a
+                  href="${path}"
+                  class="category-nav-link ${currentPath === path || currentPath.startsWith(`${path}/`) ? 'active' : ''}"
+                  data-modern-path="${path}"
+                  ${currentPath === path || currentPath.startsWith(`${path}/`) ? 'aria-current="page"' : ''}
                 >
-                  ${cat.name}
+                  ${label}
                 </a>
               </li>
             `).join('')}
@@ -130,23 +132,14 @@ export function renderHeader(props: HeaderProps): string {
         </div>
         <ul class="mobile-menu-links">
           <li><a href="#" class="mobile-link ${activeNav === 'Home' ? 'active' : ''}" data-nav="Home">Home</a></li>
-          <li><a href="#" class="mobile-link ${activeNav === 'Shop' ? 'active' : ''}" data-nav="Shop">Catalogue</a></li>
+          <li><a href="/shop" class="mobile-link ${activeNav === 'Shop' ? 'active' : ''}" data-nav="Shop">Catalogue</a></li>
           <li><a href="#" class="mobile-link ${activeNav === 'Offers' ? 'active' : ''}" data-nav="Offers">Allocations</a></li>
           <li><a href="#" class="mobile-link ${activeNav === 'New Arrivals' ? 'active' : ''}" data-nav="New Arrivals">New Releases</a></li>
           <li><a href="#" class="mobile-link ${activeNav === 'Login' ? 'active' : ''}" data-nav="Login">MC Reserve Sign-In</a></li>
+          ${SERVICE_NAV_ITEMS.map(({ label, path }) => `<li><a href="${path}" class="mobile-link" data-modern-path="${path}" ${currentPath === path || currentPath.startsWith(`${path}/`) ? 'aria-current="page"' : ''}>${label}</a></li>`).join('')}
           <li><a href="#" class="mobile-link" data-route="cart">Vault Order &amp; Cart</a></li>
           <li><a href="#" class="mobile-link" data-route="wishlist">Saved Allocations</a></li>
         </ul>
-        <div class="mobile-drawer-categories">
-          <h4>Categories</h4>
-          <ul>
-            ${NAV_CATEGORIES.map(cat => `
-              <li>
-                <a href="#" class="mobile-cat-link" data-cat-nav="${cat.id}">${cat.name}</a>
-              </li>
-            `).join('')}
-          </ul>
-        </div>
       </div>
       <div class="mobile-drawer-backdrop" id="mobile-nav-backdrop"></div>
       <nav class="mobile-bottom-nav" aria-label="Mobile navigation">

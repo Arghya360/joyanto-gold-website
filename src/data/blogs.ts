@@ -1,3 +1,7 @@
+import goldBarsOrCoinsImage from '../assets/Market Insights & Depository Notes/Gold Bars or Coins.png';
+import sellingGoldOrSilverImage from '../assets/Market Insights & Depository Notes/How to Sell Your Gold or Silver.png';
+import mcReserveRecordsImage from '../assets/Market Insights & Depository Notes/Keeping Every Document in One Place with MC Reserve.png';
+
 export interface BlogPost {
   id: number;
   title: string;
@@ -12,56 +16,46 @@ export interface BlogPost {
 export const BLOG_POSTS: BlogPost[] = [
   {
     id: 1,
-    title: "Understanding Bullion Fineness and the Dubai Good Delivery Standard",
-    excerpt: "Physical precious metals represent timeless wealth preservation. Understanding refiner accreditation, assay fineness and serialised verification ensures complete allocation integrity.",
-    content: `Physical precious metals represent timeless capital preservation. When allocating into investment-grade gold or silver, verifying mint accreditation and certified assay standards is paramount.
+    title: "Gold Bars or Coins: Choosing the Right Form of Physical Gold",
+    excerpt: "A clear comparison of bars and coins, covering value per gram, divisibility, recognisability and gifting, with an introduction to our proprietary Dubai Collection.",
+    content: `Choosing between gold bars and coins depends on what matters most to you as a buyer.
 
-1. Assay Fineness: Investment-grade gold is minted to 999.9 parts per thousand (24 karat), while institutional silver bars trade at 999.0 purity. Every bar in our inventory carries assayer certification guaranteeing its elemental purity.
+Gold bars are available in a range of weights, making it straightforward to compare their value per gram and select a size that suits your budget. Coins offer convenient divisibility: smaller denominations can be easier to sell or gift individually.
 
-2. Dubai Good Delivery (DGD): Initiated by the Dubai Multi Commodities Centre (DMCC), the Dubai Good Delivery standard mirrors the international LBMA framework, providing global benchmark quality, verifiable ethical sourcing, and international liquidity.
+Recognisability is another consideration. Well-known coins may be familiar to buyers in many markets, while bars offer a simple format focused on weight and purity. Presentation can also matter; coins are often chosen for personal or commemorative gifts.
 
-3. Chain of Custody: From initial refinery melt to sealed CertiCard or armored depository intake, serialised identification ensures that your metal remains verifiably uncompromised throughout its lifecycle.
-
-Montague Cole Bullion maintains direct supply relationships with accredited international and regional refineries, ensuring guaranteed provenance on every delivery.`,
-    date: "October 02, 2026",
-    image: "/uploads/assets/blog-1.webp",
+The Montague Cole Dubai Collection brings a distinctive, architecture-inspired design to physical gold. Compare the form, weight, and purpose of each piece to find the option that fits your needs.`,
+    date: "October 05, 2026",
+    image: goldBarsOrCoinsImage,
     author: "Montague Cole Bullion Research",
-    category: "Bullion Advisory"
+    category: "Product Guide"
   },
   {
     id: 2,
-    title: "Allocated Vault Custody vs Insured Global Delivery",
-    excerpt: "A structured assessment of holding physical bullion in allocated Dubai depository custody versus private physical possession via insured courier dispatch.",
-    content: `When acquiring substantial physical gold or silver holdings, private clients evaluate the operational balance between direct possession and institutional vault custody.
+    title: "How to Sell Your Gold or Silver: The Quote, Inspection and Settlement Process",
+    excerpt: "A step-by-step overview of requesting a private quote, bringing your metal for testing, and understanding how settlement works through our Sell to Us service.",
+    content: `Selling gold or silver through our Sell to Us service starts with a private quote request. Share the details of the metal you would like to sell so the team can discuss the next steps with you.
 
-1. Allocated and Segregated Depository: Under allocated custody inside our Dubai Free Zone facilities, physical bars remain your unencumbered legal property. Each piece is recorded by unique serial number and kept segregated from institutional balance sheets.
+The metal is then brought in for inspection and testing. This assessment helps confirm its characteristics before a final offer is discussed. The quote and settlement arrangements can depend on the results of that inspection.
 
-2. Global Insured Transport: For clients preferring private domestic custody, deliveries are executed via specialised armoured courier with comprehensive transit insurance. Shipments remain fully insured until personal signature confirmation.
-
-3. Complete Liquidity & Buy-Back: Holders of Montague Cole certified bullion benefit from our transparent buy-back framework. Custodial assets can be liquidated directly upon quote confirmation, while physical returns undergo laboratory assay and settlement.
-
-Clients may arrange private advisory appointments with our Dubai specialists to structure custody suited to their jurisdiction and family governance framework.`,
-    date: "September 24, 2026",
-    image: "/uploads/assets/blog-2.avif",
+Once you have reviewed and accepted the confirmed terms, the settlement is arranged through the agreed process. If you are considering a sale, request a quote first so you know what information to prepare and what to expect at each stage.`,
+    date: "September 28, 2026",
+    image: sellingGoldOrSilverImage,
     author: "Depository Custody Team",
-    category: "Custody & Vaulting"
+    category: "Selling & Buy-Back"
   },
   {
     id: 3,
-    title: "The Pricing Architecture of Physical Precious Metals",
-    excerpt: "A transparent overview of how live spot valuations, manufacturing premiums, delivery logistics, and insurance combine to form our clear client pricing.",
-    content: `Montague Cole Bullion operates on a transparent, institutional pricing framework. Clear mechanics govern every trade without speculative promises or urgency gimmicks.
+    title: "Keeping Every Document in One Place with MC Reserve",
+    excerpt: "How invoices, certificates, serial numbers and delivery records are organised in your private MC Reserve account, so your holdings are always documented and easy to review.",
+    content: `MC Reserve helps bring the key records for your holdings together in one private account.
 
-1. Live Spot Value: Physical bullion is anchored to the global spot metal market. As global interbank benchmark rates fluctuate, indicative catalogue values reflect prevailing metal value.
+Your account can organise documents such as purchase invoices, certificates, product serial numbers, and delivery records. Keeping these details together makes it easier to review the information associated with your assets when you need it.
 
-2. Product Premium: Minting and fabrication require precise metallurgical engineering. Premiums cover accredited refining, stamping, assay certification, and tamper-resistant security packaging.
-
-3. Delivery & Insurance: Physical bullion freight requires specialised transport logistics and underwriters. Every shipment includes comprehensive transit cover until signed handover.
-
-Final invoice calculation formula: Sell Price = Live Metal Value + Product Premium + Delivery + Insurance + Applicable Taxes. We never promise returns or future appreciation; we deliver verified physical ownership.`,
-    date: "September 15, 2026",
-    image: "/uploads/assets/blog-3.jpg",
-    author: "Trading & Execution Desk",
-    category: "Market Standards"
+Use your MC Reserve account as a clear record of your holdings and their documentation. For details about account access and the records available for your assets, contact the Montague Cole team.`,
+    date: "September 19, 2026",
+    image: mcReserveRecordsImage,
+    author: "Private Client Services",
+    category: "Private Client"
   }
 ];

@@ -96,3 +96,16 @@ The following specific data points are missing from client-supplied assets and w
 - **Current Codebase State:** The site uses existing images in `/uploads/` and `/uploads/assets/`.
 - **Client Requirement:** Do not use real third-party brand photos. Keep the existing image slots and use the current placeholder images, marked as placeholders in the data.
 - **Resolution:** Existing image asset paths will be retained in all product objects and banners, with updated descriptive bullion alt tags reflecting Montague Cole Bullion products.
+
+## 9. Shop Filter Product Taxonomy and Availability
+- **Current Codebase State:** The legacy `/shop` filter previously rendered service navigation labels as product categories with fixed counts. Its 23 products now have structured category, metal, type, weight/unit, fine-weight (where supplied), price-source and stock-status fields. The three existing Private Assets products use a temporary seventh filter category, approved to avoid misrepresenting diamonds and timepieces as gifts.
+- **Category confirmation required:** Confirm whether Private Assets should remain a separate filter category or be excluded/reclassified when the launch taxonomy is finalized. No Gift Range products currently exist in the legacy shop data, so its calculated count is zero.
+- **Availability confirmation required:** Dubai prototype items are marked Pre-order and Private Assets enquiry-only. Other bullion products use existing listing labels as provisional availability, not verified inventory. Confirm real stock status for each SKU before launch.
+- **Data conflict corrected:** The 0.5 Carat Diamond previously displayed a fixed AED 3,922 indicative price despite the enquiry-only rule. It now displays Price on Request; exact stone specifications and pricing remain `[PENDING CLIENT]`.
+- **Legacy assignments corrected:** The 1/4 oz Gold Dubai Collection Coin is classified under Dubai Collection; gold and silver bars/coins are separated by metal. No products were removed.
+
+## 10. Shared Catalogue Product Data
+- Home featured products, category counts, Offers pre-orders, New Arrivals selection, Catalogue search suggestions, and `/shop` now read from `src/features/modern-data.ts`.
+- The Catalogue records still need client-confirmed fineness/purity, mint/refiner, product specifications and descriptions, verified stock status, and a sellable price source. Current `demoPrice` values are not displayed as prices and are not used for checkout.
+- The shared catalogue contains no `isNew`-flagged products; New Arrivals therefore has no product cards until the client identifies actual new releases.
+- Add-to-cart remains disabled for all products pending verified price and inventory data. Dubai Collection entries are displayed as Pre-order in accordance with the supplied availability rule.

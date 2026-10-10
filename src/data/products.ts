@@ -1,3 +1,5 @@
+import diamondImage from '../assets/product picture/dimond.webp';
+
 export interface Product {
   id: number;
   title: string;
@@ -6,7 +8,14 @@ export interface Product {
   oldPrice?: number;
   priceDisplay: string;
   regularPrice: number;
-  category: string;
+  category: ShopCategory;
+  metal: ProductMetal;
+  type: ProductType;
+  weightValue?: number;
+  weightUnit?: ProductWeightUnit;
+  fineWeightGrams?: number;
+  priceSource: 'indicative' | 'on_request' | 'unavailable' | 'verified';
+  stockStatus: ProductStockStatus;
   badge: string;
   packSize?: string;
   rating?: number;
@@ -17,7 +26,24 @@ export interface Product {
   slug?: string;
 }
 
-export const PRODUCTS: Product[] = [
+export type ShopCategory =
+  | 'gold-bars'
+  | 'silver-bars'
+  | 'gold-coins'
+  | 'silver-coins'
+  | 'dubai-collection'
+  | 'gift-range'
+  | 'private-assets';
+export type ProductMetal = 'gold' | 'silver' | 'other';
+export type ProductType = 'bar' | 'coin' | 'gift' | 'other';
+export type ProductWeightUnit = 'g' | 'kg' | 'oz' | 'carat' | 'allocation';
+export type ProductStockStatus = 'in_stock' | 'pre_order' | 'enquire' | 'out_of_stock' | 'unconfirmed';
+
+type ProductSeed = Omit<Product, 'category' | 'metal' | 'type' | 'weightValue' | 'weightUnit' | 'fineWeightGrams' | 'priceSource' | 'stockStatus'> & {
+  category: string;
+};
+
+const PRODUCT_SEEDS: ProductSeed[] = [
   // ── 8 Featured Recent Products (Montague Cole Bullion Highlights) ──────────
   {
     id: 1,
@@ -631,54 +657,57 @@ export const PRODUCTS: Product[] = [
     ]
   },
   {
-    id: 21,
-    slug: "private-assets-diamonds",
-    title: "Investment Diamonds & Gemstones",
-    image: "/uploads/products/product-8.png",
+    id: 23,
+    slug: "half-carat-diamond",
+    title: "0.5 Carat Diamond",
+    image: diamondImage,
     price: 0,
     regularPrice: 0,
     priceDisplay: "Price on Request",
     category: "private-assets",
     badge: "Enquiry Only",
-    packSize: "Private Allocation",
-    rating: 5.0,
-    reviewCount: 6,
-    inStock: true,
-    description: "GIA-certified natural diamonds and rare colored gemstones for private treasury diversification. Private consultation only — automated online checkout disabled.",
+    packSize: "0.5 carat",
+    description: "Private consultation only. Exact stone specifications and pricing: [PENDING CLIENT].",
     features: [
-      "Category: Private Assets (Montague Cole Private Assets, Dubai)",
-      "Classification: Investment Grade Diamonds & Colored Gemstones",
-      "Certification: GIA / Gübelin / SSEF certified [PENDING CLIENT: grading lab]",
+      "Category: Private Assets",
+      "Product: 0.5 carat diamond",
       "Purchase Terms: ENQUIRY ONLY · No online card checkout",
-      "Custody Options: Allocated bonded depository in Dubai Free Zone or international armored delivery",
-      "Settlement: Direct private client broker consultation"
-    ]
-  },
-  {
-    id: 22,
-    slug: "private-assets-horology",
-    title: "High Horology & Rare Timepieces",
-    image: "/uploads/products/product-2.png",
-    price: 0,
-    regularPrice: 0,
-    priceDisplay: "Price on Request",
-    category: "private-assets",
-    badge: "Enquiry Only",
-    packSize: "Private Allocation",
-    rating: 5.0,
-    reviewCount: 8,
-    inStock: true,
-    description: "Curated portfolio-grade haute horlogerie acquisitions. Fully authenticated provenance. Private consultation only — automated online checkout disabled.",
-    features: [
-      "Category: Private Assets (Montague Cole Private Assets, Dubai)",
-      "Classification: Independent & Heritage High Horology",
-      "Provenance: Verified archives & manufacturer extract",
-      "Purchase Terms: ENQUIRY ONLY · No online card checkout",
-      "Custody Options: Insured vault storage or personal broker handover in Dubai",
-      "Settlement: Direct private client broker consultation"
+      "Pricing, certification and exact stone specifications: [PENDING CLIENT]"
     ]
   }
 ];
+
+type ProductFilterMetadata = Pick<Product, 'category' | 'metal' | 'type' | 'weightValue' | 'weightUnit' | 'fineWeightGrams' | 'priceSource' | 'stockStatus'>;
+
+const FILTER_METADATA: Record<number, ProductFilterMetadata> = {
+  1: { category: 'gold-bars', metal: 'gold', type: 'bar', weightValue: 1, weightUnit: 'oz', fineWeightGrams: 31.1035, priceSource: 'indicative', stockStatus: 'in_stock' },
+  2: { category: 'silver-coins', metal: 'silver', type: 'coin', weightValue: 1, weightUnit: 'oz', fineWeightGrams: 31.1035, priceSource: 'indicative', stockStatus: 'in_stock' },
+  3: { category: 'dubai-collection', metal: 'gold', type: 'bar', weightValue: 50, weightUnit: 'g', fineWeightGrams: 50, priceSource: 'indicative', stockStatus: 'pre_order' },
+  4: { category: 'dubai-collection', metal: 'gold', type: 'coin', weightValue: 0.25, weightUnit: 'oz', fineWeightGrams: 7.776, priceSource: 'indicative', stockStatus: 'in_stock' },
+  5: { category: 'gold-bars', metal: 'gold', type: 'bar', weightValue: 100, weightUnit: 'g', fineWeightGrams: 100, priceSource: 'indicative', stockStatus: 'in_stock' },
+  6: { category: 'silver-bars', metal: 'silver', type: 'bar', weightValue: 1, weightUnit: 'kg', fineWeightGrams: 1000, priceSource: 'indicative', stockStatus: 'in_stock' },
+  7: { category: 'gold-coins', metal: 'gold', type: 'coin', weightValue: 1, weightUnit: 'oz', fineWeightGrams: 31.1035, priceSource: 'indicative', stockStatus: 'in_stock' },
+  8: { category: 'dubai-collection', metal: 'gold', type: 'coin', weightValue: 0.25, weightUnit: 'oz', fineWeightGrams: 7.776, priceSource: 'indicative', stockStatus: 'pre_order' },
+  9: { category: 'gold-bars', metal: 'gold', type: 'bar', weightValue: 1, weightUnit: 'g', fineWeightGrams: 1, priceSource: 'indicative', stockStatus: 'in_stock' },
+  10: { category: 'gold-bars', metal: 'gold', type: 'bar', weightValue: 5, weightUnit: 'g', fineWeightGrams: 5, priceSource: 'indicative', stockStatus: 'in_stock' },
+  11: { category: 'gold-bars', metal: 'gold', type: 'bar', weightValue: 10, weightUnit: 'g', fineWeightGrams: 10, priceSource: 'indicative', stockStatus: 'in_stock' },
+  12: { category: 'gold-bars', metal: 'gold', type: 'bar', weightValue: 20, weightUnit: 'g', fineWeightGrams: 20, priceSource: 'indicative', stockStatus: 'in_stock' },
+  13: { category: 'gold-bars', metal: 'gold', type: 'bar', weightValue: 1, weightUnit: 'kg', fineWeightGrams: 1000, priceSource: 'indicative', stockStatus: 'in_stock' },
+  14: { category: 'gold-coins', metal: 'gold', type: 'coin', weightValue: 1, weightUnit: 'oz', fineWeightGrams: 31.1035, priceSource: 'indicative', stockStatus: 'in_stock' },
+  15: { category: 'silver-bars', metal: 'silver', type: 'bar', weightValue: 100, weightUnit: 'g', fineWeightGrams: 100, priceSource: 'indicative', stockStatus: 'in_stock' },
+  16: { category: 'silver-bars', metal: 'silver', type: 'bar', weightValue: 250, weightUnit: 'g', fineWeightGrams: 250, priceSource: 'indicative', stockStatus: 'in_stock' },
+  17: { category: 'silver-bars', metal: 'silver', type: 'bar', weightValue: 500, weightUnit: 'g', fineWeightGrams: 500, priceSource: 'indicative', stockStatus: 'in_stock' },
+  18: { category: 'silver-coins', metal: 'silver', type: 'coin', weightValue: 1, weightUnit: 'oz', fineWeightGrams: 31.1035, priceSource: 'indicative', stockStatus: 'in_stock' },
+  19: { category: 'dubai-collection', metal: 'gold', type: 'bar', weightValue: 100, weightUnit: 'g', fineWeightGrams: 100, priceSource: 'indicative', stockStatus: 'pre_order' },
+  20: { category: 'dubai-collection', metal: 'gold', type: 'bar', weightValue: 50, weightUnit: 'g', fineWeightGrams: 50, priceSource: 'indicative', stockStatus: 'pre_order' },
+  23: { category: 'private-assets', metal: 'other', type: 'other', weightValue: 0.5, weightUnit: 'carat', priceSource: 'on_request', stockStatus: 'enquire' },
+};
+
+export const PRODUCTS: Product[] = PRODUCT_SEEDS.map(product => {
+  const metadata = FILTER_METADATA[product.id];
+  if (!metadata) throw new Error(`Missing filter metadata for product ${product.id}`);
+  return { ...product, ...metadata };
+});
 
 export function getProductById(id: number): Product | undefined {
   return PRODUCTS.find(p => p.id === id);

@@ -33,6 +33,7 @@ function seededValue(seedText: string): number {
 
 function priceAt(material: ReturnType<typeof materialFromSymbol>, time: number): number {
   const base = DEFAULT_BASE_PRICES_USD[material];
+  const diamond = material === 'diamond';
   const day = Math.floor(time / DAY_SECONDS);
   const minute = Math.floor(time / MINUTE_SECONDS);
   let levels = dailyWalkLevels.get(material);
@@ -43,12 +44,15 @@ function priceAt(material: ReturnType<typeof materialFromSymbol>, time: number):
   while (levels.length <= day) {
     const previous = levels[levels.length - 1];
     if (previous === undefined) throw new Error('Mock price history could not be initialized.');
-    const dailyReturn = (seededValue(`${material}:${levels.length}`) - 0.5) * 0.003;
+    const dailyVolatility = diamond ? 0.0003 : 0.003;
+    const dailyReturn = (seededValue(`${material}:${levels.length}`) - 0.5) * dailyVolatility;
     levels.push(previous * Math.exp(dailyReturn));
   }
   const walkLevel = levels[day] ?? base;
-  const slowCycle = Math.sin(day / 91) * 0.035 + Math.sin(day / 23) * 0.009;
-  const intraday = Math.sin(minute / 97) * 0.001 + Math.sin(minute / 19) * 0.00035;
+  const slowCycle = Math.sin(day / 91) * (diamond ? 0.004 : 0.035)
+    + Math.sin(day / 23) * (diamond ? 0.002 : 0.009);
+  const intraday = Math.sin(minute / 97) * (diamond ? 0.00012 : 0.001)
+    + Math.sin(minute / 19) * (diamond ? 0.00004 : 0.00035);
   return walkLevel * Math.exp(slowCycle + intraday);
 }
 

@@ -1,12 +1,14 @@
-import { PRODUCTS } from '../data/products';
+import { catalogueItems } from '../features/modern-data';
+import { toStorefrontProduct } from '../features/catalogue-product-adapter';
 import { renderProductCard } from './ProductCard';
 
 export function renderWishlistPage(productIds: number[]): string {
   const products = productIds
-    .map(id => PRODUCTS.find(product => product.id === id))
-    .filter(product => product !== undefined);
+    .map(id => catalogueItems.find(product => product.id === id))
+    .filter(product => product !== undefined)
+    .map(toStorefrontProduct)
   return `
-    <main class="commerce-page wishlist-page">
+    <main class="commerce-page wide-screen-container wishlist-page">
       <nav class="commerce-breadcrumbs" aria-label="Breadcrumb"><a href="/" data-route="home">Home</a><span>/</span><span>Wishlist</span></nav>
       <h1>Wishlist</h1>
       ${products.length

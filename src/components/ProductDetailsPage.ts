@@ -17,7 +17,7 @@ export function renderProductDetailsPage(props: ProductDetailsPageProps): string
   const { product, reviews, wishlisted, activeTab } = props;
   if (!product) {
     return `
-      <main class="commerce-page shop-container product-not-found">
+      <main class="commerce-page shop-container wide-screen-container product-not-found">
         <a class="commerce-back-link" href="/shop" data-route="shop">← Back to Shop</a>
         <h1>Product not found</h1>
         <p>This product may have been removed or the link may be incorrect.</p>
@@ -25,14 +25,15 @@ export function renderProductDetailsPage(props: ProductDetailsPageProps): string
     `;
   }
 
-  const originalPrice = getProductOriginalPrice(product);
+  const canPurchase = product.priceSource === 'verified' && product.stockStatus === 'in_stock';
+  const originalPrice = canPurchase ? getProductOriginalPrice(product) : undefined;
   const categoryName = product.category.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
   const features = product.features?.length
     ? product.features
     : [`${product.title}`, `Pack size: ${product.packSize ?? 'See product packaging'}`, `Category: ${categoryName}`];
 
   return `
-    <main class="commerce-page shop-container product-details-page">
+    <main class="commerce-page shop-container wide-screen-container product-details-page">
       <nav class="commerce-breadcrumbs" aria-label="Breadcrumb">
         <a href="/" data-route="home">Home</a><span>/</span>
         <a href="/shop" data-route="shop">Shop</a><span>/</span>
@@ -64,7 +65,7 @@ export function renderProductDetailsPage(props: ProductDetailsPageProps): string
           </div>
           <div class="product-detail-price">
             ${originalPrice ? `<del>AED ${originalPrice}</del>` : ''}
-            <strong>${product.priceDisplay || `AED ${product.price}`}</strong>
+            <strong>${canPurchase ? product.priceDisplay || `AED ${product.price}` : 'Indicative price unavailable'}</strong>
             ${product.packSize ? `<span class="product-detail-size">${product.packSize}</span>` : ''}
           </div>
           <p class="product-detail-description">${product.description || `${product.title} — certified physical precious metal allocation by Montague Cole Bullion, Dubai.`}</p>
@@ -81,8 +82,8 @@ export function renderProductDetailsPage(props: ProductDetailsPageProps): string
               <output id="product-detail-quantity">1</output>
               <button type="button" data-detail-quantity="increase" aria-label="Increase quantity">+</button>
             </div>
-            <button class="product-detail-add-button" id="btn-detail-add-to-cart" ${product.inStock === false ? 'disabled' : ''}>
-              ${product.price === 0 ? 'Enquiry Only' : 'Add to Cart'}
+            <button class="product-detail-add-button" id="btn-detail-add-to-cart" ${canPurchase ? '' : 'disabled'}>
+              ${canPurchase ? 'Add to Cart' : 'Purchasing paused'}
             </button>
           </div>
 

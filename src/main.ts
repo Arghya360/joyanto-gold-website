@@ -1,5 +1,5 @@
 import './style.css';
-import { PRODUCTS, getProductById, getProductBySlug, makeSlug } from './data/products';
+import { PRODUCTS, getProductById, makeSlug } from './data/products';
 import type { Product } from './data/products';
 import { BLOG_POSTS } from './data/blogs';
 import type { BlogPost } from './data/blogs';
@@ -8,8 +8,7 @@ import { cartStore } from './store/cart';
 import { renderHeader } from './components/Header';
 import { renderPageBanner } from './components/PageBanner';
 import { renderProductCard } from './components/ProductCard';
-import { renderFilterSidebar } from './components/FilterSidebar';
-import type { FilterState } from './components/FilterSidebar';
+import { filterActiveCount, filtersActive, renderFilterChips, renderFilterEmptyState, renderFilterSidebar } from './components/FilterSidebar';
 import { renderHomePage } from './components/HomePage';
 import { renderFalaqFooter } from './components/Footer';
 import { renderOffersPage } from './components/OffersPage';
@@ -18,24 +17,49 @@ import { renderLoginPage } from './components/LoginPage';
 import { renderProductDetailsPage } from './components/ProductDetailsPage';
 import { renderCartPage } from './components/CartPage';
 import { renderCheckoutPage } from './components/CheckoutPage';
+import type { CheckoutFormDraft } from './components/CheckoutPage';
 import { renderWishlistPage } from './components/WishlistPage';
+import { attachModernPageHandlers, renderModernPage } from './features/modern-pages';
+import { catalogueItems } from './features/modern-data';
+import { toStorefrontProduct } from './features/catalogue-product-adapter';
+import { createEmptyCatalogueFilters, filterCatalogueProducts } from './features/catalogue-filters';
+import {
+  cloneFilters,
+  computeFacets,
+  createEmptyFilters,
+  filterProducts,
+  filtersEqual,
+  serializeFilterUrl,
+  SHOP_CATEGORIES,
+  STOCK_STATUSES,
+} from './features/shop-filters';
+import type { ProductFilters } from './features/shop-filters';
+import { convertPriceCurrency } from './features/shop-filters';
+import type { Currency } from './features/currency';
+import { getSelectedCurrency } from './features/currency';
+import { submitFooterNewsletter } from './services/footer-newsletter';
+import {
+  checkoutService,
+  isMockOrder,
+  isPriceFeedStale,
+  isPriceLockExpired,
+  orderService,
+  validateInternationalPhone,
+} from './services/checkout';
+import type { MockOrder, PriceLock } from './services/checkout';
+import { checkoutContent } from './content/checkout';
+import { PRICE_LOCK_DURATION_MS, RESTRICTED_COUNTRY_CODES } from './config/checkout';
 
 // ═══════════════════════════════════════════════════════════════
 // ROUTER STATE
 // ═══════════════════════════════════════════════════════════════
-type Page = 'home' | 'shop' | 'offers' | 'new-arrivals' | 'login' | 'product' | 'cart' | 'checkout' | 'wishlist';
-type CheckoutFormDraft = {
-  name: string;
-  email: string;
-  phone: string;
-  address: string;
-  notes: string;
-};
+type Page = 'home' | 'shop' | 'offers' | 'new-arrivals' | 'login' | 'product' | 'cart' | 'checkout' | 'confirmation' | 'wishlist' | 'modern';
 
 let currentPage: Page = 'home';
 let selectedProductSlug = '';
 let detailQuantity = 1;
 let detailTab: 'description' | 'reviews' = 'description';
+let modernPath = '';
 
 // ── Modals & Drawer state ────────────────────────────────────
 let isCartOpen = false;
@@ -45,33 +69,102 @@ let couponFeedback = '';
 let couponInputDraft = '';
 let couponFeedbackType: 'success' | 'error' = 'success';
 let isSubmittingOrder = false;
-let checkoutFormDraft: CheckoutFormDraft = { name: '', email: '', phone: '', address: '', notes: '' };
+let checkoutFormDraft: CheckoutFormDraft = {
+  fullName: '',
+  email: '',
+  phoneCode: '+971',
+  phone: '',
+  deliveryPhoneCode: '+971',
+  deliveryPhone: '',
+  appointmentDate: '',
+  appointmentTime: '',
+  country: '',
+  city: '',
+  street: '',
+  postalCode: '',
+  notes: '',
+};
+let checkoutDeliveryMethod: 'collection' | 'uae' | 'international' = 'collection';
+let checkoutPriceLock: PriceLock | null = null;
+let checkoutLockConfirmed = false;
+let checkoutLockInterval: ReturnType<typeof setInterval> | null = null;
+let checkoutFeedUpdatedAt: number | null = null;
+let checkoutOrder: MockOrder | null = null;
+let checkoutOrderPersistenceWarning = false;
+let checkoutInvalidCartNotice = false;
+let checkoutIdempotencyKey = '';
 
 // ── Home slider state ────────────────────────────────────────
 let currentSlide = 0;
 let slideInterval: ReturnType<typeof setInterval> | null = null;
+let reviewsInterval: ReturnType<typeof setInterval> | null = null;
 
 // ── Shop filter state ────────────────────────────────────────
 let selectedNavCategory: string = '';
 let topSearchQuery: string = '';
 
-let filters: FilterState = {
-  searchQuery: '',
-  selectedCategories: [],
-  priceMin: 0,
-  priceMax: 5000,
-  selectedPackSizes: [],
-  minRating: 0,
-  inStockOnly: false,
-};
+let filters: ProductFilters = createEmptyFilters();
+let pendingFilters: ProductFilters = cloneFilters(filters);
+let invalidPriceRange = false;
+let searchDebounce: ReturnType<typeof setTimeout> | null = null;
 
 let expandedSections: string[] = ['categories'];
 let mobileFilterOpen = false;
+let mobileWeightsExpanded = false;
 
 const app = document.getElementById('app')!;
 
+function normalizeCatalogueWishlistIds(saved: unknown): number[] {
+  if (!Array.isArray(saved)) return [];
+  return [...new Set(saved.flatMap(value => {
+    const id = Number(value);
+    if (!Number.isInteger(id)) return [];
+    const legacyProduct = getProductById(id);
+    const product = catalogueItems.find(candidate => candidate.id === id)
+      ?? catalogueItems.find(candidate => candidate.name === legacyProduct?.title);
+    return product ? [product.id] : [];
+  }))];
+}
+
+function addProductToCart(product: Product, quantity = 1): boolean {
+  if (!cartStore.addItem(product, quantity)) {
+    showToast(product.stockStatus === 'pre_order'
+      ? 'This product is available for pre-order enquiry only.'
+      : product.stockStatus === 'enquire'
+        ? 'Please enquire about this product.'
+        : 'This product is out of stock.');
+    return false;
+  }
+  showToast(`"${product.title}" added to cart!`);
+  return true;
+}
+
+function addCatalogueProductToCart(slug: string): void {
+  const item = catalogueItems.find(product => product.slug === slug);
+  if (!item || !addProductToCart(toStorefrontProduct(item))) return;
+  isCartOpen = true;
+  render();
+}
+
 app.addEventListener('click', event => {
   const target = event.target as HTMLElement;
+  const accordion = target.closest<HTMLButtonElement>('.footer-accordion-trigger');
+  if (accordion) {
+    const listId = accordion.getAttribute('aria-controls');
+    const list = listId ? document.getElementById(listId) : null;
+    if (list) {
+      const expanded = accordion.getAttribute('aria-expanded') === 'true';
+      accordion.setAttribute('aria-expanded', String(!expanded));
+      list.hidden = expanded;
+    }
+    return;
+  }
+  const modernLink = target.closest<HTMLElement>('[data-modern-path]');
+  if (modernLink?.dataset.modernPath) {
+    event.preventDefault();
+    navigateModern(modernLink.dataset.modernPath);
+    return;
+  }
   const routeElement = target.closest<HTMLElement>('[data-route]');
   if (routeElement) {
     event.preventDefault();
@@ -93,8 +186,73 @@ app.addEventListener('click', event => {
   }
 });
 
+app.addEventListener('submit', event => {
+  const form = event.target;
+  if (!(form instanceof HTMLFormElement) || form.id !== 'footer-newsletter-form') return;
+  event.preventDefault();
+  if (!form.reportValidity()) return;
+  const emailInput = form.querySelector<HTMLInputElement>('#footer-newsletter-email');
+  const submitButton = form.querySelector<HTMLButtonElement>('.footer-inbox-submit-btn');
+  const status = form.querySelector<HTMLElement>('.footer-newsletter-status');
+  if (!emailInput || !submitButton || !status) {
+    console.error('Newsletter form is missing a required control.');
+    return;
+  }
+  submitButton.disabled = true;
+  status.textContent = 'Submitting…';
+  void submitFooterNewsletter(emailInput.value).then(() => {
+    status.textContent = 'Thank you. This demo submission did not update a mailing list.';
+    form.reset();
+  }).catch((error: unknown) => {
+    console.error('Newsletter demo submission failed.', error);
+    status.textContent = 'We could not submit your request. Please try again.';
+  }).finally(() => {
+    submitButton.disabled = false;
+  });
+});
+
+app.addEventListener('invalid', event => {
+  const input = event.target;
+  if (!(input instanceof HTMLInputElement) || input.id !== 'footer-newsletter-email') return;
+  const status = input.form?.querySelector<HTMLElement>('.footer-newsletter-status');
+  if (status) status.textContent = 'Enter a valid email address.';
+}, true);
+
+app.addEventListener('input', event => {
+  const input = event.target;
+  if (!(input instanceof HTMLInputElement) || input.id !== 'footer-newsletter-email') return;
+  const status = input.form?.querySelector<HTMLElement>('.footer-newsletter-status');
+  if (status && input.validity.valid) status.textContent = '';
+});
+
+app.addEventListener('change', event => {
+  const target = event.target;
+  if (target instanceof HTMLSelectElement && target.matches('.footer-currency-dropdown')) {
+    const previousCurrency = getSelectedCurrency();
+    const nextCurrency = getCurrencyFromValue(target.value);
+    if (!nextCurrency) {
+      console.error(`Unsupported site currency selected: ${target.value}`);
+      target.value = previousCurrency;
+      return;
+    }
+    localStorage.setItem('mc-currency', target.value);
+    if (currentPage === 'shop') {
+      filters = convertFilterCurrency(filters, previousCurrency, nextCurrency);
+      pendingFilters = convertFilterCurrency(pendingFilters, previousCurrency, nextCurrency);
+      updateFilterUrl();
+      render();
+    } else if (currentPage === 'modern') {
+      render();
+    }
+  }
+});
+
 app.addEventListener('keydown', event => {
   const keyEvent = event as KeyboardEvent;
+  if (keyEvent.key === 'Escape' && mobileFilterOpen) {
+    closeMobileFilters();
+    return;
+  }
   if (keyEvent.key !== 'Enter' && keyEvent.key !== ' ') return;
   const target = event.target as HTMLElement;
   const productCard = target.closest<HTMLElement>('[data-product-id][role="link"]');
@@ -108,29 +266,32 @@ app.addEventListener('keydown', event => {
 // NAVIGATION
 // ═══════════════════════════════════════════════════════════════
 function navigateTo(page: Page, cat?: string) {
+  if (page === 'shop') {
+    const params = new URLSearchParams(window.location.search);
+    if (cat) params.set('category', cat === 'bars' ? 'gold-bars' : cat);
+    const query = params.toString();
+    navigateModern(`/shop${query ? `?${query}` : ''}`);
+    return;
+  }
   currentPage = page;
   const paths: Record<Page, string> = {
     home: '/',
-    shop: '/shop',
+    shop: '/catalogue',
     offers: '/offers',
     'new-arrivals': '/new-arrivals',
     login: '/login',
     product: `/product/${selectedProductSlug}`,
     cart: '/cart',
     checkout: '/checkout',
+    confirmation: checkoutOrder ? `/checkout/confirmation/${checkoutOrder.reference}` : '/checkout',
     wishlist: '/wishlist',
+    modern: modernPath,
   };
   const nextPath = paths[page];
   if (window.location.pathname !== nextPath) {
     window.history.pushState({}, '', nextPath);
   }
-  if (page === 'shop') {
-    if (cat) {
-      selectedNavCategory = cat;
-      filters.selectedCategories = [];
-    }
-    stopSlideshow();
-  } else if (page === 'offers') {
+  if (page === 'offers') {
     selectedNavCategory = '';
     stopSlideshow();
   } else if (page === 'new-arrivals') {
@@ -148,26 +309,56 @@ function navigateTo(page: Page, cat?: string) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+function navigateModern(path: string) {
+  if (path === '/') {
+    navigateTo('home');
+    return;
+  }
+  const destination = new URL(path, window.location.origin);
+  modernPath = destination.pathname;
+  currentPage = 'modern';
+  stopSlideshow();
+  const destinationPath = `${destination.pathname}${destination.search}${destination.hash}`;
+  if (`${window.location.pathname}${window.location.search}${window.location.hash}` !== destinationPath) {
+    window.history.pushState({}, '', destinationPath);
+  }
+  render();
+  if (destination.hash) {
+    document.getElementById(decodeURIComponent(destination.hash.slice(1)))?.scrollIntoView({ behavior: 'smooth' });
+  } else {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+}
+
 function navigateToProduct(product: Product) {
-  selectedProductSlug = product.slug || makeSlug(product.title, product.id);
+  const catalogueProduct = catalogueItems.find(item => item.id === product.id)
+    ?? catalogueItems.find(item => item.slug === product.slug || item.name === product.title);
+  selectedProductSlug = catalogueProduct?.slug || product.slug || makeSlug(product.title, product.id);
   detailQuantity = 1;
   detailTab = 'description';
-  currentPage = 'product';
-  const productPath = `/product/${selectedProductSlug}`;
-  if (window.location.pathname !== productPath) {
-    window.history.pushState({}, '', productPath);
-  }
-  stopSlideshow();
-  render();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  navigateModern(`/catalogue/${selectedProductSlug}`);
 }
 
 function renderFromLocation() {
   const pathname = decodeURIComponent(window.location.pathname).replace(/\/+$/, '') || '/';
   const productMatch = pathname.match(/^\/product\/(.+)$/);
-  if (productMatch) {
-    selectedProductSlug = productMatch[1];
-    currentPage = 'product';
+  const modernMatch = /^\/(live-prices|shop|catalogue(?:\/.*)?|storage|mc-reserve(?:\/.*)?|sell-to-us|about|contact)$/.test(pathname);
+  if (modernMatch) {
+    modernPath = pathname;
+    currentPage = 'modern';
+    stopSlideshow();
+  } else if (productMatch) {
+    const legacyProduct = PRODUCTS.find(product => makeSlug(product.title, product.id) === productMatch[1]);
+    const catalogueProduct = catalogueItems.find(product => product.slug === productMatch[1])
+      ?? catalogueItems.find(product => product.name === legacyProduct?.title);
+    if (catalogueProduct) {
+      modernPath = `/catalogue/${catalogueProduct.slug}`;
+      window.history.replaceState({}, '', modernPath);
+      currentPage = 'modern';
+    } else {
+      selectedProductSlug = productMatch[1];
+      currentPage = 'product';
+    }
     stopSlideshow();
   } else if (pathname === '/cart') {
     currentPage = 'cart';
@@ -175,11 +366,11 @@ function renderFromLocation() {
   } else if (pathname === '/checkout') {
     currentPage = 'checkout';
     stopSlideshow();
+  } else if (/^\/checkout\/confirmation\/[^/]+$/.test(pathname)) {
+    currentPage = 'confirmation';
+    stopSlideshow();
   } else if (pathname === '/wishlist') {
     currentPage = 'wishlist';
-    stopSlideshow();
-  } else if (pathname === '/shop') {
-    currentPage = 'shop';
     stopSlideshow();
   } else if (pathname === '/offers') {
     currentPage = 'offers';
@@ -190,9 +381,13 @@ function renderFromLocation() {
   } else if (pathname === '/login') {
     currentPage = 'login';
     stopSlideshow();
-  } else {
+  } else if (pathname === '/') {
     currentPage = 'home';
     startSlideshow();
+  } else {
+    modernPath = pathname;
+    currentPage = 'modern';
+    stopSlideshow();
   }
   render();
 }
@@ -240,56 +435,13 @@ function updateHeroTrack() {
 // ═══════════════════════════════════════════════════════════════
 // SHOP FILTERING
 // ═══════════════════════════════════════════════════════════════
-function matchesProductSearch(product: Product, query: string): boolean {
-  const searchableText = [
-    product.title,
-    product.category.replace(/-/g, ' '),
-    product.description || '',
-    ...(product.features || []),
-  ].join(' ').toLowerCase();
-  return searchableText.includes(query);
-}
-
 function getFilteredProducts(): Product[] {
-  let list = [...PRODUCTS];
-
-  if (filters.selectedCategories.length > 0) {
-    list = list.filter(p => filters.selectedCategories.includes(p.category));
-  } else if (selectedNavCategory && selectedNavCategory !== 'catalog') {
-    list = list.filter(p => p.category === selectedNavCategory);
-  }
-
-  const q = (filters.searchQuery || topSearchQuery || '').toLowerCase().trim();
-  if (q) {
-    list = list.filter(p => matchesProductSearch(p, q));
-  }
-
-  if (filters.priceMax > 0) {
-    list = list.filter(p => p.price >= filters.priceMin && p.price <= filters.priceMax);
-  }
-  if (filters.selectedPackSizes.length > 0) {
-    list = list.filter(p => p.packSize && filters.selectedPackSizes.includes(p.packSize));
-  }
-  if (filters.minRating > 0) {
-    list = list.filter(p => (p.rating ?? 5) >= filters.minRating);
-  }
-  if (filters.inStockOnly) {
-    list = list.filter(p => p.inStock !== false);
-  }
-
-  return list;
+  return filterProducts(PRODUCTS, filters, getSelectedCurrency());
 }
 
 function renderProductGrid(products: Product[]): string {
   if (products.length === 0) {
-    return `
-      <div class="no-products-found">
-        <svg width="48" height="48" fill="none" viewBox="0 0 24 24" stroke="#ccc" stroke-width="1.5">
-          <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
-        </svg>
-        <p>No products found</p>
-        <span>Try adjusting your filters or search term</span>
-      </div>`;
+    return renderFilterEmptyState();
   }
   return products.map(p => renderProductCard(p)).join('');
 }
@@ -300,6 +452,18 @@ function renderProductGrid(products: Product[]): string {
 function renderCartDrawerAndModals(): string {
   const cartItems = cartStore.getItems();
   const cartSubtotal = cartStore.getSubtotal();
+  const hasKnownPrice = (product: Product) =>
+    (product.priceSource === 'indicative' || product.priceSource === 'verified')
+    && Number.isFinite(product.price) && product.price > 0;
+  const hasAllCartPrices = cartItems.every(({ product }) => hasKnownPrice(product));
+  const pricedSubtotal = cartItems.reduce(
+    (sum, { product, quantity }) => sum + (hasKnownPrice(product) ? product.price * quantity : 0),
+    0,
+  );
+  const formatAed = (amount: number) =>
+    `AED ${amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  const cartPricesVerified = cartItems.length > 0 && cartItems.every(({ product }) =>
+    product.priceSource === 'verified' && product.stockStatus === 'in_stock');
 
   return `
     <!-- Toast Notification -->
@@ -330,7 +494,7 @@ function renderCartDrawerAndModals(): string {
             <img src="${item.product.image}" alt="${item.product.title}" />
             <div class="side-cart-item-info">
               <div class="side-cart-item-title">${item.product.title}</div>
-              <div class="side-cart-item-price">AED ${item.product.price} × ${item.quantity} = AED ${item.product.price * item.quantity}</div>
+              <div class="side-cart-item-price">${hasKnownPrice(item.product) ? `${item.product.priceDisplay || formatAed(item.product.price)} × ${item.quantity} = ${formatAed(item.product.price * item.quantity)} · indicative` : 'Price unavailable'}</div>
               <div class="side-cart-qty-ctrl">
                 <button data-dec="${item.product.id}">-</button>
                 <span>${item.quantity}</span>
@@ -345,8 +509,8 @@ function renderCartDrawerAndModals(): string {
       ${cartItems.length > 0 ? `
         <div class="side-cart-footer">
           <div class="side-cart-subtotal-row">
-            <span>Metal Value Subtotal:</span>
-            <span style="color: #0d874c;">AED ${cartSubtotal}</span>
+            <span>Indicative product subtotal:</span>
+            <span style="color: #0d874c;">${hasAllCartPrices ? formatAed(cartSubtotal) : `${formatAed(pricedSubtotal)} · partial`}</span>
           </div>
           <button class="side-cart-checkout-btn" id="btn-open-cart-page">
             View Allocation Cart
@@ -391,7 +555,7 @@ function renderCartDrawerAndModals(): string {
             <div style="background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 6px; padding: 14px; margin: 16px 0; font-size: 14px;">
               <div style="display:flex; justify-content:space-between; margin-bottom: 6px; color: #4b5563;">
                 <span>Metal Value Subtotal:</span>
-                <span>AED ${cartSubtotal}</span>
+                <span>${cartPricesVerified ? `AED ${cartSubtotal}` : 'Unavailable'}</span>
               </div>
               <div style="display:flex; justify-content:space-between; margin-bottom: 6px; color: #4b5563;">
                 <span>Insured Freight:</span>
@@ -399,12 +563,12 @@ function renderCartDrawerAndModals(): string {
               </div>
               <div style="display:flex; justify-content:space-between; font-weight:700; color:#0d874c; font-size:16px; border-top:1px dashed #D1D5DB; padding-top:8px;">
                 <span>Total Invoice:</span>
-                <span id="display-grand-total">AED ${cartSubtotal + 70}</span>
+                <span id="display-grand-total">${cartPricesVerified ? `AED ${cartSubtotal + 70}` : 'Unavailable'}</span>
               </div>
             </div>
 
-            <button type="submit" class="side-cart-checkout-btn" style="padding: 13px;">
-              Confirm Allocation Order
+            <button type="submit" class="side-cart-checkout-btn" style="padding: 13px;" ${cartPricesVerified ? '' : 'disabled'}>
+              ${cartPricesVerified ? 'Confirm Allocation Order' : 'Purchasing paused'}
             </button>
           </form>
         </div>
@@ -434,9 +598,18 @@ function renderCartDrawerAndModals(): string {
 // MAIN RENDER
 // ═══════════════════════════════════════════════════════════════
 function render() {
+  if (currentPage !== 'home' && reviewsInterval) {
+    clearInterval(reviewsInterval);
+    reviewsInterval = null;
+  }
+  if (currentPage !== 'checkout' && currentPage !== 'confirmation') {
+    document.querySelector<HTMLMetaElement>('meta[name="robots"]')?.remove();
+  }
   const cartCount = cartStore.getItemCount();
 
-  if (currentPage === 'home') {
+  if (currentPage === 'modern') {
+    renderModern(cartCount);
+  } else if (currentPage === 'home') {
     renderHome(cartCount);
   } else if (currentPage === 'offers') {
     renderOffers(cartCount);
@@ -450,6 +623,8 @@ function render() {
     renderCart(cartCount);
   } else if (currentPage === 'checkout') {
     renderCheckout(cartCount);
+  } else if (currentPage === 'confirmation') {
+    renderCheckout(cartCount);
   } else if (currentPage === 'wishlist') {
     renderWishlist(cartCount);
   } else {
@@ -457,7 +632,23 @@ function render() {
   }
 }
 
+function renderModern(cartCount: number) {
+  app.innerHTML = `
+    ${renderCartDrawerAndModals()}
+    ${renderHeader({ activeNav: 'Shop', cartCount, searchQuery: '', selectedNavCategory: '' })}
+    ${renderModernPage(modernPath)}
+    ${renderFalaqFooter()}
+  `;
+  const currencySelect = app.querySelector<HTMLSelectElement>('.footer-currency-dropdown');
+  if (currencySelect) currencySelect.value = localStorage.getItem('mc-currency') || 'AED';
+  attachHeaderListeners();
+  const modernRoot = app.querySelector<HTMLElement>('.mc-modern');
+  if (modernRoot) attachModernPageHandlers(modernRoot, navigateModern, addCatalogueProductToCart);
+  attachCartAndModalListeners();
+}
+
 function renderHome(cartCount: number) {
+  document.title = 'Montague Cole Bullion';
   app.innerHTML = `
     ${renderCartDrawerAndModals()}
     ${renderHeader({ activeNav: 'Home', cartCount, searchQuery: '', selectedNavCategory: '' })}
@@ -474,7 +665,10 @@ function renderWishlist(cartCount: number) {
   let productIds: number[] = [];
   try {
     const saved = JSON.parse(localStorage.getItem('falaqfood_wishlist_v1') || '[]');
-    if (Array.isArray(saved)) productIds = saved.filter((id): id is number => Number.isInteger(id));
+    productIds = normalizeCatalogueWishlistIds(saved);
+    if (JSON.stringify(productIds) !== JSON.stringify(saved)) {
+      localStorage.setItem('falaqfood_wishlist_v1', JSON.stringify(productIds));
+    }
   } catch (error) {
     console.error('Failed to read wishlist', error);
     showToast('Unable to load wishlist. Please check browser storage settings.');
@@ -505,9 +699,7 @@ function renderWishlist(cartCount: number) {
       event.stopPropagation();
       const product = getProductById(Number(button.dataset.id));
       if (!product) return;
-      cartStore.addItem(product);
-      showToast(`"${product.title}" added to cart!`);
-      navigateTo('cart');
+      if (addProductToCart(product)) navigateTo('cart');
     });
   });
   attachCartAndModalListeners();
@@ -535,8 +727,7 @@ function attachOffersListeners() {
       const id = parseInt((btn as HTMLElement).dataset.id || '0', 10);
       const product = PRODUCTS.find(p => p.id === id);
       if (product) {
-        cartStore.addItem(product, 1);
-        showToast(`"${product.title}" added to cart!`);
+        if (!addProductToCart(product, 1)) return;
         isCartOpen = true;
         render();
       }
@@ -572,8 +763,7 @@ function attachNewArrivalsListeners() {
       const id = parseInt((btn as HTMLElement).dataset.id || '0', 10);
       const product = PRODUCTS.find(p => p.id === id);
       if (product) {
-        cartStore.addItem(product, 1);
-        showToast(`"${product.title}" added to cart!`);
+        if (!addProductToCart(product, 1)) return;
         isCartOpen = true;
         render();
       }
@@ -602,11 +792,11 @@ function renderLogin(cartCount: number) {
 }
 
 function renderProductDetails(cartCount: number) {
-  const product = getProductBySlug(selectedProductSlug)
-    || PRODUCTS.find(p => makeSlug(p.title, p.id) === selectedProductSlug);
+  const catalogueProduct = catalogueItems.find(item => item.slug === selectedProductSlug);
+  const product = catalogueProduct ? toStorefrontProduct(catalogueProduct) : undefined;
   let wishlisted = false;
   try {
-    const savedIds: number[] = JSON.parse(localStorage.getItem('falaqfood_wishlist_v1') || '[]');
+    const savedIds = normalizeCatalogueWishlistIds(JSON.parse(localStorage.getItem('falaqfood_wishlist_v1') || '[]'));
     wishlisted = product ? savedIds.includes(product.id) : false;
   } catch (error) {
     console.error('Failed to read wishlist', error);
@@ -624,6 +814,7 @@ function renderProductDetails(cartCount: number) {
 }
 
 function renderCart(cartCount: number) {
+  document.querySelector<HTMLMetaElement>('meta[name="robots"]')?.remove();
   app.innerHTML = `
     ${renderCartDrawerAndModals()}
     ${renderHeader({ activeNav: 'Cart', cartCount, searchQuery: topSearchQuery, selectedNavCategory })}
@@ -646,26 +837,422 @@ function renderCart(cartCount: number) {
 }
 
 function renderCheckout(cartCount: number) {
+  const confirmationPage = currentPage === 'confirmation';
+  if (!confirmationPage) {
+    if (!checkoutPriceLock || checkoutPriceLock.totalAed !== cartStore.getSubtotal()) {
+      checkoutPriceLock = checkoutService.lockPrice(cartStore.getSubtotal());
+      checkoutLockConfirmed = true;
+    }
+    if (!checkoutIdempotencyKey) checkoutIdempotencyKey = crypto.randomUUID();
+    if (!checkoutLockInterval) checkoutLockInterval = setInterval(updateCheckoutLockDisplay, 1000);
+  } else if (checkoutLockInterval) {
+    clearInterval(checkoutLockInterval);
+    checkoutLockInterval = null;
+  }
+  document.title = confirmationPage ? 'Order received | Montague Cole Bullion' : 'Checkout | Montague Cole Bullion';
+  let robots = document.querySelector<HTMLMetaElement>('meta[name="robots"]');
+  if (!robots) {
+    robots = document.createElement('meta');
+    robots.name = 'robots';
+    document.head.append(robots);
+  }
+  robots.content = 'noindex, nofollow';
+  const validItems = cartStore.getItems().filter(({ product }) =>
+    product.stockStatus !== 'pre_order'
+      && product.stockStatus !== 'enquire'
+      && product.stockStatus !== 'out_of_stock');
+  if (validItems.length !== cartStore.getItems().length) {
+    checkoutInvalidCartNotice = true;
+    cartStore.getItems()
+      .filter(({ product }) => product.stockStatus === 'pre_order'
+        || product.stockStatus === 'enquire'
+        || product.stockStatus === 'out_of_stock')
+      .forEach(({ product }) => cartStore.removeItem(product.id));
+  }
   app.innerHTML = `
     ${renderCartDrawerAndModals()}
     ${renderHeader({ activeNav: 'Cart', cartCount, searchQuery: topSearchQuery, selectedNavCategory })}
     ${renderCheckoutPage({
       items: cartStore.getItems(),
-      subtotal: cartStore.getSubtotal(),
-      discountTotal: cartStore.getCouponDiscountTotal(),
-      deliveryFee: cartStore.getDeliveryFee(),
-      total: cartStore.getTotal(),
-      deliveryZone: cartStore.getDeliveryZone(),
-      couponCode: cartStore.getCouponCode(),
-      couponInputValue: couponInputDraft || cartStore.getCouponCode(),
-      couponMessage: couponFeedback,
-      couponMessageType: couponFeedbackType,
+      subtotalAed: cartStore.getSubtotal(),
+      deliveryMethod: checkoutDeliveryMethod,
       formValues: checkoutFormDraft,
+      priceLock: checkoutPriceLock,
+      lockConfirmed: checkoutLockConfirmed,
+      feedIsStale: isPriceFeedStale(checkoutFeedUpdatedAt),
+      invalidCartNotice: checkoutInvalidCartNotice,
+      order: checkoutOrder,
+      orderPersistenceWarning: checkoutOrderPersistenceWarning,
     })}
     ${renderFalaqFooter()}
   `;
   attachHeaderListeners();
   attachCartAndModalListeners();
+  attachCheckoutPageListeners();
+}
+
+const CHECKOUT_DRAFT_KEY = 'mc-checkout-draft';
+const CHECKOUT_ORDER_KEY = 'mc-checkout-order';
+const EMPTY_CHECKOUT_DRAFT: CheckoutFormDraft = {
+  fullName: '',
+  email: '',
+  phoneCode: '+971',
+  phone: '',
+  deliveryPhoneCode: '+971',
+  deliveryPhone: '',
+  appointmentDate: '',
+  appointmentTime: '',
+  country: '',
+  city: '',
+  street: '',
+  postalCode: '',
+  notes: '',
+};
+let checkoutLockPreviousRemaining = 10 * 60 * 1000;
+
+function restoreCheckoutDraft() {
+  try {
+    const raw = sessionStorage.getItem(CHECKOUT_DRAFT_KEY);
+    if (!raw) return;
+    const parsed: unknown = JSON.parse(raw);
+    if (!parsed || typeof parsed !== 'object') return;
+    const stored = parsed as Partial<Record<keyof CheckoutFormDraft | 'deliveryMethod', unknown>>;
+    for (const key of [
+      'fullName', 'email', 'phoneCode', 'phone', 'deliveryPhoneCode', 'deliveryPhone',
+      'country', 'city', 'street', 'postalCode',
+    ] as const) {
+      if (typeof stored[key] === 'string') checkoutFormDraft[key] = stored[key];
+    }
+    if (stored.deliveryMethod === 'collection' || stored.deliveryMethod === 'uae' || stored.deliveryMethod === 'international') {
+      checkoutDeliveryMethod = stored.deliveryMethod;
+    }
+  } catch (error) {
+    console.error('Failed to restore checkout contact and address details', error);
+  }
+}
+
+function persistCheckoutDraft() {
+  const safeDraft = {
+    fullName: checkoutFormDraft.fullName,
+    email: checkoutFormDraft.email,
+    phoneCode: checkoutFormDraft.phoneCode,
+    phone: checkoutFormDraft.phone,
+    deliveryPhoneCode: checkoutFormDraft.deliveryPhoneCode,
+    deliveryPhone: checkoutFormDraft.deliveryPhone,
+    deliveryMethod: checkoutDeliveryMethod,
+    country: checkoutFormDraft.country,
+    city: checkoutFormDraft.city,
+    street: checkoutFormDraft.street,
+    postalCode: checkoutFormDraft.postalCode,
+  };
+  try {
+    sessionStorage.setItem(CHECKOUT_DRAFT_KEY, JSON.stringify(safeDraft));
+  } catch (error) {
+    console.error('Failed to save checkout contact and address details', error);
+  }
+}
+
+function restoreCheckoutOrder() {
+  try {
+    const raw = sessionStorage.getItem(CHECKOUT_ORDER_KEY);
+    if (!raw) return;
+    const parsed: unknown = JSON.parse(raw);
+    if (!isMockOrder(parsed)) {
+      sessionStorage.removeItem(CHECKOUT_ORDER_KEY);
+      console.warn('Discarded invalid mock checkout confirmation data.');
+      return;
+    }
+    checkoutOrder = parsed;
+  } catch (error) {
+    console.error('Failed to restore checkout confirmation data', error);
+  }
+}
+
+function canSubmitCheckoutOrder(): boolean {
+  const lock = checkoutPriceLock;
+  return currentPage === 'checkout'
+    && !isSubmittingOrder
+    && !isPriceFeedStale(checkoutFeedUpdatedAt)
+    && lock !== null
+    && !isPriceLockExpired(lock)
+    && checkoutLockConfirmed
+    && cartStore.getItems().length > 0
+    && cartStore.getItems().every(({ product }) => product.priceSource === 'verified' && product.stockStatus === 'in_stock');
+}
+
+function updateCheckoutLockDisplay() {
+  if (currentPage !== 'checkout' || !checkoutPriceLock) return;
+  const remaining = Math.max(0, checkoutPriceLock.expiresAt - Date.now());
+  const seconds = Math.ceil(remaining / 1000);
+  const minutesText = Math.floor(seconds / 60).toString().padStart(2, '0');
+  const secondsText = (seconds % 60).toString().padStart(2, '0');
+  const time = document.querySelector<HTMLElement>('[data-price-lock-status] time');
+  if (time) time.textContent = `${minutesText}:${secondsText}`;
+  const progress = document.querySelector<HTMLElement>('.checkout-price-lock-progress');
+  if (progress) {
+    const value = Math.round(remaining / PRICE_LOCK_DURATION_MS * 100);
+    progress.setAttribute('aria-valuenow', String(value));
+    const bar = progress.querySelector<HTMLElement>('span');
+    if (bar) bar.style.width = `${value}%`;
+  }
+  const warning = document.getElementById('checkout-lock-warning');
+  if (warning) warning.hidden = remaining > 60_000 || remaining === 0;
+  const expired = document.querySelector<HTMLElement>('.checkout-lock-expired');
+  if (expired) expired.hidden = remaining > 0;
+  const liveRegion = document.getElementById('checkout-lock-live');
+  if (remaining <= 0) {
+    checkoutLockConfirmed = false;
+    if (checkoutLockPreviousRemaining > 0 && liveRegion) liveRegion.textContent = checkoutContent.validation.expiredAnnouncement;
+  } else if (checkoutLockPreviousRemaining > 300_000 && remaining <= 300_000 && liveRegion) {
+    liveRegion.textContent = checkoutContent.validation.fiveMinuteAnnouncement;
+  } else if (checkoutLockPreviousRemaining > 60_000 && remaining <= 60_000 && liveRegion) {
+    liveRegion.textContent = checkoutContent.validation.oneMinuteAnnouncement;
+  }
+  const submitButton = document.querySelector<HTMLButtonElement>('.checkout-submit-button');
+  if (submitButton) submitButton.disabled = !canSubmitCheckoutOrder();
+  checkoutLockPreviousRemaining = remaining;
+}
+
+function updateCheckoutSectionIndicators(form: HTMLFormElement) {
+  const field = (name: string) => form.querySelector<HTMLInputElement | HTMLSelectElement>(`[name="${name}"]`);
+  const name = field('fullName');
+  const email = field('email');
+  const appointmentDate = form.querySelector<HTMLInputElement>('[name="appointmentDate"]');
+  const appointmentTime = field('appointmentTime');
+  const contactValid = Boolean(name?.value.trim() && name.value.trim().length >= 2)
+    && Boolean(email?.value && email.checkValidity())
+    && validateInternationalPhone(checkoutFormDraft.phoneCode, checkoutFormDraft.phone);
+  const deliveryValid = checkoutDeliveryMethod === 'collection'
+    ? Boolean(appointmentDate?.value && appointmentDate.value >= appointmentDate.min && appointmentTime?.value)
+    : Boolean(field('country')?.value && field('city')?.value.trim() && field('street')?.value.trim())
+      && !(checkoutDeliveryMethod === 'international' && RESTRICTED_COUNTRY_CODES.includes(checkoutFormDraft.country))
+      && validateInternationalPhone(checkoutFormDraft.deliveryPhoneCode, checkoutFormDraft.deliveryPhone);
+  const paymentValid = Boolean(form.querySelector<HTMLInputElement>('[name="terms"]')?.checked);
+  const states: Record<string, boolean> = { contact: contactValid, delivery: deliveryValid, payment: paymentValid };
+  for (const badge of form.querySelectorAll<HTMLElement>('[data-checkout-section]')) {
+    const section = badge.dataset.checkoutSection;
+    const number = badge.getAttribute('aria-label')?.replace('Section ', '') ?? '';
+    const complete = section ? states[section] === true : false;
+    badge.textContent = complete ? '✓' : number;
+    badge.setAttribute('aria-label', complete ? `${section} section complete` : `Section ${number}`);
+  }
+}
+
+function attachCheckoutPageListeners() {
+  if (currentPage === 'confirmation') {
+    document.querySelector('[data-print-order]')?.addEventListener('click', () => window.print());
+    return;
+  }
+  const form = document.getElementById('checkout-page-form');
+  if (!(form instanceof HTMLFormElement)) return;
+  const summaryDetails = document.querySelector<HTMLDetailsElement>('.checkout-summary-details');
+  if (summaryDetails) summaryDetails.open = window.matchMedia('(min-width: 801px)').matches;
+  updateCheckoutSectionIndicators(form);
+
+  form.addEventListener('input', event => {
+    const field = event.target;
+    if (!(field instanceof HTMLInputElement || field instanceof HTMLTextAreaElement || field instanceof HTMLSelectElement)) return;
+    if (field.name in checkoutFormDraft) {
+      checkoutFormDraft[field.name as keyof CheckoutFormDraft] = field.value;
+      persistCheckoutDraft();
+    }
+    if (field.id) {
+      field.removeAttribute('aria-invalid');
+      const error = document.getElementById(`${field.id}-error`);
+      if (error) error.textContent = '';
+    }
+    const noteCounter = document.getElementById('checkout-notes-count');
+    if (field.name === 'notes' && noteCounter) noteCounter.textContent = `${field.value.length}/500`;
+    updateCheckoutSectionIndicators(form);
+  });
+  form.addEventListener('change', () => updateCheckoutSectionIndicators(form));
+
+  form.querySelectorAll<HTMLInputElement>('input[name="deliveryMethod"]').forEach(input => {
+    input.addEventListener('change', () => {
+      checkoutDeliveryMethod = input.value as typeof checkoutDeliveryMethod;
+      persistCheckoutDraft();
+      if (checkoutDeliveryMethod !== 'collection' && !checkoutFormDraft.deliveryPhone && checkoutFormDraft.phone) {
+        checkoutFormDraft.deliveryPhoneCode = checkoutFormDraft.phoneCode;
+        checkoutFormDraft.deliveryPhone = checkoutFormDraft.phone;
+        persistCheckoutDraft();
+      }
+      render();
+    });
+  });
+
+  form.querySelectorAll<HTMLSelectElement>('select').forEach(select => {
+    select.addEventListener('change', () => {
+      if (select.name in checkoutFormDraft) {
+        checkoutFormDraft[select.name as keyof CheckoutFormDraft] = select.value;
+        persistCheckoutDraft();
+      }
+      if (select.name === 'country') render();
+    });
+  });
+
+  document.querySelectorAll<HTMLButtonElement>('[data-checkout-inc], [data-checkout-dec]').forEach(button => {
+    button.addEventListener('click', () => {
+      const productId = Number(button.dataset.checkoutInc ?? button.dataset.checkoutDec);
+      const item = cartStore.getItems().find(cartItem => cartItem.product.id === productId);
+      if (!item) return;
+      if (button.dataset.checkoutDec && item.quantity === 1) {
+        if (!window.confirm(checkoutContent.validation.removeItem)) return;
+        cartStore.removeItem(productId);
+      } else {
+        cartStore.updateQuantity(productId, item.quantity + (button.dataset.checkoutInc ? 1 : -1));
+      }
+      checkoutPriceLock = checkoutService.lockPrice(cartStore.getSubtotal());
+      checkoutLockConfirmed = true;
+      checkoutLockPreviousRemaining = PRICE_LOCK_DURATION_MS;
+      render();
+    });
+  });
+
+  document.querySelector('[data-confirm-new-price]')?.addEventListener('click', () => {
+    checkoutPriceLock = checkoutService.lockPrice(cartStore.getSubtotal());
+    checkoutLockConfirmed = true;
+    checkoutLockPreviousRemaining = PRICE_LOCK_DURATION_MS;
+    render();
+  });
+
+  form.addEventListener('submit', async event => {
+    event.preventDefault();
+    if (isSubmittingOrder) return;
+    const email = checkoutFormDraft.email.trim();
+    const phoneIsValid = validateInternationalPhone(checkoutFormDraft.phoneCode, checkoutFormDraft.phone);
+    const validation: Array<[string, string, boolean]> = [
+      ['checkout-full-name', 'checkout-full-name-error', checkoutFormDraft.fullName.trim().length >= 2],
+      ['checkout-email', 'checkout-email-error', /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)],
+      ['checkout-phone', 'checkout-phone-error', phoneIsValid],
+    ];
+    if (checkoutDeliveryMethod !== 'collection') {
+      validation.push(
+        ['checkout-country', 'checkout-country-error', Boolean(checkoutFormDraft.country)],
+        ['checkout-city', 'checkout-city-error', Boolean(checkoutFormDraft.city.trim())],
+        ['checkout-street', 'checkout-street-error', checkoutFormDraft.street.trim().length >= 5],
+        ['checkout-delivery-phone', 'checkout-delivery-phone-error', validateInternationalPhone(checkoutFormDraft.deliveryPhoneCode, checkoutFormDraft.deliveryPhone)],
+      );
+    }
+    const date = form.querySelector<HTMLInputElement>('[name="appointmentDate"]');
+    const time = form.querySelector<HTMLSelectElement>('[name="appointmentTime"]');
+    if (checkoutDeliveryMethod === 'collection') {
+      validation.push(
+        ['checkout-appointment-date', '', Boolean(date?.value && date.value >= date.min)],
+        ['checkout-appointment-time', '', Boolean(time?.value)],
+      );
+    }
+    for (const [fieldId, errorId, valid] of validation) {
+      const field = document.getElementById(fieldId);
+      const error = errorId ? document.getElementById(errorId) : null;
+      if (field instanceof HTMLInputElement || field instanceof HTMLSelectElement) {
+        field.setAttribute('aria-invalid', String(!valid));
+      }
+      if (error) error.textContent = valid ? '' : fieldId === 'checkout-full-name'
+        ? checkoutContent.validation.name
+        : fieldId === 'checkout-email' ? checkoutContent.validation.email
+          : fieldId.includes('phone') ? checkoutContent.validation.phone
+            : checkoutContent.validation.required;
+    }
+    const terms = form.querySelector<HTMLInputElement>('[name="terms"]');
+    const submitError = document.getElementById('checkout-submit-error');
+    const invalidField = validation.find(([, , valid]) => !valid);
+    if (invalidField) {
+      document.getElementById(invalidField[0])?.focus();
+      document.getElementById(invalidField[0])?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      return;
+    }
+    if (!terms?.checked) {
+      terms?.setAttribute('aria-invalid', 'true');
+      if (submitError) {
+        submitError.hidden = false;
+        submitError.textContent = checkoutContent.validation.terms;
+      }
+      terms?.focus();
+      return;
+    }
+    if (checkoutDeliveryMethod === 'international' && RESTRICTED_COUNTRY_CODES.includes(checkoutFormDraft.country)) {
+      if (submitError) {
+        submitError.hidden = false;
+        submitError.textContent = checkoutContent.validation.restrictedCountry;
+      }
+      return;
+    }
+    if (isPriceFeedStale(checkoutFeedUpdatedAt)
+      || !checkoutPriceLock
+      || isPriceLockExpired(checkoutPriceLock)
+      || !checkoutLockConfirmed
+      || !cartStore.getItems().every(({ product }) => product.priceSource === 'verified' && product.stockStatus === 'in_stock')) {
+      if (submitError) {
+        submitError.hidden = false;
+        submitError.textContent = checkoutContent.validation.orderBlocked;
+      }
+      return;
+    }
+
+    isSubmittingOrder = true;
+    const submitButton = form.querySelector<HTMLButtonElement>('.checkout-submit-button');
+    if (submitButton) {
+      submitButton.disabled = true;
+      submitButton.textContent = 'Placing order…';
+    }
+    try {
+      const order = await orderService.createOrder({
+        idempotencyKey: checkoutIdempotencyKey,
+        lines: cartStore.getItems().map(({ product, quantity }) => ({
+          productId: product.id,
+          title: product.title,
+          quantity,
+          unitPriceAed: product.price,
+          image: product.image,
+          weight: product.packSize ?? 'Weight awaiting confirmation',
+        })),
+        totalAed: cartStore.getSubtotal(),
+        contact: {
+          fullName: checkoutFormDraft.fullName.trim(),
+          email: checkoutFormDraft.email.trim(),
+          phone: `${checkoutFormDraft.phoneCode} ${checkoutFormDraft.phone.trim()}`,
+        },
+        delivery: {
+          method: checkoutDeliveryMethod,
+          appointmentDate: checkoutDeliveryMethod === 'collection' ? checkoutFormDraft.appointmentDate : '',
+          appointmentTime: checkoutDeliveryMethod === 'collection' ? checkoutFormDraft.appointmentTime : '',
+          country: checkoutDeliveryMethod === 'collection' ? '' : checkoutFormDraft.country,
+          city: checkoutDeliveryMethod === 'collection' ? '' : checkoutFormDraft.city.trim(),
+          street: checkoutDeliveryMethod === 'collection' ? '' : checkoutFormDraft.street.trim(),
+          postalCode: checkoutDeliveryMethod === 'collection' ? '' : checkoutFormDraft.postalCode.trim(),
+          phone: checkoutDeliveryMethod === 'collection'
+            ? ''
+            : `${checkoutFormDraft.deliveryPhoneCode} ${checkoutFormDraft.deliveryPhone.trim()}`,
+        },
+        notes: checkoutFormDraft.notes.trim(),
+        paymentMethod: 'bank-transfer',
+      });
+      try {
+        sessionStorage.setItem(CHECKOUT_ORDER_KEY, JSON.stringify(order));
+        checkoutOrderPersistenceWarning = false;
+      } catch (error) {
+        checkoutOrderPersistenceWarning = true;
+        console.error('Failed to persist mock checkout confirmation data', error);
+      }
+      checkoutOrder = order;
+      sessionStorage.removeItem(CHECKOUT_DRAFT_KEY);
+      checkoutFormDraft = { ...EMPTY_CHECKOUT_DRAFT };
+      checkoutPriceLock = null;
+      checkoutIdempotencyKey = '';
+      cartStore.clear();
+      currentPage = 'confirmation';
+      window.history.pushState({}, '', `/checkout/confirmation/${order.reference}`);
+      render();
+    } catch (error) {
+      console.error('Failed to create mock checkout order', error);
+      if (submitError) {
+        submitError.hidden = false;
+        submitError.textContent = checkoutContent.validation.orderFailed;
+      }
+    } finally {
+      isSubmittingOrder = false;
+    }
+  });
 }
 
 function attachProductDetailsListeners(product: Product | undefined) {
@@ -680,9 +1267,7 @@ function attachProductDetailsListeners(product: Product | undefined) {
   });
 
   document.getElementById('btn-detail-add-to-cart')?.addEventListener('click', () => {
-    cartStore.addItem(product, detailQuantity);
-    showToast(`"${product.title}" added to cart!`);
-    navigateTo('cart');
+    if (addProductToCart(product, detailQuantity)) navigateTo('cart');
   });
 
   document.getElementById('btn-product-back')?.addEventListener('click', () => {
@@ -708,8 +1293,7 @@ function attachProductDetailsListeners(product: Product | undefined) {
   document.getElementById('btn-product-wishlist')?.addEventListener('click', () => {
     let savedIds: number[] = [];
     try {
-      savedIds = JSON.parse(localStorage.getItem('falaqfood_wishlist_v1') || '[]');
-      if (!Array.isArray(savedIds)) savedIds = [];
+      savedIds = normalizeCatalogueWishlistIds(JSON.parse(localStorage.getItem('falaqfood_wishlist_v1') || '[]'));
       savedIds = savedIds.includes(product.id)
         ? savedIds.filter(id => id !== product.id)
         : [...savedIds, product.id];
@@ -797,27 +1381,44 @@ function attachLoginListeners() {
 
 function renderShop(cartCount: number) {
   const filteredProducts = getFilteredProducts();
+  const currency = getSelectedCurrency();
+  const facets = computeFacets(PRODUCTS, filters, currency);
+  const hasChanges = invalidPriceRange || !filtersEqual(filters, pendingFilters);
   app.innerHTML = `
     ${renderCartDrawerAndModals()}
     ${renderHeader({ activeNav: 'Shop', cartCount, searchQuery: topSearchQuery, selectedNavCategory })}
     <main class="shop-main-bg">
       ${renderPageBanner()}
-      <div class="shop-container shop-content-area">
+      <div class="shop-container shop-content-area wide-screen-container">
         <div class="shop-layout-grid">
           <div class="mobile-filter-bar">
-            <button class="mobile-filter-toggle-btn" id="btn-mobile-filter-open">
+            <button class="mobile-filter-toggle-btn" id="btn-mobile-filter-open" aria-expanded="${mobileFilterOpen}" aria-controls="filter-sidebar">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
                 <line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="20" y2="12"/><line x1="12" y1="18" x2="20" y2="18"/>
               </svg>
-              Filters
+              Filters (${filterActiveCount(filters)})
             </button>
-            <span class="results-count">${filteredProducts.length} product${filteredProducts.length !== 1 ? 's' : ''} found</span>
+            <span class="mobile-results-count">${filteredProducts.length} products found</span>
           </div>
           <div class="sidebar-column ${mobileFilterOpen ? 'mobile-open' : ''}" id="sidebar-column">
-            ${renderFilterSidebar({ filters, expandedSections })}
+            ${renderFilterSidebar({
+              filters: pendingFilters,
+              facets,
+              currency,
+              expandedSections,
+              hasChanges,
+              hasActiveFilters: filtersActive(filters) || filtersActive(pendingFilters),
+              mobileOpen: mobileFilterOpen,
+              invalidPriceRange,
+              totalProducts: PRODUCTS.length,
+            })}
           </div>
           <div class="sidebar-overlay ${mobileFilterOpen ? 'visible' : ''}" id="sidebar-overlay"></div>
           <section class="products-column">
+            <div class="shop-results-summary">
+              <p class="results-count" aria-live="polite">Showing ${filteredProducts.length} of ${PRODUCTS.length} products</p>
+              ${renderFilterChips(filters)}
+            </div>
             <div class="shop-products-grid" id="products-grid">
               ${renderProductGrid(filteredProducts)}
             </div>
@@ -827,6 +1428,8 @@ function renderShop(cartCount: number) {
       ${renderFalaqFooter()}
     </main>
   `;
+  const currencySelect = app.querySelector<HTMLSelectElement>('.footer-currency-dropdown');
+  if (currencySelect) currencySelect.value = currency;
   attachHeaderListeners();
   attachShopListeners();
   attachCartAndModalListeners();
@@ -886,9 +1489,10 @@ function attachHeaderListeners() {
   }
 
   function getSuggestions(query: string): Product[] {
-    const q = query.toLowerCase().trim();
-    if (!q || q.length < 1) return [];
-    return PRODUCTS.filter(product => matchesProductSearch(product, q)).slice(0, 7);
+    const filters = createEmptyCatalogueFilters();
+    filters.query = query.trim();
+    if (!filters.query) return [];
+    return filterCatalogueProducts(catalogueItems, filters).slice(0, 7).map(toStorefrontProduct);
   }
 
   function renderDropdown(query: string) {
@@ -905,7 +1509,7 @@ function attachHeaderListeners() {
       <div
         class="search-suggestion-item"
         data-suggest-index="${i}"
-        data-suggest-id="${p.id}"
+        data-suggest-slug="${p.slug}"
         role="option"
         aria-selected="false"
       >
@@ -914,7 +1518,7 @@ function attachHeaderListeners() {
           <div class="suggest-title">${highlightMatch(p.title, query)}</div>
           <div class="suggest-category">${p.category.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}</div>
         </div>
-        <div class="suggest-price">${p.price}৳</div>
+        <div class="suggest-price">${p.priceDisplay}</div>
       </div>
     `).join('') + `
       <div class="search-suggestion-footer" data-suggest-all="1">
@@ -933,9 +1537,9 @@ function attachHeaderListeners() {
     suggestionItems.forEach(item => {
       item.addEventListener('mousedown', (e) => {
         e.preventDefault();
-        const product = getProductById(Number(item.dataset.suggestId));
+        const slug = item.dataset.suggestSlug;
         closeDropdown();
-        if (product) navigateToProduct(product);
+        if (slug) navigateModern(`/catalogue/${slug}`);
       });
     });
 
@@ -943,10 +1547,8 @@ function attachHeaderListeners() {
     const footerBtn = dropdown.querySelector('[data-suggest-all]') as HTMLElement;
     footerBtn?.addEventListener('mousedown', (e) => {
       e.preventDefault();
-      topSearchQuery = topInput.value.trim();
-      filters.searchQuery = '';
       closeDropdown();
-      navigateTo('shop');
+      submitTopSearch(topInput.value);
     });
   }
 
@@ -1009,10 +1611,8 @@ function attachHeaderListeners() {
       setActiveItem(activeSuggestionIndex);
     } else if (e.key === 'Enter') {
       e.preventDefault();
-      topSearchQuery = topInput.value.trim();
-      filters.searchQuery = '';
       closeDropdown();
-      navigateTo('shop');
+      submitTopSearch(topInput.value);
     } else if (e.key === 'Escape') {
       closeDropdown();
     }
@@ -1029,29 +1629,23 @@ function attachHeaderListeners() {
   // Clear button
   clearBtn?.addEventListener('click', () => {
     topInput.value = '';
-    topSearchQuery = '';
-    filters.searchQuery = '';
+    submitTopSearch('');
     updateClearBtn();
     closeDropdown();
     topInput.focus();
-    if (currentPage === 'shop') updateProductGrid();
   });
 
   // Form submit
   document.getElementById('top-search-form')?.addEventListener('submit', (e) => {
     e.preventDefault();
-    topSearchQuery = topInput?.value ?? '';
-    filters.searchQuery = '';
     closeDropdown();
-    navigateTo('shop');
+    submitTopSearch(topInput?.value ?? '');
   });
 
   // Search icon button
   document.getElementById('btn-top-search')?.addEventListener('click', () => {
-    topSearchQuery = topInput?.value ?? '';
-    filters.searchQuery = '';
     closeDropdown();
-    navigateTo('shop');
+    submitTopSearch(topInput?.value ?? '');
   });
 
   // Cart button in header
@@ -1086,8 +1680,17 @@ function closeMobileNav() {
 // HOME PAGE LISTENERS
 // ═══════════════════════════════════════════════════════════════
 function attachHomeListeners() {
+  document.querySelectorAll<HTMLButtonElement>('[data-action="add-to-cart"]').forEach(button => {
+    button.addEventListener('click', event => {
+      event.stopPropagation();
+      const product = catalogueItems.find(item => item.id === Number(button.dataset.id));
+      if (product) addCatalogueProductToCart(product.slug);
+    });
+  });
+
   try {
-    const savedIds: number[] = JSON.parse(localStorage.getItem('falaqfood_wishlist_v1') || '[]');
+    const savedIds = normalizeCatalogueWishlistIds(JSON.parse(localStorage.getItem('falaqfood_wishlist_v1') || '[]'));
+    localStorage.setItem('falaqfood_wishlist_v1', JSON.stringify(savedIds));
     document.querySelectorAll<HTMLButtonElement>('[data-home-wishlist]').forEach(button => {
       const wishlisted = savedIds.includes(Number(button.dataset.homeWishlist));
       button.setAttribute('aria-pressed', String(wishlisted));
@@ -1105,7 +1708,7 @@ function attachHomeListeners() {
       event.stopPropagation();
       const productId = Number(button.dataset.homeWishlist);
       try {
-        const saved: number[] = JSON.parse(localStorage.getItem('falaqfood_wishlist_v1') || '[]');
+        const saved = normalizeCatalogueWishlistIds(JSON.parse(localStorage.getItem('falaqfood_wishlist_v1') || '[]'));
         const wishlisted = saved.includes(productId);
         const next = wishlisted ? saved.filter(id => id !== productId) : [...saved, productId];
         localStorage.setItem('falaqfood_wishlist_v1', JSON.stringify(next));
@@ -1169,7 +1772,6 @@ function attachHomeListeners() {
     const prependFragment = document.createDocumentFragment();
     [...originalCards].reverse().forEach(card => {
       const clone = card.cloneNode(true) as HTMLElement;
-      clone.setAttribute('data-cat-card', card.getAttribute('data-cat-card') || '');
       clone.classList.add('cat-clone');
       prependFragment.appendChild(clone);
     });
@@ -1179,7 +1781,6 @@ function attachHomeListeners() {
     const appendFragment = document.createDocumentFragment();
     originalCards.forEach(card => {
       const clone = card.cloneNode(true) as HTMLElement;
-      clone.setAttribute('data-cat-card', card.getAttribute('data-cat-card') || '');
       clone.classList.add('cat-clone');
       appendFragment.appendChild(clone);
     });
@@ -1266,23 +1867,7 @@ function attachHomeListeners() {
       scrollCarousel('next');
     });
 
-    // Also re-attach click listeners on cloned cards
-    track.querySelectorAll('.cat-clone[data-cat-card]').forEach(clone => {
-      clone.addEventListener('click', () => {
-        const catId = (clone as HTMLElement).dataset.catCard;
-        if (catId) navigateTo('shop', catId);
-      });
-    });
   }
-
-
-  // Category card click -> navigate to Shop filtered by that category
-  document.querySelectorAll('[data-cat-card]').forEach(card => {
-    card.addEventListener('click', () => {
-      const catId = (card as HTMLElement).dataset.catCard;
-      navigateTo('shop', catId);
-    });
-  });
 
   // Add to cart buttons on Recent Products
   document.querySelectorAll('[data-add]').forEach(el => {
@@ -1291,8 +1876,7 @@ function attachHomeListeners() {
       const pid = parseInt((el as HTMLElement).dataset.add || '0', 10);
       const prod = getProductById(pid);
       if (prod) {
-        cartStore.addItem(prod, 1);
-        showToast(`"${prod.title}" added to cart!`);
+        if (!addProductToCart(prod, 1)) return;
         isCartOpen = true;
         render();
       }
@@ -1315,171 +1899,320 @@ function attachHomeListeners() {
   });
 
   // Reviews carousel buttons
+  if (reviewsInterval) clearInterval(reviewsInterval);
   const revTrack = document.getElementById('reviews-track');
-  document.getElementById('review-prev')?.addEventListener('click', () => {
-    if (revTrack) revTrack.scrollBy({ left: -320, behavior: 'smooth' });
-  });
-  document.getElementById('review-next')?.addEventListener('click', () => {
-    if (revTrack) revTrack.scrollBy({ left: 320, behavior: 'smooth' });
-  });
+  if (revTrack && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const reviewCards = Array.from(revTrack.querySelectorAll<HTMLElement>('.review-card'));
+    const wrapper = revTrack.parentElement;
+    let paused = document.hidden;
+    const advanceReviews = () => {
+      if (paused || document.hidden || reviewCards.length < 2) return;
+      const maxScroll = revTrack.scrollWidth - revTrack.clientWidth;
+      const step = reviewCards[0].getBoundingClientRect().width +
+        (parseFloat(getComputedStyle(revTrack).columnGap) || 20);
+      if (revTrack.scrollLeft >= maxScroll - 2) {
+        revTrack.scrollTo({ left: 0, behavior: 'smooth' });
+      } else {
+        revTrack.scrollBy({ left: step, behavior: 'smooth' });
+      }
+    };
+    wrapper?.addEventListener('mouseenter', () => { paused = true; });
+    wrapper?.addEventListener('mouseleave', () => { paused = false; });
+    wrapper?.addEventListener('focusin', () => { paused = true; });
+    wrapper?.addEventListener('focusout', event => {
+      const relatedTarget = event.relatedTarget;
+      if (!(relatedTarget instanceof Node) || !wrapper.contains(relatedTarget)) paused = false;
+    });
+    reviewsInterval = setInterval(advanceReviews, 4500);
+  } else {
+    reviewsInterval = null;
+  }
 }
 
 // ═══════════════════════════════════════════════════════════════
 // SHOP PAGE LISTENERS
 // ═══════════════════════════════════════════════════════════════
-function attachShopListeners() {
-  // Add to cart buttons in shop grid
+function attachProductCardListeners() {
   document.querySelectorAll('[data-action="add-to-cart"]').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
       const id = parseInt((btn as HTMLElement).dataset.id || '0', 10);
       const product = PRODUCTS.find(p => p.id === id);
       if (product) {
-        cartStore.addItem(product, 1);
-        showToast(`"${product.title}" added to cart!`);
+        if (!addProductToCart(product, 1)) return;
         isCartOpen = true;
         render();
       }
     });
   });
+}
 
-  // Sidebar search
-  const sidebarInput = document.getElementById('sidebar-search-input') as HTMLInputElement;
+function attachShopListeners() {
+  attachProductCardListeners();
+  const sidebarInput = document.getElementById('sidebar-search-input');
   sidebarInput?.addEventListener('input', () => {
-    filters.searchQuery = sidebarInput.value;
-    updateProductGrid();
+    if (!(sidebarInput instanceof HTMLInputElement)) return;
+    pendingFilters.query = sidebarInput.value.trim();
+    const clearButton = document.querySelector<HTMLButtonElement>('[data-clear-search]');
+    if (clearButton) clearButton.hidden = pendingFilters.query.length === 0;
+    invalidPriceRange = false;
+    if (searchDebounce) clearTimeout(searchDebounce);
+    searchDebounce = setTimeout(applyPendingFilters, 300);
+    refreshFilterActions();
+  });
+  sidebarInput?.addEventListener('keydown', event => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      if (searchDebounce) clearTimeout(searchDebounce);
+      applyPendingFilters();
+    }
   });
   document.getElementById('btn-sidebar-search')?.addEventListener('click', () => {
-    filters.searchQuery = sidebarInput?.value ?? '';
-    updateProductGrid();
+    if (sidebarInput instanceof HTMLInputElement) pendingFilters.query = sidebarInput.value.trim();
+    if (searchDebounce) clearTimeout(searchDebounce);
+    applyPendingFilters();
+  });
+  document.querySelector('[data-clear-search]')?.addEventListener('click', () => {
+    pendingFilters.query = '';
+    const input = document.getElementById('sidebar-search-input');
+    if (input instanceof HTMLInputElement) input.value = '';
+    if (searchDebounce) clearTimeout(searchDebounce);
+    applyPendingFilters();
   });
 
-  // Category checkboxes
-  document.querySelectorAll('[data-filter-cat]').forEach(el => {
+  document.querySelectorAll<HTMLInputElement>('[data-filter-cat]').forEach(el => {
     el.addEventListener('change', () => {
-      const catId = (el as HTMLInputElement).value;
-      const checked = (el as HTMLInputElement).checked;
-      if (checked) {
-        if (!filters.selectedCategories.includes(catId)) filters.selectedCategories.push(catId);
-      } else {
-        filters.selectedCategories = filters.selectedCategories.filter(c => c !== catId);
-      }
-      selectedNavCategory = '';
-      updateProductGrid();
+      const category = SHOP_CATEGORIES.find(item => item.id === el.value)?.id;
+      if (!category) return;
+      pendingFilters.categories = el.checked
+        ? [...new Set([...pendingFilters.categories, category])]
+        : pendingFilters.categories.filter(item => item !== category);
+      refreshFilterActions();
     });
   });
+  document.querySelector('[data-clear-categories]')?.addEventListener('click', () => {
+    pendingFilters.categories = [];
+    document.querySelectorAll<HTMLInputElement>('[data-filter-cat]').forEach(input => { input.checked = false; });
+    refreshFilterActions();
+  });
 
-  // Pack size checkboxes
-  document.querySelectorAll('[data-filter-size]').forEach(el => {
+  document.querySelectorAll<HTMLInputElement>('[data-filter-size]').forEach(el => {
     el.addEventListener('change', () => {
-      const size = (el as HTMLInputElement).value;
-      const checked = (el as HTMLInputElement).checked;
-      if (checked) {
-        if (!filters.selectedPackSizes.includes(size)) filters.selectedPackSizes.push(size);
-      } else {
-        filters.selectedPackSizes = filters.selectedPackSizes.filter(s => s !== size);
-      }
-      updateProductGrid();
+      pendingFilters.weights = el.checked
+        ? [...new Set([...pendingFilters.weights, el.value])]
+        : pendingFilters.weights.filter(weight => weight !== el.value);
+      refreshFilterActions();
     });
   });
-
-  // Price range slider
-  const slider = document.getElementById('price-range-slider') as HTMLInputElement;
-  const pMax = document.getElementById('price-max-input') as HTMLInputElement;
-  const pMin = document.getElementById('price-min-input') as HTMLInputElement;
-  slider?.addEventListener('input', () => {
-    filters.priceMax = parseInt(slider.value, 10);
-    if (pMax) pMax.value = slider.value;
-    updateProductGrid();
-  });
-  pMin?.addEventListener('input', () => {
-    filters.priceMin = parseInt(pMin.value, 10) || 0;
-    updateProductGrid();
-  });
-  pMax?.addEventListener('input', () => {
-    filters.priceMax = parseInt(pMax.value, 10) || 5000;
-    if (slider) slider.value = String(filters.priceMax);
-    updateProductGrid();
-  });
-
-  // Rating filter
-  document.querySelectorAll('[data-filter-rating]').forEach(el => {
-    el.addEventListener('change', () => {
-      filters.minRating = parseInt((el as HTMLInputElement).value, 10);
-      updateProductGrid();
-    });
-  });
-
-  // Stock filter
-  document.querySelectorAll('[data-filter-stock]').forEach(el => {
-    el.addEventListener('change', () => {
-      filters.inStockOnly = (el as HTMLInputElement).value === 'in-stock';
-      updateProductGrid();
-    });
-  });
-
-  // Apply / Reset
-  document.getElementById('btn-apply-filter')?.addEventListener('click', () => {
-    mobileFilterOpen = false;
-    updateProductGrid();
-  });
-  document.getElementById('btn-reset-filter')?.addEventListener('click', () => {
-    filters = {
-      searchQuery: '',
-      selectedCategories: [],
-      priceMin: 0,
-      priceMax: 5000,
-      selectedPackSizes: [],
-      minRating: 0,
-      inStockOnly: false
-    };
-    selectedNavCategory = '';
-    topSearchQuery = '';
-    mobileFilterOpen = false;
+  document.querySelector('[data-show-more-weights]')?.addEventListener('click', () => {
+    mobileWeightsExpanded = !mobileWeightsExpanded;
+    if (mobileWeightsExpanded && !expandedSections.includes('all-weights')) expandedSections.push('all-weights');
+    if (!mobileWeightsExpanded) expandedSections = expandedSections.filter(section => section !== 'all-weights');
     render();
   });
 
-  // Collapsible accordion
-  document.querySelectorAll('[data-toggle]').forEach(el => {
-    el.addEventListener('click', () => {
-      const section = (el as HTMLElement).dataset.toggle || '';
-      if (expandedSections.includes(section)) {
-        expandedSections = expandedSections.filter(s => s !== section);
+  const minInput = document.getElementById('price-min-input');
+  const maxInput = document.getElementById('price-max-input');
+  const minSlider = document.getElementById('price-min-slider');
+  const maxSlider = document.getElementById('price-max-slider');
+  const updatePriceRange = () => {
+    const minField = document.getElementById('price-min-input');
+    const maxField = document.getElementById('price-max-input');
+    const minParsed = minField instanceof HTMLInputElement ? parsePriceInput(minField.value) : pendingFilters.minPrice;
+    const maxParsed = maxField instanceof HTMLInputElement ? parsePriceInput(maxField.value) : pendingFilters.maxPrice;
+    const malformedMin = minField instanceof HTMLInputElement && minField.value.trim() !== '' && minParsed === null;
+    const malformedMax = maxField instanceof HTMLInputElement && maxField.value.trim() !== '' && maxParsed === null;
+    invalidPriceRange = malformedMin || malformedMax || (minParsed !== null && maxParsed !== null && minParsed > maxParsed);
+    const error = document.getElementById('filter-price-error');
+    if (error) error.hidden = !invalidPriceRange;
+    refreshFilterActions();
+  };
+  for (const input of [minInput, maxInput]) {
+    input?.addEventListener('input', () => {
+      if (!(input instanceof HTMLInputElement)) return;
+      const value = parsePriceInput(input.value);
+      if (input.id === 'price-min-input') pendingFilters.minPrice = value;
+      else pendingFilters.maxPrice = value;
+      invalidPriceRange = input.value.trim() !== '' && value === null;
+      updatePriceRange();
+    });
+  }
+  for (const slider of [minSlider, maxSlider]) {
+    slider?.addEventListener('input', () => {
+      if (!(slider instanceof HTMLInputElement)) return;
+      const rangeMin = Number(slider.min);
+      const rangeMax = Number(slider.max);
+      const value = Number(slider.value);
+      if (slider.id === 'price-min-slider') {
+        const maxValue = document.getElementById('price-max-slider');
+        if (maxValue instanceof HTMLInputElement && value > Number(maxValue.value)) maxValue.value = String(value);
       } else {
-        expandedSections.push(section);
+        const minValue = document.getElementById('price-min-slider');
+        if (minValue instanceof HTMLInputElement && value < Number(minValue.value)) minValue.value = String(value);
       }
-      const col = document.getElementById('sidebar-column');
-      if (col) {
-        col.innerHTML = renderFilterSidebar({ filters, expandedSections });
-        attachShopListeners();
-      }
+      const minRange = document.getElementById('price-min-slider');
+      const maxRange = document.getElementById('price-max-slider');
+      const selectedMin = minRange instanceof HTMLInputElement ? Number(minRange.value) : rangeMin;
+      const selectedMax = maxRange instanceof HTMLInputElement ? Number(maxRange.value) : rangeMax;
+      pendingFilters.minPrice = selectedMin > rangeMin ? selectedMin : null;
+      pendingFilters.maxPrice = selectedMax < rangeMax ? selectedMax : null;
+      const minNumber = document.getElementById('price-min-input');
+      const maxNumber = document.getElementById('price-max-input');
+      if (minNumber instanceof HTMLInputElement) minNumber.value = pendingFilters.minPrice === null ? '' : String(pendingFilters.minPrice);
+      if (maxNumber instanceof HTMLInputElement) maxNumber.value = pendingFilters.maxPrice === null ? '' : String(pendingFilters.maxPrice);
+      updatePriceRange();
+    });
+  }
+
+  document.querySelectorAll<HTMLInputElement>('[data-filter-stock]').forEach(el => {
+    el.addEventListener('change', () => {
+      const status = STOCK_STATUSES.find(item => item.id === el.value)?.id;
+      if (!status) return;
+      pendingFilters.stock = el.checked
+        ? [...new Set([...pendingFilters.stock, status])]
+        : pendingFilters.stock.filter(item => item !== status);
+      refreshFilterActions();
     });
   });
 
-  // Mobile filter drawer
-  document.getElementById('btn-mobile-filter-open')?.addEventListener('click', () => {
-    mobileFilterOpen = true;
-    document.getElementById('sidebar-column')?.classList.add('mobile-open');
-    document.getElementById('sidebar-overlay')?.classList.add('visible');
+  document.getElementById('btn-apply-filter')?.addEventListener('click', applyPendingFilters);
+  document.getElementById('btn-reset-filter')?.addEventListener('click', resetShopFilters);
+  document.querySelectorAll<HTMLElement>('[data-clear-filter]').forEach(button => {
+    button.addEventListener('click', () => clearAppliedFilter(button.dataset.clearFilter ?? ''));
   });
+  document.querySelectorAll<HTMLElement>('[data-clear-all-filters]').forEach(button => {
+    button.addEventListener('click', resetShopFilters);
+  });
+
+  document.querySelectorAll<HTMLButtonElement>('.filter-sidebar [data-toggle]').forEach(button => {
+    button.addEventListener('click', () => {
+      const section = button.dataset.toggle ?? '';
+      const panelId = button.getAttribute('aria-controls');
+      const panel = panelId ? document.getElementById(panelId) : null;
+      const expanded = button.getAttribute('aria-expanded') === 'true';
+      button.setAttribute('aria-expanded', String(!expanded));
+      if (panel) panel.hidden = expanded;
+      button.querySelector('.filter-toggle-btn')?.classList.toggle('minus', !expanded);
+      button.querySelector('.filter-toggle-btn')?.classList.toggle('plus', expanded);
+      const icon = button.querySelector<HTMLElement>('.filter-toggle-btn');
+      if (icon) icon.textContent = expanded ? '+' : '−';
+      expandedSections = expanded
+        ? expandedSections.filter(item => item !== section)
+        : [...new Set([...expandedSections, section])];
+    });
+  });
+
+  document.getElementById('btn-mobile-filter-open')?.addEventListener('click', () => {
+    openMobileFilters();
+  });
+  document.getElementById('btn-mobile-filter-close')?.addEventListener('click', () => closeMobileFilters());
   document.getElementById('sidebar-overlay')?.addEventListener('click', () => {
-    mobileFilterOpen = false;
-    document.getElementById('sidebar-column')?.classList.remove('mobile-open');
-    document.getElementById('sidebar-overlay')?.classList.remove('visible');
+    closeMobileFilters();
   });
 }
 
-function updateProductGrid() {
-  const grid = document.getElementById('products-grid');
-  const countEl = document.querySelector('.results-count');
-  const filtered = getFilteredProducts();
-  if (grid) {
-    grid.innerHTML = renderProductGrid(filtered);
-    attachShopListeners();
+function parsePriceInput(value: string): number | null {
+  if (!value.trim()) return null;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) && parsed >= 0 ? parsed : null;
+}
+
+function refreshFilterActions(): void {
+  const applyButton = document.getElementById('btn-apply-filter');
+  const resetButton = document.getElementById('btn-reset-filter');
+  if (applyButton instanceof HTMLButtonElement) {
+    applyButton.disabled = invalidPriceRange || filtersEqual(filters, pendingFilters);
   }
-  if (countEl) {
-    countEl.textContent = `${filtered.length} product${filtered.length !== 1 ? 's' : ''} found`;
+  if (resetButton instanceof HTMLButtonElement) {
+    resetButton.disabled = !filtersActive(filters) && !filtersActive(pendingFilters);
   }
+}
+
+function applyPendingFilters(): void {
+  if (invalidPriceRange) return;
+  const changed = !filtersEqual(filters, pendingFilters);
+  filters = cloneFilters(pendingFilters);
+  topSearchQuery = filters.query;
+  selectedNavCategory = '';
+  if (changed) updateFilterUrl();
+  closeMobileFilters(false);
+  render();
+}
+
+function resetShopFilters(): void {
+  filters = createEmptyFilters();
+  pendingFilters = cloneFilters(filters);
+  invalidPriceRange = false;
+  topSearchQuery = '';
+  selectedNavCategory = '';
+  if (searchDebounce) clearTimeout(searchDebounce);
+  updateFilterUrl();
+  closeMobileFilters(false);
+  render();
+}
+
+function clearAppliedFilter(key: string): void {
+  const updated = cloneFilters(filters);
+  if (key === 'query') updated.query = '';
+  else if (key === 'price') {
+    updated.minPrice = null;
+    updated.maxPrice = null;
+  } else if (key.startsWith('category:')) {
+    updated.categories = updated.categories.filter(category => category !== key.slice('category:'.length));
+  } else if (key.startsWith('weight:')) {
+    updated.weights = updated.weights.filter(weight => weight !== key.slice('weight:'.length));
+  } else if (key.startsWith('stock:')) {
+    updated.stock = updated.stock.filter(status => status !== key.slice('stock:'.length));
+  } else return;
+  filters = updated;
+  pendingFilters = cloneFilters(updated);
+  topSearchQuery = updated.query;
+  invalidPriceRange = false;
+  updateFilterUrl();
+  render();
+}
+
+function updateFilterUrl(): void {
+  const search = serializeFilterUrl(window.location.search, filters, true);
+  const destination = `${window.location.pathname}${search}${window.location.hash}`;
+  if (`${window.location.pathname}${window.location.search}${window.location.hash}` !== destination) {
+    window.history.pushState({}, '', destination);
+  }
+}
+
+function submitTopSearch(query: string): void {
+  const search = query.trim();
+  navigateModern(search ? `/catalogue?q=${encodeURIComponent(search)}` : '/catalogue');
+}
+
+function openMobileFilters(): void {
+  mobileFilterOpen = true;
+  document.body.classList.add('filters-open');
+  document.getElementById('sidebar-column')?.classList.add('mobile-open');
+  document.getElementById('sidebar-overlay')?.classList.add('visible');
+  document.getElementById('btn-mobile-filter-open')?.setAttribute('aria-expanded', 'true');
+  document.getElementById('btn-mobile-filter-close')?.focus();
+}
+
+function closeMobileFilters(restoreFocus = true): void {
+  mobileFilterOpen = false;
+  document.body.classList.remove('filters-open');
+  document.getElementById('sidebar-column')?.classList.remove('mobile-open');
+  document.getElementById('sidebar-overlay')?.classList.remove('visible');
+  document.getElementById('btn-mobile-filter-open')?.setAttribute('aria-expanded', 'false');
+  if (restoreFocus) document.getElementById('btn-mobile-filter-open')?.focus();
+}
+
+function convertFilterCurrency(filtersToConvert: ProductFilters, from: Currency, to: Currency): ProductFilters {
+  const converted = cloneFilters(filtersToConvert);
+  if (converted.minPrice !== null) converted.minPrice = convertPriceCurrency(converted.minPrice, from, to);
+  if (converted.maxPrice !== null) converted.maxPrice = convertPriceCurrency(converted.maxPrice, from, to);
+  return converted;
+}
+
+function getCurrencyFromValue(value: string): Currency | null {
+  const currencies: readonly Currency[] = ['AED', 'USD', 'EUR', 'GBP', 'INR', 'SAR'];
+  return currencies.find(currency => currency === value) ?? null;
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -1576,7 +2309,9 @@ function attachCartAndModalListeners() {
   });
 
   document.getElementById('btn-cart-proceed-checkout')?.addEventListener('click', () => {
-    if (cartStore.getItems().length > 0) navigateTo('checkout');
+    const items = cartStore.getItems();
+    if (items.length === 0) return;
+    navigateTo('checkout');
   });
 
   document.getElementById('btn-cart-change-address')?.addEventListener('click', () => {
@@ -1611,117 +2346,15 @@ function attachCartAndModalListeners() {
     });
   });
 
-  document.querySelectorAll<HTMLButtonElement>('[data-checkout-inc], [data-checkout-dec]').forEach(button => {
-    button.addEventListener('click', () => {
-      const increment = button.dataset.checkoutInc;
-      const decrement = button.dataset.checkoutDec;
-      const productId = Number(increment ?? decrement);
-      const item = cartStore.getItems().find(cartItem => cartItem.product.id === productId);
-      if (!item) return;
-      if (decrement && item.quantity === 1) {
-        cartStore.removeItem(productId);
-        render();
-        return;
-      }
-      cartStore.updateQuantity(productId, item.quantity + (increment ? 1 : -1));
-      const row = document.querySelector<HTMLElement>(`[data-checkout-item="${productId}"]`);
-      if (!row) return;
-      const quantityOutput = row.querySelector('output');
-      const imageQuantity = row.querySelector('.checkout-order-image span');
-      const lineTotal = row.querySelector<HTMLElement>('[data-checkout-line-total]');
-      if (quantityOutput) quantityOutput.textContent = String(item.quantity);
-      if (imageQuantity) imageQuantity.textContent = String(item.quantity);
-      if (lineTotal) lineTotal.textContent = `${item.product.price * item.quantity}৳`;
-      const subtotal = cartStore.getSubtotal();
-      const discount = cartStore.getCouponDiscountTotal();
-      const fee = cartStore.getDeliveryFee();
-      const total = cartStore.getTotal();
-      const subtotalElement = document.getElementById('checkout-order-subtotal');
-      const discountElement = document.getElementById('checkout-coupon-discount');
-      const feeElement = document.getElementById('checkout-shipping-total');
-      const totalElement = document.getElementById('checkout-grand-total');
-      const submitButton = document.querySelector<HTMLButtonElement>('.checkout-submit-button');
-      if (subtotalElement) subtotalElement.textContent = `${subtotal}৳`;
-      if (discountElement) discountElement.textContent = `−${discount}৳`;
-      if (feeElement) feeElement.textContent = `${fee}৳`;
-      if (totalElement) totalElement.textContent = `${total}৳`;
-      if (submitButton) submitButton.textContent = `PLACE ORDER · ${total}৳`;
-    });
-  });
-
-  const checkoutPageForm = document.getElementById('checkout-page-form');
-  checkoutPageForm?.addEventListener('input', event => {
-    const field = event.target;
-    if (!(field instanceof HTMLInputElement || field instanceof HTMLTextAreaElement)) return;
-    if (field.name in checkoutFormDraft) {
-      checkoutFormDraft[field.name as keyof CheckoutFormDraft] = field.value;
-    }
-  });
-
-  checkoutPageForm?.addEventListener('submit', event => {
-    event.preventDefault();
-    if (isSubmittingOrder) return;
-    const form = event.currentTarget as HTMLFormElement;
-    if (!form.reportValidity() || cartStore.getItems().length === 0) return;
-
-    isSubmittingOrder = true;
-    const submitButton = form.querySelector<HTMLButtonElement>('.checkout-submit-button');
-    if (submitButton) {
-      submitButton.disabled = true;
-      submitButton.textContent = 'PLACING ORDER…';
-    }
-    const formData = new FormData(form);
-    const details = [
-      ['Name', String(formData.get('name') || '')],
-      ['Email', String(formData.get('email') || '')],
-      ['Phone', String(formData.get('phone') || '')],
-      ['Address', String(formData.get('address') || '')],
-      ['Payment', 'Verified Wire / Depository Handover'],
-    ];
-    const orderId = `ORD-${Math.floor(100000 + Math.random() * 900000)}`;
-    const layout = form.closest('.checkout-page-layout');
-    if (!layout) {
-      isSubmittingOrder = false;
-      return;
-    }
-
-    const success = document.createElement('section');
-    success.className = 'checkout-success-panel';
-    const heading = document.createElement('h2');
-    heading.textContent = 'Allocation Order Confirmed!';
-    const confirmation = document.createElement('p');
-    confirmation.textContent = `Reference ID: #${orderId}`;
-    const disclosure = document.createElement('p');
-    disclosure.className = 'checkout-client-order-note';
-    disclosure.textContent = 'Your bullion allocation request has been registered for this session. A Montague Cole depository officer will confirm settlement coordinates.';
-    const detailList = document.createElement('div');
-    detailList.className = 'checkout-success-details';
-    for (const [label, value] of details) {
-      const row = document.createElement('p');
-      const strong = document.createElement('strong');
-      strong.textContent = `${label}: `;
-      row.append(strong, document.createTextNode(value));
-      detailList.append(row);
-    }
-    const continueButton = document.createElement('button');
-    continueButton.className = 'product-detail-add-button';
-    continueButton.textContent = 'Return to Catalogue';
-    continueButton.addEventListener('click', () => {
-      navigateTo('home');
-    });
-    success.append(heading, confirmation, disclosure, detailList, continueButton);
-    layout.replaceChildren(success);
-    couponFeedback = '';
-    couponInputDraft = '';
-    couponFeedbackType = 'success';
-    checkoutFormDraft = { name: '', email: '', phone: '', address: '', notes: '' };
-    cartStore.clear();
-    isSubmittingOrder = false;
-  });
-
   // Checkout order submission
   document.getElementById('order-form')?.addEventListener('submit', (e) => {
     e.preventDefault();
+    const items = cartStore.getItems();
+    if (!items.length || !items.every(({ product }) =>
+      product.priceSource === 'verified' && product.stockStatus === 'in_stock')) {
+      showToast('Purchasing is paused until prices and availability are confirmed.');
+      return;
+    }
     const name = (document.getElementById('order-name') as HTMLInputElement).value;
     const phone = (document.getElementById('order-phone') as HTMLInputElement).value;
     const address = (document.getElementById('order-address') as HTMLInputElement).value;
@@ -1779,5 +2412,7 @@ cartStore.subscribe(() => {
 // ═══════════════════════════════════════════════════════════════
 // BOOTSTRAP
 // ═══════════════════════════════════════════════════════════════
+restoreCheckoutDraft();
+restoreCheckoutOrder();
 window.addEventListener('popstate', renderFromLocation);
 renderFromLocation();

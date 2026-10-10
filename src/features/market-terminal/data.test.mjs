@@ -72,6 +72,16 @@ test('diamond mock data is daily-reference-only and does not subscribe to ticks'
   assert.doesNotThrow(() => provider.subscribe('DIAMOND-IDX', () => undefined)());
 });
 
+test('diamond index history stays low-volatility and daily', async () => {
+  const provider = new MockMarketDataProvider();
+  const to = 1_800_000_000;
+  const candles = await provider.getCandles('DIAMOND-IDX', '1D', to - 365 * 24 * 60 * 60, to);
+  assert.ok(candles.length >= 360 && candles.length <= 366);
+  const prices = candles.flatMap(candle => [candle.high, candle.low]);
+  const relativeSpread = (Math.max(...prices) - Math.min(...prices)) / Math.min(...prices);
+  assert.ok(relativeSpread < 0.03);
+});
+
 test('URL state validates supported values and defaults invalid query parameters', () => {
   const invalid = parseUrlView('?metal=plutonium&cur=CAD&tf=90m&range=2D&type=pie');
   assert.deepEqual(invalid, DEFAULT_TERMINAL_VIEW);

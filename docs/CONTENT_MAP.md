@@ -1,7 +1,7 @@
-# CONTENT MAP — Montague Cole Bullion Migration
+# CONTENT MAP ï¿½ Montague Cole Bullion Migration
 **Audit date:** 2026-10-06
 **Auditor:** Senior Front-End Engineer (content-only migration)
-**Status:** STEP 1 COMPLETE — read-only audit, no edits beyond previous session commits
+**Status:** STEP 1 COMPLETE ï¿½ read-only audit, no edits beyond previous session commits
 
 ---
 
@@ -11,38 +11,38 @@
 joyto da website/
 +-- index.html                    <- SEO title, meta, OG tags
 +-- public/
-¦   +-- logo.png                  <- Brand logo
-¦   +-- favicon.svg               <- Favicon
-¦   +-- icons.svg                 <- Sprite icons
-¦   +-- uploads/
-¦       +-- products/             <- Product images (see §6)
-¦       +-- assets/               <- Banner, blog, category, avatar images
+ï¿½   +-- logo.png                  <- Brand logo
+ï¿½   +-- favicon.svg               <- Favicon
+ï¿½   +-- icons.svg                 <- Sprite icons
+ï¿½   +-- uploads/
+ï¿½       +-- products/             <- Product images (see ï¿½6)
+ï¿½       +-- assets/               <- Banner, blog, category, avatar images
 +-- src/
-¦   +-- style.css                 <- LOCKED — design only, zero content edits
-¦   +-- main.ts                   <- Routing, UI strings, localStorage keys
-¦   +-- data/
-¦   ¦   +-- products.ts           <- Master product catalog (TypeScript, ACTIVE)
-¦   ¦   +-- products.json         <- LEGACY JSON — still contains all 16 old food items
-¦   ¦   +-- categories.ts         <- Navigation + filter sidebar categories
-¦   ¦   +-- blogs.ts              <- Market insight blog posts
-¦   ¦   +-- reviews.ts            <- Client testimonials
-¦   +-- components/
-¦   ¦   +-- Header.ts             <- Logo alt, search placeholder, nav labels
-¦   ¦   +-- Footer.ts             <- Brand copy, link columns, currency selector
-¦   ¦   +-- HomePage.ts           <- Hero slides, category cards, products grid, blogs, reviews
-¦   ¦   +-- FilterSidebar.ts      <- Filter labels (Weight/Denomination, Price AED)
-¦   ¦   +-- ProductCard.ts        <- Currency display
-¦   ¦   +-- ProductDetailsPage.ts <- Product spec labels, AED display
-¦   ¦   +-- CartPage.ts           <- Cart labels, delivery zone labels
-¦   ¦   +-- CheckoutPage.ts       <- Checkout labels, delivery zones
-¦   ¦   +-- OffersPage.ts         <- Page title, product selection
-¦   ¦   +-- NewArrivalsPage.ts    <- Page title, product selection
-¦   ¦   +-- LoginPage.ts          <- MC Reserve portal copy
-¦   ¦   +-- WishlistPage.ts       <- Saved allocations labels (not fully audited)
-¦   ¦   +-- PageBanner.ts         <- Generic banner component
-¦   +-- store/
-¦       +-- cart.ts               <- localStorage key 'falaqfood_cart_v1' (OLD BRAND)
-¦                                    DeliveryZone type: 'inside_dhaka' | 'outside_dhaka'
+ï¿½   +-- style.css                 <- LOCKED ï¿½ design only, zero content edits
+ï¿½   +-- main.ts                   <- Routing, UI strings, localStorage keys
+ï¿½   +-- data/
+ï¿½   ï¿½   +-- products.ts           <- Master product catalog (TypeScript, ACTIVE)
+ï¿½   ï¿½   +-- products.json         <- LEGACY JSON ï¿½ still contains all 16 old food items
+ï¿½   ï¿½   +-- categories.ts         <- Navigation + filter sidebar categories
+ï¿½   ï¿½   +-- blogs.ts              <- Market insight blog posts
+ï¿½   ï¿½   +-- reviews.ts            <- Client testimonials
+ï¿½   +-- components/
+ï¿½   ï¿½   +-- Header.ts             <- Logo alt, search placeholder, nav labels
+ï¿½   ï¿½   +-- Footer.ts             <- Brand copy, link columns, currency selector
+ï¿½   ï¿½   +-- HomePage.ts           <- Hero slides, category cards, products grid, blogs, reviews
+ï¿½   ï¿½   +-- FilterSidebar.ts      <- Filter labels (Weight/Denomination, Price AED)
+ï¿½   ï¿½   +-- ProductCard.ts        <- Currency display
+ï¿½   ï¿½   +-- ProductDetailsPage.ts <- Product spec labels, AED display
+ï¿½   ï¿½   +-- CartPage.ts           <- Cart labels, delivery zone labels
+ï¿½   ï¿½   +-- CheckoutPage.ts       <- Checkout labels, delivery zones
+ï¿½   ï¿½   +-- OffersPage.ts         <- Page title, product selection
+ï¿½   ï¿½   +-- NewArrivalsPage.ts    <- Page title, product selection
+ï¿½   ï¿½   +-- LoginPage.ts          <- MC Reserve portal copy
+ï¿½   ï¿½   +-- WishlistPage.ts       <- Saved allocations labels (not fully audited)
+ï¿½   ï¿½   +-- PageBanner.ts         <- Generic banner component
+ï¿½   +-- store/
+ï¿½       +-- cart.ts               <- localStorage key 'falaqfood_cart_v1' (OLD BRAND)
+ï¿½                                    DeliveryZone type: 'inside_dhaka' | 'outside_dhaka'
 +-- docs/
     +-- CONTENT_MAP.md            <- This file
     +-- CONTENT_ISSUES.md         <- Issues log
@@ -51,7 +51,7 @@ joyto da website/
 
 ---
 
-## 2. SEO / HTML Head — index.html
+## 2. SEO / HTML Head ï¿½ index.html
 
 | Element | Current Value | Status |
 |---|---|---|
@@ -61,8 +61,8 @@ joyto da website/
 | og:title | Montague Cole Bullion or A Higher Standard | DONE |
 | og:description | Dubai bullion. Global delivery... | DONE |
 | og:image | Not set | PENDING CLIENT: OG image asset |
-| favicon | /logo.png | DONE — using brand logo |
-| Google Fonts | Poppins, Hind Siliguri, Noto Sans | LOCKED — design |
+| favicon | /logo.png | DONE ï¿½ using brand logo |
+| Google Fonts | Poppins, Hind Siliguri, Noto Sans | LOCKED ï¿½ design |
 
 ---
 
@@ -85,7 +85,7 @@ NOTE: These 7 IDs route to the shop filtered by category ID. No dedicated /price
 
 ---
 
-## 4. Top Navigation Bar — src/components/Header.ts
+## 4. Top Navigation Bar ï¿½ src/components/Header.ts
 
 | Element | Current Value | Status |
 |---|---|---|
@@ -97,9 +97,9 @@ NOTE: These 7 IDs route to the shop filtered by category ID. No dedicated /price
 
 ---
 
-## 5. Product Data — src/data/products.ts
+## 5. Product Data ï¿½ src/data/products.ts
 
-22 products total. All old food items removed. Current catalog:
+21 products total. All old food items removed. Current catalog:
 
 ### Featured / Recent Products (IDs 1-8, shown on homepage grid)
 
@@ -133,7 +133,7 @@ MISSING FROM SPEC: Client brief requests a 50 g Gold Bar. Currently 50 g only ex
 | 14 | gold-1oz-dubai-coin | 1 oz Gold Dubai Coin | Gold | 1 oz | AED 2,410 |
 | 18 | silver-1oz-dubai-coin | 1 oz Silver Dubai Coin | Silver | 1 oz | AED 36 |
 
-PENDING: Internationally recognised gold coin slot and silver coin slot — [PENDING CLIENT: brand selection]
+PENDING: Internationally recognised gold coin slot and silver coin slot ï¿½ [PENDING CLIENT: brand selection]
 
 ### Silver Bars (IDs 15-17, 6)
 
@@ -155,26 +155,17 @@ PENDING: Internationally recognised gold coin slot and silver coin slot — [PENDI
 
 MISSING FROM SPEC: Palm-inspired coins, gift range (presentation boxes, certificates, commemorative pieces). Logged in CONTENT_ISSUES.md.
 
-### Private Assets (IDs 21-22)
-
-| ID | Slug | Title | Price |
-|---|---|---|---|
-| 21 | private-assets-diamonds | Investment Diamonds & Gemstones | Price on Request |
-| 22 | private-assets-horology | High Horology & Rare Timepieces | Price on Request |
-
-Both marked Enquiry Only with price: 0.
-
 ### Pending Data on All Products
 
 Every product has these [PENDING CLIENT] placeholders in its features[] array:
 - Exact physical dimensions
 - Confirmed refiner/mint name (where not yet assigned)
 - Real fineness values (editable defaults: 999.9 gold, 999.0 silver)
-- Pricing uses indicative premiums only — no live pricing engine built
+- Pricing uses indicative premiums only ï¿½ no live pricing engine built
 
 ---
 
-## 6. Product Images — public/uploads/products/
+## 6. Product Images ï¿½ public/uploads/products/
 
 ### Client-Provided Bullion Images (copied from src/assets/product picture/)
 
@@ -195,7 +186,7 @@ These old food images are no longer referenced by any active product in products
 
 ---
 
-## 7. Category Data — src/data/categories.ts
+## 7. Category Data ï¿½ src/data/categories.ts
 
 CATEGORIES[] is used by FilterSidebar and the homepage carousel.
 
@@ -213,14 +204,14 @@ CATEGORIES[] is used by FilterSidebar and the homepage carousel.
 | coins | Coins | Bengali text (legacy) | Old asset image |
 
 Issues:
-- nameBn field contains Bengali legacy text — not visible in current UI but should be cleared or updated
+- nameBn field contains Bengali legacy text ï¿½ not visible in current UI but should be cleared or updated
 - Image slots reference old food category images (cat-honey.png, cat-dal.png, etc.)
 - dubai-collection and private-assets categories exist in products.ts but NOT in CATEGORIES[], so they do not appear in the filter sidebar
 All logged in CONTENT_ISSUES.md.
 
 ---
 
-## 8. Blog Data — src/data/blogs.ts
+## 8. Blog Data ï¿½ src/data/blogs.ts
 
 3 posts, all updated:
 
@@ -234,14 +225,14 @@ Blog image slots (blog-1.webp, blog-2.avif, blog-3.jpg) still reference placehol
 
 ---
 
-## 9. Reviews — src/data/reviews.ts
+## 9. Reviews ï¿½ src/data/reviews.ts
 
 5 testimonials, all updated to bullion/depository client voice. No financial return promises.
 Names and roles are fictional placeholders. [PENDING CLIENT: real testimonials or approval to use fictional ones]
 
 ---
 
-## 10. Homepage — src/components/HomePage.ts
+## 10. Homepage ï¿½ src/components/HomePage.ts
 
 | Section | Current State | Status |
 |---|---|---|
@@ -256,7 +247,7 @@ Names and roles are fictional placeholders. [PENDING CLIENT: real testimonials o
 
 ---
 
-## 11. Footer — src/components/Footer.ts
+## 11. Footer ï¿½ src/components/Footer.ts
 
 | Element | Current Value | Status |
 |---|---|---|
@@ -288,7 +279,7 @@ Names and roles are fictional placeholders. [PENDING CLIENT: real testimonials o
 
 ---
 
-## 13. Cart Drawer and Modals — src/main.ts
+## 13. Cart Drawer and Modals ï¿½ src/main.ts
 
 | Element | Current Value | Status |
 |---|---|---|
@@ -308,10 +299,10 @@ Names and roles are fictional placeholders. [PENDING CLIENT: real testimonials o
 | Page | File | Status |
 |---|---|---|
 | Login / MC Reserve Portal | LoginPage.ts | DONE |
-| Offers | OffersPage.ts | DONE — Special Allocations & Sovereign Coins |
-| New Arrivals | NewArrivalsPage.ts | DONE — New Releases & Minted Bullion |
-| Wishlist | WishlistPage.ts | Not fully audited — check for food-niche labels |
-| Product Details | ProductDetailsPage.ts | DONE — spec labels updated to bullion terminology |
+| Offers | OffersPage.ts | DONE ï¿½ Special Allocations & Sovereign Coins |
+| New Arrivals | NewArrivalsPage.ts | DONE ï¿½ New Releases & Minted Bullion |
+| Wishlist | WishlistPage.ts | Not fully audited ï¿½ check for food-niche labels |
+| Product Details | ProductDetailsPage.ts | DONE ï¿½ spec labels updated to bullion terminology |
 
 ---
 
@@ -319,15 +310,15 @@ Names and roles are fictional placeholders. [PENDING CLIENT: real testimonials o
 
 | Key | Current Value | Issue |
 |---|---|---|
-| Cart persistence | falaqfood_cart_v1 | OLD BRAND NAME — in cart.ts and main.ts |
-| Wishlist persistence | falaqfood_wishlist_v1 | OLD BRAND NAME — in main.ts (9 occurrences) |
+| Cart persistence | falaqfood_cart_v1 | OLD BRAND NAME ï¿½ in cart.ts and main.ts |
+| Wishlist persistence | falaqfood_wishlist_v1 | OLD BRAND NAME ï¿½ in main.ts (9 occurrences) |
 | Delivery zone type | inside_dhaka or outside_dhaka | Internal only, not user-visible |
 
 Decision required: Renaming localStorage keys clears existing carts/wishlists on first load. Acceptable for pre-launch. Requires your approval before editing. See CONTENT_ISSUES.md.
 
 ---
 
-## 16. Legacy Data File — src/data/products.json
+## 16. Legacy Data File ï¿½ src/data/products.json
 
 STILL CONTAINS ALL 16 ORIGINAL FOOD PRODUCTS with Bengali text, food categories, and BDT prices.
 This file is NOT imported anywhere in the current build (products.ts is the active source).
@@ -347,9 +338,9 @@ None of these appear in the live render.
 
 ## 18. Files With Zero Content (Not Edited)
 
-- src/style.css — design CSS only, LOCKED
+- src/style.css ï¿½ design CSS only, LOCKED
 - tsconfig.json, package.json, package-lock.json
-- src/counter.ts — utility only
+- src/counter.ts ï¿½ utility only
 - All component event handler and routing logic
 - src/store/cart.ts logic (storage key name is the only content item, flagged above)
 
@@ -359,7 +350,7 @@ None of these appear in the live render.
 
 | # | Item | Location |
 |---|---|---|
-| 1 | Real sell prices | All 22 products in products.ts |
+| 1 | Real sell prices | All 21 products in products.ts |
 | 2 | Confirmed fineness values | All product features[] |
 | 3 | Physical bar/coin dimensions | All product features[] |
 | 4 | Confirmed refiner/mint names | All product features[] |
@@ -385,7 +376,7 @@ None of these appear in the live render.
 
 ## 20. Build Verification
 
-- npm run build (tsc + vite build): PASSES — 0 errors, 0 warnings
+- npm run build (tsc + vite build): PASSES ï¿½ 0 errors, 0 warnings
 - Build output: dist/index.html 1.44 kB, CSS 68.50 kB, JS 137.48 kB
 - Dev server: Running on http://localhost:5173/
 - No CSS, Tailwind class, component structure, or config file changed
