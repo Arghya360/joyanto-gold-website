@@ -123,42 +123,42 @@ export function renderHeader(props: HeaderProps): string {
           </ul>
         </div>
       </nav>
-
-      <!-- Mobile Navigation Drawer -->
-      <div class="mobile-nav-drawer" id="mobile-nav-drawer">
-        <div class="mobile-drawer-header">
-          <img src="/logo.png" alt="Montague Cole Bullion" style="height: 36px; object-fit: contain;" />
-          <button class="drawer-close-btn" id="btn-close-mobile-nav" aria-label="Close menu">&times;</button>
-        </div>
-        <ul class="mobile-menu-links">
-          <li><a href="#" class="mobile-link ${activeNav === 'Home' ? 'active' : ''}" data-nav="Home">Home</a></li>
-          <li><a href="/shop" class="mobile-link ${activeNav === 'Shop' ? 'active' : ''}" data-nav="Shop">Catalogue</a></li>
-          <li><a href="#" class="mobile-link ${activeNav === 'Offers' ? 'active' : ''}" data-nav="Offers">Allocations</a></li>
-          <li><a href="#" class="mobile-link ${activeNav === 'New Arrivals' ? 'active' : ''}" data-nav="New Arrivals">New Releases</a></li>
-          <li><a href="#" class="mobile-link ${activeNav === 'Login' ? 'active' : ''}" data-nav="Login">MC Reserve Sign-In</a></li>
-          ${SERVICE_NAV_ITEMS.map(({ label, path }) => `<li><a href="${path}" class="mobile-link" data-modern-path="${path}" ${currentPath === path || currentPath.startsWith(`${path}/`) ? 'aria-current="page"' : ''}>${label}</a></li>`).join('')}
-          <li><a href="#" class="mobile-link" data-route="cart">Vault Order &amp; Cart</a></li>
-          <li><a href="#" class="mobile-link" data-route="wishlist">Saved Allocations</a></li>
-        </ul>
-      </div>
-      <div class="mobile-drawer-backdrop" id="mobile-nav-backdrop"></div>
-      <nav class="mobile-bottom-nav" aria-label="Mobile navigation">
-        <button type="button" class="mobile-bottom-nav-item" data-bottom-menu aria-label="Open menu">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg><span>Menu</span>
-        </button>
-        <a href="/shop" class="mobile-bottom-nav-item ${activeNav === 'Shop' ? 'active' : ''}" data-route="shop">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8h14l1 13H4L5 8Z"/><path d="M9 9V6a3 3 0 0 1 6 0v3"/></svg><span>Shop</span>
-        </a>
-        <a href="/" class="mobile-bottom-nav-item mobile-bottom-home ${activeNav === 'Home' ? 'active' : ''}" data-route="home">
-          <span class="mobile-bottom-home-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 11 9-8 9 8v10h-6v-6H9v6H3V11Z"/></svg></span><span>Home</span>
-        </a>
-        <a href="/cart" class="mobile-bottom-nav-item ${activeNav === 'Cart' ? 'active' : ''}" data-route="cart">
-          <span class="mobile-bottom-cart-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8h14l1 13H4L5 8Z"/><path d="M9 9V6a3 3 0 0 1 6 0v3"/></svg>${cartCount ? `<b>${cartCount}</b>` : ''}</span><span>Cart</span>
-        </a>
-        <a href="/login" class="mobile-bottom-nav-item ${activeNav === 'Login' ? 'active' : ''}" data-route="login">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><span>Account</span>
-        </a>
-      </nav>
     </header>
+
+    <!-- Keep fixed mobile controls outside the transformed sticky header. -->
+    <div class="mobile-nav-drawer" id="mobile-nav-drawer">
+      <div class="mobile-drawer-header">
+        <img src="/logo.png" alt="Montague Cole Bullion" style="height: 36px; object-fit: contain;" />
+        <button class="drawer-close-btn" id="btn-close-mobile-nav" aria-label="Close menu">&times;</button>
+      </div>
+      <ul class="mobile-menu-links">
+        <li><a href="#" class="mobile-link ${activeNav === 'Home' ? 'active' : ''}" data-nav="Home">Home</a></li>
+        <li><a href="/shop" class="mobile-link ${activeNav === 'Shop' ? 'active' : ''}" data-nav="Shop">Catalogue</a></li>
+        <li><a href="#" class="mobile-link ${activeNav === 'Offers' ? 'active' : ''}" data-nav="Offers">Allocations</a></li>
+        <li><a href="#" class="mobile-link ${activeNav === 'New Arrivals' ? 'active' : ''}" data-nav="New Arrivals">New Releases</a></li>
+        <li><a href="#" class="mobile-link ${activeNav === 'Login' ? 'active' : ''}" data-nav="Login">MC Reserve Sign-In</a></li>
+        ${SERVICE_NAV_ITEMS.map(({ label, path }) => `<li><a href="${path}" class="mobile-link" data-modern-path="${path}" ${currentPath === path || currentPath.startsWith(`${path}/`) ? 'aria-current="page"' : ''}>${label}</a></li>`).join('')}
+        <li><a href="#" class="mobile-link" data-route="cart">Vault Order &amp; Cart</a></li>
+        <li><a href="#" class="mobile-link" data-route="wishlist">Saved Allocations</a></li>
+      </ul>
+    </div>
+    <div class="mobile-drawer-backdrop" id="mobile-nav-backdrop"></div>
+    <nav class="mobile-bottom-nav" aria-label="Mobile navigation">
+      <button type="button" class="mobile-bottom-nav-item" data-bottom-menu aria-label="Open menu">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg><span>Menu</span>
+      </button>
+      <a href="/shop" class="mobile-bottom-nav-item ${activeNav === 'Shop' ? 'active' : ''}" data-route="shop">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8h14l1 13H4L5 8Z"/><path d="M9 9V6a3 3 0 0 1 6 0v3"/></svg><span>Shop</span>
+      </a>
+      <a href="/" class="mobile-bottom-nav-item mobile-bottom-home ${activeNav === 'Home' ? 'active' : ''}" data-route="home">
+        <span class="mobile-bottom-home-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 11 9-8 9 8v10h-6v-6H9v6H3V11Z"/></svg></span><span>Home</span>
+      </a>
+      <a href="/cart" class="mobile-bottom-nav-item ${activeNav === 'Cart' ? 'active' : ''}" data-route="cart">
+        <span class="mobile-bottom-cart-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8h14l1 13H4L5 8Z"/><path d="M9 9V6a3 3 0 0 1 6 0v3"/></svg>${cartCount ? `<b>${cartCount}</b>` : ''}</span><span>Cart</span>
+      </a>
+      <a href="/login" class="mobile-bottom-nav-item ${activeNav === 'Login' ? 'active' : ''}" data-route="login">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><span>Account</span>
+      </a>
+    </nav>
   `;
 }

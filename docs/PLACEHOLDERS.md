@@ -11,7 +11,10 @@ All products and values below are demonstration data. Replace them only after th
 - Order-review threshold — `src/config/checkout.ts` currently uses AED 100,000 as the requested placeholder; confirm the client-approved threshold.
 - Checkout destination country list and country-specific phone calling codes — `src/config/checkout.ts`; the current limited list is a UI seed, not an assertion that these destinations are serviceable.
 
-- Business contact details: phone, email, WhatsApp, address and hours — `src/features/modern-pages.ts` (Contact).
+- Business contact details: phone, email, WhatsApp, address, map location, privacy-policy URL, response-time commitment and weekly opening hours — `src/config/contact.ts`.
+- Contact form privacy notice and policy URL, complaints procedure, confirmed contact channels and address/map destination — `src/config/contact.ts` and `src/content/contact.ts`. Review the form consent wording and privacy/legal disclosures with the client before launch.
+- Contact enquiries and appointment requests are simulated in the browser only; references and slot reservations are not sent to staff or a booking system — replace the mock services in `src/services/contact.ts` with approved server endpoints before launch.
+- Appointment formats, purposes, operating hours, holidays, closed weekdays, booking horizon and slot duration — `src/config/contact.ts`; current appointment slots are illustrative demo availability, not confirmed availability.
 - Company founding year, founders, team profiles and bios — `src/features/modern-pages.ts` (About).
 - Collection location, appointment availability, hours, video meeting arrangement and contact process — `src/features/modern-pages.ts` (Storage, Sell to Us, Contact).
 - Product dimensions, fine weights, fineness, refiner/mint, packaging, certificates/serials, dispatch, stock status and buy-back eligibility — `src/features/modern-pages.ts` (Catalogue product details).
@@ -19,7 +22,14 @@ All products and values below are demonstration data. Replace them only after th
 - Confirm the final `/shop` category taxonomy, whether Private Assets remains a separate seventh filter category, and verified inventory status for every product — `src/data/products.ts` and `docs/CONTENT_ISSUES.md`.
 - Exact 0.5 carat diamond stone specifications and price-on-request details — `src/data/products.ts` (`[PENDING CLIENT]` on product 23).
 - Storage service scope, collection process, records, availability and fee schedule — `src/features/modern-pages.ts` (Storage).
-- Buy-back rate, route and appointment process — `src/features/modern-pages.ts` (Sell to Us).
+- Sell-to-Us indicative value band and approved pricing/buy-back basis — `src/config/sellToUs.ts`. The current UI uses the site's demonstration spot references and labels them simulated; it does not represent an offer or a buy-back rate.
+- Sell-to-Us weight ceiling and allowed photo formats/size limits — `src/config/sellToUs.ts`; confirm operational limits with the client if they differ from the current interface safeguards.
+- Confirmed Sell-to-Us appointment location, opening hours, holidays, closed days and available slots — Sell-to-Us currently reuses the illustrative appointment calendar and 09:00–17:00 mock request slots in `src/config/contact.ts`; these are not confirmed business hours or bookings.
+- Insured shipping availability and terms — `src/config/sellToUs.ts` (`shippingEnabled` is false until confirmed).
+- Sell-to-Us settlement wording, testing process, inspection requirements, identification/source-of-funds wording, privacy wording, and FAQ process answers — `src/content/sellToUs.ts`; confirm client facts and obtain legal review where indicated.
+- Real Sell-to-Us quote endpoint, booking integration, delivery of enquiry notifications, and durable idempotency/rate limiting — `src/services/sellToUs.ts` is an in-browser mock. No request is sent to the business, and the mock service must be replaced by an approved server endpoint before launch.
+- Sell-to-Us quote references, appointment slot reservations, and saved drafts are local browser state only; drafts exclude consent and photo contents, but include item and contact fields. Replace with approved server-side retention/access rules if durable recovery is required.
+- Account prefill/authentication — the application has no authenticated client profile service available to prefill Sell-to-Us details.
 - Product imagery — product cards currently use generated neutral artwork; approved product photography remains pending.
 
 ## Legal review

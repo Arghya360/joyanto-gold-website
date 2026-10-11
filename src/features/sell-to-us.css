@@ -1,0 +1,2129 @@
+.mc-sell-page {
+  --sell-navy: var(--mc-ink, #001838);
+  --sell-gold: var(--mc-gold, #9a7b43);
+  --sell-line: var(--mc-line, #dce4ef);
+  --sell-paper: var(--mc-paper, #f0eee7);
+  color: var(--sell-navy);
+}
+
+.mc-sell-page *,
+.mc-sell-page *::before,
+.mc-sell-page *::after {
+  box-sizing: border-box;
+}
+
+.mc-sell-page :where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 3px solid var(--sell-gold);
+  outline-offset: 3px;
+}
+
+.mc-sell-page :where(button, input, select, textarea) {
+  font: inherit;
+}
+
+.mc-sell-page :where(button, a) {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mc-sell-page :where(button) {
+  cursor: pointer;
+}
+
+.mc-sell-page :where(button:disabled, input:disabled) {
+  cursor: not-allowed;
+  opacity: .55;
+}
+
+.mc-sell-page :where([hidden]) {
+  display: none !important;
+}
+
+.mc-sell-page h1,
+.mc-sell-page h2,
+.mc-sell-page h3,
+.mc-sell-page p {
+  margin-top: 0;
+}
+
+.mc-sell-page h2,
+.mc-sell-page .mc-sell-hero h1 {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-weight: 500;
+  letter-spacing: -.025em;
+}
+
+.mc-sell-page h2 {
+  margin-bottom: 11px;
+  font-size: clamp(29px, 3vw, 38px);
+  line-height: 1.12;
+}
+
+.mc-sell-page p {
+  line-height: 1.65;
+}
+
+.mc-sell-page :where(input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]), select) {
+  display: block;
+  width: 100%;
+  min-height: 38px;
+  margin-top: 4px;
+  padding: 7px 11px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background: #fff;
+  color: var(--sell-navy);
+  font-size: 13.5px;
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+
+.mc-sell-page :where(input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]), select):focus {
+  border-color: var(--sell-gold);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(154, 123, 67, 0.15);
+}
+
+.mc-sell-page textarea {
+  display: block;
+  width: 100%;
+  min-height: 48px;
+  margin-top: 4px;
+  padding: 7px 11px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background: #fff;
+  color: var(--sell-navy);
+  font-size: 13px;
+  line-height: 1.4;
+  resize: vertical;
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+
+.mc-sell-page textarea:focus {
+  border-color: var(--sell-gold);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(154, 123, 67, 0.15);
+}
+
+.mc-sell-page label {
+  display: block;
+  min-width: 0;
+  color: #334155;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.mc-sell-page label > input[type="checkbox"],
+.mc-sell-page label > input[type="radio"] {
+  flex: 0 0 auto;
+}
+
+.mc-sell-hero::before {
+  display: none !important;
+  content: none !important;
+}
+
+.mc-sell-hero {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 400px;
+  overflow: hidden;
+  margin: 0 0 54px;
+  border-radius: 10px;
+  background-color: #0b1118;
+  background-image:
+    linear-gradient(90deg, rgba(0, 0, 0, 0.45) 0%, rgba(0, 0, 0, 0.18) 36%, transparent 60%),
+    var(--sell-banner-image);
+  background-position: center 36%;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.mc-sell-hero-copy {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  width: min(100%, 650px);
+  margin: clamp(16px, 3vw, 36px);
+  padding: clamp(24px, 3.5vw, 48px);
+  color: #ffffff;
+}
+
+.mc-sell-page .mc-sell-hero .mc-sell-hero-copy > :is(.mc-sell-eyebrow, h1, p),
+.mc-sell-page .mc-sell-hero h1,
+.mc-sell-page .mc-sell-hero p,
+.mc-sell-hero .mc-sell-eyebrow,
+.mc-sell-page .mc-sell-hero .mc-sell-trust-points li,
+.mc-sell-page .mc-sell-hero .mc-sell-trust-points li span {
+  color: #ffffff !important;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9), 0 1px 2px rgba(0, 0, 0, 0.95);
+}
+
+.mc-sell-eyebrow {
+  display: inline-block;
+  margin-bottom: 12px;
+  color: var(--sell-gold);
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+}
+
+.mc-sell-hero .mc-sell-eyebrow {
+  color: #ffffff !important;
+  font-weight: 750;
+  letter-spacing: 0.14em;
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+.mc-sell-hero h1 {
+  margin: 0 0 12px;
+  color: #ffffff !important;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(38px, 4.5vw, 56px);
+  font-weight: 500;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+}
+
+.mc-sell-hero-copy > p {
+  max-width: 440px;
+  margin-bottom: 20px;
+  color: #ffffff !important;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.mc-sell-hero-actions,
+.mc-sell-closing-actions,
+.mc-sell-success-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  position: relative;
+  z-index: 6;
+}
+
+.mc-sell-button {
+  display: inline-flex;
+  min-height: 46px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 11px 20px;
+  border: 1px solid var(--sell-navy);
+  border-radius: 5px;
+  background: var(--sell-navy);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform .2s ease, background-color .2s ease, box-shadow .2s ease;
+}
+
+.mc-sell-button:hover {
+  transform: translateY(-1px);
+}
+
+.mc-sell-button-outline {
+  border-color: currentColor;
+  background: transparent;
+  color: inherit;
+}
+
+.mc-sell-hero .mc-sell-button {
+  border-color: #ffffff;
+  background: #ffffff;
+  color: #001838 !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+}
+
+.mc-sell-hero .mc-sell-button:hover {
+  background: #f4f3ef;
+  color: #001838 !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+}
+
+.mc-sell-hero .mc-sell-button-outline {
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  background: rgba(0, 24, 56, 0.3);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  color: #ffffff !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+}
+
+.mc-sell-hero .mc-sell-button-outline:hover {
+  background: rgba(255, 255, 255, 0.22);
+  border-color: #ffffff;
+  color: #ffffff !important;
+  transform: translateY(-2px);
+}
+
+.mc-sell-trust-points {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px 20px;
+  padding: 0;
+  margin: 22px 0 0;
+  list-style: none;
+  position: relative;
+  z-index: 6;
+}
+
+.mc-sell-trust-points li {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #f0eee7;
+  font-size: 12px;
+}
+
+.mc-sell-hero .mc-sell-trust-points li {
+  color: #ffffff !important;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9);
+}
+
+.mc-sell-trust-points li span {
+  color: #ead39a;
+  font-size: 14px;
+}
+
+.mc-sell-hero .mc-sell-trust-points li span {
+  color: #ffffff !important;
+}
+
+.mc-sell-section {
+  margin: 0 0 68px;
+  scroll-margin-top: 95px;
+}
+
+.mc-sell-section-heading {
+  max-width: 700px;
+  margin-bottom: 27px;
+}
+
+.mc-sell-section-heading h2 {
+  color: var(--sell-navy);
+}
+
+.mc-sell-section-heading > p {
+  max-width: 640px;
+  margin: 0;
+  color: #4d5a6c;
+}
+
+.mc-sell-process {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.mc-sell-process-step {
+  position: relative;
+  min-width: 0;
+  padding: 0 14px 0 0;
+  transition: opacity .2s ease;
+}
+
+.mc-sell-process-step:not(:last-child)::after {
+  position: absolute;
+  top: 21px;
+  left: 53px;
+  width: calc(100% - 56px);
+  height: 1px;
+  background: var(--sell-line);
+  content: "";
+}
+
+.mc-sell-process-number {
+  display: grid;
+  width: 43px;
+  height: 43px;
+  place-items: center;
+  margin-bottom: 18px;
+  border: 1px solid var(--sell-gold);
+  border-radius: 50%;
+  background: #fff;
+  color: var(--sell-navy);
+  font-size: 12px;
+  font-weight: 750;
+  transition: background-color .2s ease, color .2s ease;
+}
+
+.mc-sell-process-step.is-active .mc-sell-process-number {
+  background: var(--sell-navy);
+  color: #fff;
+}
+
+.mc-sell-process-step h3,
+.mc-sell-consider-card h3,
+.mc-sell-item-card h3 {
+  margin: 0 0 8px;
+  color: var(--sell-navy);
+  font-size: 16px;
+  line-height: 1.35;
+}
+
+.mc-sell-process-step p {
+  margin: 0;
+  color: #4d5a6c;
+  font-size: 13px;
+}
+
+.mc-sell-pending {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 3px;
+  background: var(--sell-paper);
+  color: #39475a;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.mc-sell-consider-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.mc-sell-consider-card {
+  display: flex;
+  min-height: 220px;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 21px;
+  border: 1px solid var(--sell-line);
+  border-radius: 7px;
+  background: #fff;
+}
+
+.mc-sell-item-icon {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  margin-bottom: 17px;
+  border-radius: 50%;
+  background: var(--sell-paper);
+  color: var(--sell-gold);
+  font-size: 22px;
+}
+
+.mc-sell-consider-card p {
+  margin: 0 0 15px;
+  color: #4d5a6c;
+  font-size: 12px;
+}
+
+.mc-sell-consider-card a {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  gap: 7px;
+  margin-top: auto;
+  color: var(--sell-navy);
+  font-size: 12px;
+  font-weight: 750;
+  text-decoration: none;
+}
+
+.mc-sell-workspace-section {
+  padding: clamp(28px, 4vw, 48px);
+  border-radius: 16px;
+  background: #fbfaf8;
+  border: 1px solid #e5e9f0;
+  box-shadow: 0 4px 20px rgba(0, 24, 56, 0.02);
+  margin-bottom: 60px;
+}
+
+.mc-sell-workspace-section .mc-sell-section-heading {
+  text-align: center;
+  max-width: 680px;
+  margin: 0 auto 28px;
+}
+
+.mc-sell-workspace-section .mc-sell-section-heading h2 {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(28px, 3.2vw, 38px);
+  font-weight: 500;
+  color: var(--sell-navy);
+  margin: 6px 0 10px;
+}
+
+.mc-sell-workspace-section .mc-sell-section-heading > p {
+  color: #5a6676;
+  font-size: 15px;
+  line-height: 1.5;
+  margin: 0 auto;
+}
+
+.mc-sell-draft-restored {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin: 0 0 20px;
+  padding: 10px 18px;
+  border-radius: 8px;
+  background: #ffffff;
+  border: 1px solid rgba(154, 123, 67, 0.35);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+  color: var(--sell-navy);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.mc-sell-draft-restored button {
+  background: transparent;
+  border: 0;
+  color: var(--sell-gold);
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 4px 8px;
+}
+
+.mc-sell-workspace {
+  display: block;
+  width: 100%;
+}
+
+.mc-sell-wizard-column {
+  width: 100%;
+}
+
+.mc-sell-wizard,
+.mc-sell-value-card,
+.mc-sell-checklist-card,
+.mc-sell-success {
+  min-width: 0;
+  padding: clamp(22px, 3vw, 36px);
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow: 0 12px 36px rgba(0, 24, 56, 0.06), 0 2px 6px rgba(0, 0, 0, 0.02);
+}
+
+.mc-sell-stepper {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #edf2f7;
+}
+
+.mc-sell-stepper button {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 42px;
+  padding: 8px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #f8fafc;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: left;
+  transition: all .2s ease;
+}
+
+.mc-sell-stepper button:not(:last-child)::after {
+  display: none;
+}
+
+.mc-sell-stepper button[aria-current="step"] {
+  background: #001838;
+  color: #ffffff;
+  border-color: #001838;
+  box-shadow: 0 4px 12px rgba(0, 24, 56, 0.14);
+}
+
+.mc-sell-step-number {
+  width: 24px;
+  height: 24px;
+  flex: 0 0 24px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1.5px solid #cbd5e1;
+  background: #ffffff;
+  color: #475569;
+  font-size: 11px;
+  font-weight: 750;
+  transition: all .2s ease;
+}
+
+.mc-sell-stepper button[aria-current="step"] .mc-sell-step-number {
+  background: #9a7b43;
+  border-color: #9a7b43;
+  color: #ffffff;
+}
+
+.mc-sell-stepper button:disabled {
+  opacity: .75;
+}
+
+.mc-sell-step-name {
+  background: transparent;
+  padding: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mc-sell-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  clip-path: inset(50%);
+}
+
+.mc-sell-step-panels {
+  min-height: 200px;
+}
+
+.mc-sell-step-panel {
+  min-width: 0;
+  padding: 0;
+  margin: 0;
+  border: 0;
+}
+
+.mc-sell-step-panel > legend {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  margin-bottom: 18px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.mc-sell-step-panel .mc-sell-eyebrow {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  background: rgba(154, 123, 67, 0.12);
+  color: #9a7b43 !important;
+  font-size: 11px;
+  font-weight: 800;
+  text-shadow: none;
+}
+
+.mc-sell-panel-title {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--sell-navy);
+}
+
+.mc-sell-item-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 12px 14px;
+  padding: 18px 20px;
+  margin: 0 0 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #fbfcfd;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02);
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+
+.mc-sell-item-card:hover {
+  border-color: #cbd5e1;
+}
+
+.mc-sell-item-header {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #eef2f6;
+  margin-bottom: 2px;
+}
+
+.mc-sell-item-header h3 {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 750;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--sell-navy);
+}
+
+.mc-sell-item-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.mc-sell-text-button {
+  min-height: 30px;
+  padding: 3px 10px;
+  border: 1px solid #e2e8f0;
+  border-radius: 5px;
+  background: #ffffff;
+  color: #475569;
+  font-size: 11.5px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all .15s ease;
+}
+
+.mc-sell-text-button:hover {
+  border-color: #cbd5e1;
+  color: var(--sell-navy);
+  background: #f8fafc;
+}
+
+.mc-sell-fieldset {
+  min-width: 0;
+  padding: 0;
+  margin: 0;
+  border: 0;
+}
+
+.mc-sell-fieldset > legend,
+.mc-sell-phone-field > legend {
+  margin-bottom: 4px;
+  color: #334155;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+/* 4-item horizontal row on desktop! */
+.mc-sell-item-card > .mc-sell-fieldset:first-of-type {
+  grid-column: span 3;
+}
+
+.mc-sell-item-card > label:has([data-sell-field="type"]) {
+  grid-column: span 3;
+}
+
+.mc-sell-item-card > label:has([data-sell-field="purity"]) {
+  grid-column: span 3;
+}
+
+.mc-sell-item-card > label:has([data-sell-field="quantity"]) {
+  grid-column: span 3;
+}
+
+/* Row 2: Weight/Unit (span 4) + Description (span 8) */
+.mc-sell-item-card > .mc-sell-weight-row {
+  grid-column: span 4;
+}
+
+.mc-sell-item-card > label:has([data-sell-field="description"]) {
+  grid-column: span 8;
+}
+
+/* Full width elements */
+.mc-sell-item-card > .mc-sell-field-error,
+.mc-sell-item-card > .mc-sell-dropzone,
+.mc-sell-item-card > .mc-sell-photo-list,
+.mc-sell-item-card > [data-sell-photo-errors] {
+  grid-column: 1 / -1;
+}
+
+.mc-sell-segmented {
+  min-height: 38px;
+  padding: 3px;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  background: #f1f5f9;
+  gap: 3px;
+  display: flex;
+  width: 100%;
+  margin-top: 4px;
+}
+
+.mc-sell-segmented > button,
+.mc-sell-segmented > label {
+  flex: 1;
+  min-width: 0;
+  min-height: 30px;
+  padding: 5px 8px;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--sell-navy);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all .15s ease;
+}
+
+.mc-sell-segmented > button[aria-pressed="true"],
+.mc-sell-segmented > label:has(input:checked) {
+  background: var(--sell-navy);
+  color: #ffffff;
+  box-shadow: 0 1px 4px rgba(0, 24, 56, 0.2);
+}
+
+.mc-sell-segmented input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: .01;
+}
+
+.mc-sell-weight-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 78px;
+  align-items: end;
+  gap: 8px;
+}
+
+.mc-sell-dropzone {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 52px;
+  padding: 10px 16px;
+  gap: 14px;
+  border: 1.5px dashed #cbd5e1;
+  border-radius: 8px;
+  background: #ffffff;
+  color: var(--sell-navy);
+  cursor: pointer;
+  transition: all .2s ease;
+}
+
+.mc-sell-dropzone:hover,
+.mc-sell-dropzone.is-dragging {
+  border-color: var(--sell-gold);
+  background: #fdfbf7;
+}
+
+.mc-sell-dropzone-icon {
+  font-size: 18px;
+  color: var(--sell-gold);
+  flex-shrink: 0;
+}
+
+.mc-sell-dropzone strong {
+  font-size: 12.5px;
+  color: var(--sell-navy);
+  margin-right: 6px;
+}
+
+.mc-sell-dropzone > span:not(.mc-sell-dropzone-icon) {
+  font-size: 11.5px;
+  color: #64748b;
+  flex: 1;
+  text-align: left;
+  line-height: 1.35;
+}
+
+.mc-sell-browse {
+  min-height: 32px;
+  padding: 5px 14px;
+  font-size: 11.5px;
+  font-weight: 650;
+  border-radius: 5px;
+  border: 1px solid #cbd5e1;
+  background: #f8fafc;
+  color: var(--sell-navy);
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.mc-sell-browse:hover {
+  background: #edf2f7;
+}
+
+.mc-sell-photo-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.mc-sell-photo {
+  position: relative;
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr) 28px;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  padding: 5px;
+  border: 1px solid var(--sell-line);
+  border-radius: 4px;
+  font-size: 10px;
+}
+
+.mc-sell-photo img {
+  width: 36px;
+  height: 36px;
+  object-fit: cover;
+  border-radius: 3px;
+}
+
+.mc-sell-photo span {
+  overflow-wrap: anywhere;
+}
+
+.mc-sell-photo button {
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--sell-line);
+  border-radius: 50%;
+  background: #fff;
+  color: var(--sell-navy);
+}
+
+.mc-sell-field-error {
+  display: block;
+  min-height: 0;
+  color: #b91c1c;
+  font-size: 11px;
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+.mc-sell-field-error:empty {
+  display: none;
+}
+
+.mc-sell-page [aria-invalid="true"] {
+  border-color: #b91c1c;
+}
+
+.mc-sell-add-item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 38px;
+  margin: 4px 0 12px;
+  border: 1.5px dashed var(--sell-gold);
+  border-radius: 8px;
+  background: rgba(154, 123, 67, 0.04);
+  color: var(--sell-gold);
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .2s ease;
+}
+
+.mc-sell-add-item:hover {
+  background: rgba(154, 123, 67, 0.1);
+  transform: none;
+}
+
+.mc-sell-tip,
+.mc-sell-pending-line {
+  padding: 10px 14px;
+  border-left: 3px solid var(--sell-gold);
+  border-radius: 0 6px 6px 0;
+  background: #fbf8f2;
+  color: #3b4859;
+  font-size: 12px;
+}
+
+.mc-sell-tip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+}
+
+.mc-sell-tip > span {
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--sell-gold);
+  color: #fff;
+  font-size: 10.5px;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.mc-sell-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: 15px;
+}
+
+.mc-sell-phone-field {
+  min-width: 0;
+  padding: 0;
+  margin: 0;
+  border: 0;
+}
+
+.mc-sell-phone-row {
+  display: grid;
+  grid-template-columns: minmax(145px, .8fr) minmax(0, 1.2fr);
+  gap: 8px;
+}
+
+.mc-sell-phone-row select,
+.mc-sell-phone-row input {
+  margin-top: 0 !important;
+}
+
+.mc-sell-route-options {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.mc-sell-route-card {
+  display: flex !important;
+  min-height: 74px;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 15px;
+  border: 1px solid var(--sell-line);
+  border-radius: 6px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.mc-sell-route-card > input {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  margin: 2px 0 0 !important;
+  accent-color: var(--sell-navy);
+}
+
+.mc-sell-route-card > span {
+  display: grid;
+  gap: 5px;
+}
+
+.mc-sell-route-card small {
+  color: #4d5a6c;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.mc-sell-route-disabled {
+  background: var(--sell-paper);
+  cursor: not-allowed;
+}
+
+.mc-sell-appointment-panel {
+  padding: 16px;
+  border: 1px solid var(--sell-line);
+  border-radius: 6px;
+  background: #fff;
+}
+
+.mc-sell-pending-line {
+  margin-bottom: 14px;
+}
+
+.mc-sell-calendar {
+  max-width: 370px;
+  margin: 0 auto;
+}
+
+.mc-sell-calendar-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.mc-sell-calendar-heading h3 {
+  margin: 0;
+  font-size: 15px;
+}
+
+.mc-sell-calendar-heading button {
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--sell-line);
+  border-radius: 50%;
+  background: #fff;
+  color: var(--sell-navy);
+  font-size: 24px;
+}
+
+.mc-sell-calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  text-align: center;
+}
+
+.mc-sell-calendar-grid > span[role="columnheader"] {
+  padding: 6px 0;
+  color: #4d5a6c;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.mc-sell-calendar-grid [data-sell-calendar-days] {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+
+.mc-sell-calendar-empty {
+  min-height: 40px;
+}
+
+.mc-sell-calendar-grid button {
+  min-width: 0;
+  min-height: 40px;
+  padding: 3px;
+  border: 1px solid transparent;
+  border-radius: 50%;
+  background: #fff;
+  color: var(--sell-navy);
+  font-size: 12px;
+}
+
+.mc-sell-calendar-grid button:hover:not(:disabled),
+.mc-sell-calendar-grid button[aria-selected="true"] {
+  border-color: var(--sell-gold);
+  background: var(--sell-navy);
+  color: #fff;
+}
+
+.mc-sell-slots {
+  margin-top: 16px;
+}
+
+.mc-sell-slots h3 {
+  margin: 0 0 10px;
+  font-size: 14px;
+}
+
+.mc-sell-slot-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.mc-sell-slot {
+  display: grid;
+  min-width: 106px;
+  min-height: 54px;
+  align-content: center;
+  gap: 3px;
+  padding: 6px 9px;
+  border: 1px solid var(--sell-line);
+  border-radius: 5px;
+  background: #fff;
+  color: var(--sell-navy);
+  font-size: 11px;
+  text-align: left;
+}
+
+.mc-sell-slot[aria-pressed="true"] {
+  border-color: var(--sell-gold);
+  background: var(--sell-paper);
+}
+
+.mc-sell-slot small {
+  color: #4d5a6c;
+  font-size: 10px;
+}
+
+.mc-sell-slot-note {
+  margin: 13px 0 0;
+  color: #4d5a6c;
+  font-size: 11px;
+}
+
+.mc-sell-review {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 17px;
+}
+
+.mc-sell-review-card {
+  padding: 14px;
+  border: 1px solid var(--sell-line);
+  border-radius: 5px;
+  background: #fff;
+}
+
+.mc-sell-review-card > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.mc-sell-review-card h3 {
+  margin: 0 0 8px;
+  font-size: 14px;
+}
+
+.mc-sell-review-card button {
+  min-height: 40px;
+  border: 0;
+  background: transparent;
+  color: var(--sell-navy);
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.mc-sell-review-card p,
+.mc-sell-review-card ul {
+  margin: 0;
+  color: #36475d;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.mc-sell-review-card p + p {
+  margin-top: 7px;
+}
+
+.mc-sell-consents {
+  display: grid;
+  gap: 12px;
+}
+
+.mc-sell-consents > label,
+.mc-sell-checklist-card li label {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 12px;
+  font-weight: 450;
+  line-height: 1.55;
+}
+
+.mc-sell-consents input,
+.mc-sell-checklist-card input {
+  width: 18px;
+  height: 18px;
+  margin: 1px 0 0;
+  accent-color: var(--sell-navy);
+}
+
+.mc-sell-consents a {
+  color: var(--sell-navy);
+  text-decoration: underline;
+}
+
+.mc-sell-honeypot {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
+}
+
+.mc-sell-wizard-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid #edf2f7;
+}
+
+.mc-sell-draft-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 0;
+}
+
+.mc-sell-draft-actions .mc-sell-text-button {
+  min-height: 32px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.mc-sell-draft-actions .mc-sell-text-button:hover {
+  color: var(--sell-navy);
+  background: transparent;
+}
+
+.mc-sell-draft-status,
+.mc-sell-submit-status {
+  min-height: 18px;
+  margin: 6px 0 0;
+  color: #36475d;
+  font-size: 12px;
+}
+
+.mc-sell-submit-status {
+  color: #b91c1c;
+  font-weight: 600;
+}
+
+.mc-sell-step-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+}
+
+.mc-sell-step-actions .mc-sell-button {
+  min-height: 40px;
+  padding: 9px 26px;
+  font-size: 13px;
+  font-weight: 700;
+  border-radius: 6px;
+  background: var(--sell-navy);
+  color: #ffffff;
+  border: 1px solid var(--sell-navy);
+  box-shadow: 0 2px 8px rgba(0, 24, 56, 0.15);
+  cursor: pointer;
+  transition: all .2s ease;
+}
+
+.mc-sell-step-actions .mc-sell-button:hover {
+  background: var(--sell-gold);
+  border-color: var(--sell-gold);
+  box-shadow: 0 4px 12px rgba(154, 123, 67, 0.25);
+  transform: translateY(-1px);
+}
+
+.mc-sell-step-actions .mc-sell-button-outline {
+  background: transparent;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+  box-shadow: none;
+}
+
+.mc-sell-step-actions .mc-sell-button-outline:hover {
+  background: #f8fafc;
+  color: var(--sell-navy);
+  border-color: #94a3b8;
+  transform: translateY(-1px);
+}
+
+.mc-sell-value-card {
+  position: sticky;
+  top: 20px;
+}
+
+.mc-sell-value-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 9px;
+}
+
+.mc-sell-value-heading h3 {
+  margin: 0;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 23px;
+  font-weight: 500;
+}
+
+.mc-sell-feed-chip {
+  display: inline-flex;
+  min-height: 25px;
+  align-items: center;
+  padding: 4px 9px;
+  border: 1px solid var(--sell-line);
+  border-radius: 999px;
+  background: var(--sell-paper);
+  color: var(--sell-navy);
+  font-size: 10px;
+  font-weight: 750;
+}
+
+.mc-sell-tooltip {
+  position: relative;
+}
+
+.mc-sell-tooltip > button {
+  width: 24px;
+  height: 24px;
+  border: 1px solid var(--sell-line);
+  border-radius: 50%;
+  background: #fff;
+  color: var(--sell-navy);
+  font-weight: 700;
+}
+
+.mc-sell-tooltip [role="tooltip"] {
+  position: absolute;
+  z-index: 2;
+  right: -10px;
+  bottom: calc(100% + 8px);
+  width: 220px;
+  padding: 10px;
+  border-radius: 4px;
+  background: var(--sell-navy);
+  color: #fff;
+  font-size: 11px;
+  line-height: 1.45;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .15s ease;
+}
+
+.mc-sell-tooltip:hover [role="tooltip"],
+.mc-sell-tooltip:focus-within [role="tooltip"] {
+  opacity: 1;
+}
+
+.mc-sell-feed-note {
+  margin: 12px 0 16px;
+  color: #4d5a6c;
+  font-size: 11px;
+}
+
+.mc-sell-value-items {
+  display: grid;
+  gap: 11px;
+}
+
+.mc-sell-value-items > p {
+  margin: 0;
+  color: #4d5a6c;
+  font-size: 12px;
+}
+
+.mc-sell-value-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 0 11px;
+  border-bottom: 1px solid var(--sell-line);
+  font-size: 12px;
+}
+
+.mc-sell-value-row > div {
+  display: grid;
+  gap: 4px;
+}
+
+.mc-sell-value-row span {
+  color: #4d5a6c;
+  font-size: 11px;
+}
+
+.mc-sell-value-total {
+  display: grid;
+  gap: 6px;
+  padding: 16px 0;
+  color: var(--sell-navy);
+}
+
+.mc-sell-value-total span {
+  color: #36475d;
+  font-size: 12px;
+}
+
+.mc-sell-value-total strong {
+  font-size: clamp(19px, 2vw, 26px);
+}
+
+.mc-sell-value-disclaimer {
+  margin: 12px 0 0;
+  padding-top: 12px;
+  border-top: 1px solid var(--sell-line);
+  color: #36475d;
+  font-size: 11px;
+}
+
+.mc-sell-mobile-value {
+  display: none;
+}
+
+.mc-sell-checklist-card ul {
+  display: grid;
+  gap: 14px;
+  padding: 0;
+  margin: 0 0 20px;
+  list-style: none;
+}
+
+.mc-sell-checklist-card li {
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--sell-line);
+}
+
+.mc-sell-faq {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 20px;
+}
+
+.mc-sell-faq details {
+  padding: 16px 0;
+  border-bottom: 1px solid var(--sell-line);
+}
+
+.mc-sell-faq summary {
+  min-height: 44px;
+  padding: 10px 25px 10px 0;
+  color: var(--sell-navy);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.mc-sell-faq details p {
+  margin: 5px 0 0;
+  color: #36475d;
+  font-size: 12px;
+}
+
+.mc-sell-closing {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: clamp(22px, 4vw, 38px);
+  margin-bottom: 8px;
+  border-radius: 7px;
+  background: var(--sell-navy);
+  color: #fff;
+}
+
+.mc-sell-closing h2 {
+  color: #fff;
+}
+
+.mc-sell-closing p {
+  max-width: 650px;
+  margin: 0;
+  color: #f0eee7;
+  font-size: 11px;
+}
+
+.mc-sell-closing .mc-sell-button {
+  border-color: #fff;
+  background: #fff;
+  color: var(--sell-navy);
+}
+
+.mc-sell-closing .mc-sell-button-outline {
+  border-color: rgba(255, 255, 255, .75);
+  background: transparent;
+  color: #fff;
+}
+
+.mc-sell-success {
+  display: grid;
+  gap: 16px;
+  scroll-margin-top: 90px;
+}
+
+.mc-sell-success h2 {
+  margin: 0;
+}
+
+.mc-sell-reference {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding: 14px;
+  background: var(--sell-paper);
+}
+
+.mc-sell-reference code {
+  padding: 7px 10px;
+  border: 1px solid var(--sell-line);
+  border-radius: 4px;
+  background: #fff;
+  font-size: 14px;
+}
+
+.mc-sell-next-steps {
+  padding: 14px 18px;
+  background: var(--sell-paper);
+}
+
+.mc-sell-next-steps h3 {
+  margin-bottom: 8px;
+}
+
+.mc-sell-next-steps li {
+  padding: 4px 0;
+}
+
+/* ═══════════════════════════════════════════════════
+   TABLET (≤ 1023 px)
+═══════════════════════════════════════════════════ */
+@media (max-width: 1023px) {
+  .mc-sell-workspace {
+    width: 100%;
+  }
+
+  .mc-sell-consider-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ═══════════════════════════════════════════════════
+   PHONE (≤ 767 px) — full form mobile optimisation
+═══════════════════════════════════════════════════ */
+@media (max-width: 767px) {
+
+  /* ── Hero ─────────────────────────────────────── */
+  .mc-sell-hero {
+    min-height: 280px;
+    margin-bottom: 28px;
+    border-radius: 0;
+    background-image:
+      linear-gradient(180deg, rgba(0, 0, 0, 0.52) 0%, rgba(0, 0, 0, 0.18) 100%),
+      var(--sell-banner-image);
+    background-position: center 30%;
+  }
+
+  .mc-sell-hero-copy {
+    width: 100%;
+    flex: 1;
+    margin: 0;
+    padding: 24px 18px 28px;
+  }
+
+  .mc-sell-hero h1 {
+    font-size: clamp(30px, 8vw, 44px) !important;
+  }
+
+  .mc-sell-hero-copy > p {
+    font-size: 14px;
+  }
+
+  .mc-sell-trust-points {
+    display: grid;
+    gap: 8px;
+    margin-top: 16px;
+  }
+
+  /* ── Sections ─────────────────────────────────── */
+  .mc-sell-section {
+    margin-bottom: 40px;
+    scroll-margin-top: 70px;
+  }
+
+  .mc-sell-process {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .mc-sell-process-step {
+    display: grid;
+    grid-template-columns: 45px minmax(0, 1fr);
+    gap: 13px;
+    padding: 0 0 22px;
+  }
+
+  .mc-sell-process-step:not(:last-child)::after {
+    top: 45px;
+    bottom: 0;
+    left: 21px;
+    width: 1px;
+    height: auto;
+  }
+
+  .mc-sell-process-number {
+    margin: 0;
+  }
+
+  .mc-sell-process-step h3 {
+    margin: 2px 0 5px;
+    font-size: 1rem !important;
+  }
+
+  .mc-sell-consider-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .mc-sell-consider-card {
+    min-height: 0;
+  }
+
+  /* ── Workspace section wrapper ────────────────── */
+  .mc-sell-workspace-section {
+    padding: 18px 12px 24px;
+    border-radius: 12px;
+    margin-right: 0;
+    margin-left: 0;
+    margin-bottom: 36px;
+  }
+
+  .mc-sell-workspace-section .mc-sell-section-heading {
+    margin-bottom: 18px;
+  }
+
+  .mc-sell-workspace-section .mc-sell-section-heading h2 {
+    font-size: clamp(22px, 6vw, 30px) !important;
+    margin: 4px 0 8px;
+  }
+
+  .mc-sell-workspace-section .mc-sell-section-heading > p {
+    font-size: 13.5px;
+  }
+
+  /* ── Wizard card ──────────────────────────────── */
+  .mc-sell-wizard,
+  .mc-sell-value-card,
+  .mc-sell-checklist-card,
+  .mc-sell-success {
+    padding: 14px 12px;
+    border-radius: 10px;
+    box-shadow: 0 4px 18px rgba(0, 24, 56, 0.07);
+  }
+
+  /* ── Stepper (progress indicator) ────────────── */
+  .mc-sell-stepper {
+    display: flex;
+    gap: 6px;
+    margin: 0 0 16px;
+    padding-bottom: 14px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .mc-sell-stepper::-webkit-scrollbar {
+    display: none;
+  }
+
+  .mc-sell-stepper button {
+    display: inline-flex;
+    flex: 0 0 auto;
+    min-height: 40px;
+    min-width: 40px;
+    padding: 6px 10px;
+    font-size: 11px;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  /* Hide step name labels except active step to save width */
+  .mc-sell-stepper button:not([aria-current="step"]) .mc-sell-step-name {
+    display: none;
+  }
+
+  .mc-sell-stepper button[aria-current="step"] {
+    flex: 1 1 auto;
+    max-width: 200px;
+  }
+
+  .mc-sell-step-name {
+    padding: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 110px;
+  }
+
+  .mc-sell-step-number {
+    width: 26px;
+    height: 26px;
+    flex-basis: 26px;
+    font-size: 10px;
+  }
+
+  .mc-sell-step-panels {
+    min-height: 0;
+  }
+
+  /* ── Step panel legend ────────────────────────── */
+  .mc-sell-step-panel > legend {
+    gap: 8px;
+    margin-bottom: 14px;
+    padding-bottom: 8px;
+  }
+
+  .mc-sell-panel-title {
+    font-size: 16px;
+  }
+
+  /* ── Item card — full single-column layout ────── */
+  .mc-sell-item-card {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 12px;
+    margin-bottom: 10px;
+  }
+
+  /* Make every cell in the item card span full width */
+  .mc-sell-item-card > *,
+  .mc-sell-item-header,
+  .mc-sell-item-card > .mc-sell-fieldset,
+  .mc-sell-item-card > label,
+  .mc-sell-item-card > .mc-sell-weight-row,
+  .mc-sell-item-card > .mc-sell-field-error,
+  .mc-sell-item-card > .mc-sell-dropzone,
+  .mc-sell-item-card > .mc-sell-photo-list,
+  .mc-sell-item-card > [data-sell-photo-errors] {
+    grid-column: 1 !important;
+  }
+
+  /* Item header row: title + buttons */
+  .mc-sell-item-header {
+    flex-wrap: wrap;
+    gap: 6px;
+    padding-bottom: 8px;
+  }
+
+  .mc-sell-item-header h3 {
+    font-size: 11px !important;
+  }
+
+  .mc-sell-item-controls {
+    gap: 6px;
+  }
+
+  .mc-sell-text-button {
+    min-height: 32px;
+    padding: 3px 9px;
+    font-size: 11px;
+  }
+
+  /* Weight + Unit on one row */
+  .mc-sell-weight-row {
+    grid-template-columns: minmax(0, 1fr) 80px;
+    gap: 8px;
+  }
+
+  /* Segmented controls — taller tap targets */
+  .mc-sell-segmented {
+    min-height: 42px;
+  }
+
+  .mc-sell-segmented > button,
+  .mc-sell-segmented > label {
+    min-height: 36px;
+    font-size: 13px;
+  }
+
+  /* Form inputs — comfortable touch size */
+  .mc-sell-page :where(input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]), select) {
+    min-height: 44px;
+    font-size: 15px;
+    padding: 8px 12px;
+  }
+
+  .mc-sell-page textarea {
+    min-height: 60px;
+    font-size: 14px;
+  }
+
+  .mc-sell-page label {
+    font-size: 12px;
+  }
+
+  /* ── Dropzone — compact horizontal layout ─────── */
+  .mc-sell-dropzone {
+    flex-direction: row;
+    flex-wrap: wrap;
+    min-height: 54px;
+    padding: 10px 14px;
+    gap: 8px;
+  }
+
+  .mc-sell-dropzone-icon {
+    font-size: 20px;
+  }
+
+  .mc-sell-dropzone strong {
+    font-size: 12px;
+  }
+
+  .mc-sell-dropzone > span:not(.mc-sell-dropzone-icon) {
+    font-size: 11px;
+    flex: 1 1 100%;
+    order: 3;
+  }
+
+  .mc-sell-browse {
+    min-height: 36px;
+    padding: 5px 16px;
+    font-size: 12px;
+  }
+
+  /* ── Add item button ──────────────────────────── */
+  .mc-sell-add-item {
+    min-height: 44px;
+    font-size: 13px;
+    margin: 6px 0 10px;
+  }
+
+  /* ── Tip bar ──────────────────────────────────── */
+  .mc-sell-tip {
+    font-size: 12px;
+    padding: 9px 12px;
+  }
+
+  /* ── Contact step fields (step 2) ─────────────── */
+  .mc-sell-fields {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  /* Phone row: keep country code + number side-by-side */
+  .mc-sell-phone-row {
+    grid-template-columns: minmax(120px, .75fr) minmax(0, 1.25fr);
+    gap: 8px;
+  }
+
+  /* ── Route cards (step 3) ─────────────────────── */
+  .mc-sell-route-options {
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .mc-sell-route-card {
+    min-height: 60px;
+    padding: 12px;
+    font-size: 13px;
+  }
+
+  /* ── Calendar ─────────────────────────────────── */
+  .mc-sell-calendar {
+    max-width: 100%;
+  }
+
+  .mc-sell-calendar-heading button {
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+  }
+
+  .mc-sell-calendar-grid button {
+    min-height: 38px;
+    font-size: 11px;
+  }
+
+  /* ── Review (step 4) ──────────────────────────── */
+  .mc-sell-review-card {
+    padding: 12px;
+  }
+
+  .mc-sell-consents {
+    gap: 10px;
+  }
+
+  .mc-sell-consents > label {
+    font-size: 12px;
+    line-height: 1.5;
+  }
+
+  /* ── Wizard footer ────────────────────────────── */
+  .mc-sell-wizard-footer {
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 14px;
+    padding-top: 12px;
+  }
+
+  .mc-sell-draft-actions {
+    width: 100%;
+    justify-content: flex-start;
+    gap: 16px;
+  }
+
+  .mc-sell-draft-actions .mc-sell-text-button {
+    font-size: 12px;
+  }
+
+  /* ── Step action buttons — sticky at bottom ───── */
+  .mc-sell-step-actions {
+    position: sticky;
+    z-index: 10;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: stretch;
+    gap: 8px;
+    padding: 10px 0 max(10px, env(safe-area-inset-bottom));
+    background: #ffffff;
+    border-top: 1px solid #edf2f7;
+    box-shadow: 0 -4px 16px rgba(0, 24, 56, 0.08);
+    margin: 0 -12px;
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .mc-sell-step-actions .mc-sell-button {
+    flex: 1;
+    min-height: 48px;
+    font-size: 14px;
+    font-weight: 700;
+    border-radius: 8px;
+  }
+
+  .mc-sell-step-actions .mc-sell-button-outline {
+    flex: 0 0 auto;
+    min-width: 80px;
+  }
+
+  /* ── Draft/submit status messages ─────────────── */
+  .mc-sell-draft-status,
+  .mc-sell-submit-status {
+    font-size: 12px;
+    margin-top: 4px;
+  }
+
+  /* ── Value column + mobile value bar ──────────── */
+  .mc-sell-value-column {
+    display: none;
+  }
+
+  .mc-sell-mobile-value {
+    position: sticky;
+    z-index: 3;
+    bottom: max(5px, env(safe-area-inset-bottom));
+    display: block;
+    margin-top: 16px;
+    border: 1px solid var(--sell-line);
+    border-radius: 6px;
+    background: #fff;
+    box-shadow: 0 3px 16px rgba(0, 24, 56, .16);
+  }
+
+  .mc-sell-mobile-value > button {
+    display: flex;
+    width: 100%;
+    min-height: 50px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 8px 12px;
+    border: 0;
+    background: transparent;
+    color: var(--sell-navy);
+    font-size: 13px;
+  }
+
+  .mc-sell-mobile-value > button strong {
+    overflow-wrap: anywhere;
+    font-size: 13px;
+  }
+
+  .mc-sell-mobile-value [data-sell-mobile-details] {
+    max-height: 45vh;
+    overflow: auto;
+    padding: 0 10px 10px;
+  }
+
+  .mc-sell-mobile-value [data-sell-mobile-details] .mc-sell-value-card {
+    display: block;
+    position: static;
+    padding: 10px;
+    border: 0;
+  }
+
+  /* ── FAQ & closing ────────────────────────────── */
+  .mc-sell-faq {
+    grid-template-columns: 1fr;
+  }
+
+  .mc-sell-faq summary {
+    font-size: 14px;
+  }
+
+  .mc-sell-closing {
+    display: grid;
+    align-items: start;
+    margin-bottom: 0;
+  }
+
+  .mc-sell-closing-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ═══════════════════════════════════════════════════
+   SMALL PHONE (≤ 380 px)
+═══════════════════════════════════════════════════ */
+@media (max-width: 380px) {
+  .mc-sell-hero-actions {
+    display: grid;
+    width: 100%;
+  }
+
+  .mc-sell-stepper button[aria-current="step"] {
+    justify-content: flex-start;
+    max-width: none;
+  }
+
+  .mc-sell-weight-row {
+    grid-template-columns: minmax(0, 1fr) 72px;
+  }
+
+  .mc-sell-phone-row {
+    grid-template-columns: 1fr;
+  }
+
+  .mc-sell-step-actions {
+    display: grid;
+  }
+
+  .mc-sell-step-actions .mc-sell-button-outline {
+    min-width: 0;
+    width: 100%;
+  }
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+  .mc-sell-page *,
+  .mc-sell-page *::before,
+  .mc-sell-page *::after {
+    scroll-behavior: auto !important;
+    transition-duration: .01ms !important;
+  }
+}
+
+@media print {
+  .mc-sell-page[data-sell-print-mode="checklist"] > :not([aria-labelledby="sell-checklist-heading"]),
+  .mc-sell-page[data-sell-print-mode="summary"] > :not([data-sell-success]) {
+    display: none !important;
+  }
+
+  .mc-sell-page[data-sell-print-mode] {
+    max-width: none;
+    color: #000;
+  }
+}

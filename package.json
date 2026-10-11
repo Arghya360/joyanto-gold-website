@@ -6,8 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "package": "powershell -ExecutionPolicy Bypass -File scripts/package-zip.ps1",
     "preview": "vite preview",
-    "test": "node --experimental-strip-types --test src/features/market-terminal/data.test.mjs src/features/shop-filters.test.mjs src/features/catalogue-filters.test.mjs src/features/home-products.test.mjs src/services/checkout.test.mjs"
+    "test": "node --experimental-strip-types --test src/features/market-terminal/data.test.mjs src/features/shop-filters.test.mjs src/features/catalogue-filters.test.mjs src/features/home-products.test.mjs src/services/checkout.test.mjs src/services/contact.test.mjs src/services/sellToUs.test.mjs"
   },
   "devDependencies": {
     "typescript": "~6.0.2",

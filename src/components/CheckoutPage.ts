@@ -128,7 +128,6 @@ export function renderCheckoutPage(props: CheckoutPageProps): string {
     <nav class="commerce-breadcrumbs" aria-label="Breadcrumb"><a href="/" data-route="home">Home</a><span>/</span><span aria-current="page">${copy.title}</span></nav>
     <header class="checkout-page-heading"><span>${copy.eyebrow}</span><h1>${copy.title}</h1><p>${copy.subtitle}</p></header>
     ${props.invalidCartNotice ? `<p class="checkout-notice" role="status">${copy.invalidCart}</p>` : ''}
-    ${props.feedIsStale ? `<p class="checkout-notice checkout-notice-warning" role="status">${copy.staleFeed}</p>` : ''}
     <div class="checkout-page-layout">
       <form class="checkout-page-form" id="checkout-page-form" novalidate>
         ${sectionHeading('01', copy.contact.title, copy.contact.description, 'contact')}

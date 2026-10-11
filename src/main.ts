@@ -113,6 +113,27 @@ let mobileFilterOpen = false;
 let mobileWeightsExpanded = false;
 
 const app = document.getElementById('app')!;
+let lastHeaderScrollY = window.scrollY;
+let headerScrollFrame = 0;
+
+window.addEventListener('scroll', () => {
+  if (headerScrollFrame) return;
+  headerScrollFrame = window.requestAnimationFrame(() => {
+    const currentScrollY = window.scrollY;
+    const header = document.querySelector<HTMLElement>('.shop-site-header');
+
+    if (header) {
+      if (currentScrollY <= 80 || currentScrollY < lastHeaderScrollY - 4) {
+        header.classList.remove('nav-hidden');
+      } else if (currentScrollY > lastHeaderScrollY + 4) {
+        header.classList.add('nav-hidden');
+      }
+    }
+
+    lastHeaderScrollY = currentScrollY;
+    headerScrollFrame = 0;
+  });
+}, { passive: true });
 
 function normalizeCatalogueWishlistIds(saved: unknown): number[] {
   if (!Array.isArray(saved)) return [];
@@ -510,7 +531,7 @@ function renderCartDrawerAndModals(): string {
         <div class="side-cart-footer">
           <div class="side-cart-subtotal-row">
             <span>Indicative product subtotal:</span>
-            <span style="color: #0d874c;">${hasAllCartPrices ? formatAed(cartSubtotal) : `${formatAed(pricedSubtotal)} · partial`}</span>
+            <span style="color: var(--green);">${hasAllCartPrices ? formatAed(cartSubtotal) : `${formatAed(pricedSubtotal)} · partial`}</span>
           </div>
           <button class="side-cart-checkout-btn" id="btn-open-cart-page">
             View Allocation Cart
@@ -561,7 +582,7 @@ function renderCartDrawerAndModals(): string {
                 <span>Insured Freight:</span>
                 <span id="display-delivery-fee">AED 70</span>
               </div>
-              <div style="display:flex; justify-content:space-between; font-weight:700; color:#0d874c; font-size:16px; border-top:1px dashed #D1D5DB; padding-top:8px;">
+              <div style="display:flex; justify-content:space-between; font-weight:700; color:var(--green); font-size:16px; border-top:1px dashed #D1D5DB; padding-top:8px;">
                 <span>Total Invoice:</span>
                 <span id="display-grand-total">${cartPricesVerified ? `AED ${cartSubtotal + 70}` : 'Unavailable'}</span>
               </div>
@@ -1898,24 +1919,117 @@ function attachHomeListeners() {
     });
   });
 
-  // Reviews carousel buttons
+  // Reviews carousel
   if (reviewsInterval) clearInterval(reviewsInterval);
   const revTrack = document.getElementById('reviews-track');
-  if (revTrack && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  if (revTrack) {
     const reviewCards = Array.from(revTrack.querySelectorAll<HTMLElement>('.review-card'));
     const wrapper = revTrack.parentElement;
+    const reviewDots = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-review-index]'));
+    const previousButton = document.getElementById('review-prev');
+    const nextButton = document.getElementById('review-next');
+    const cloneCount = Math.min(3, reviewCards.length);
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let currentReview = 0;
     let paused = document.hidden;
-    const advanceReviews = () => {
-      if (paused || document.hidden || reviewCards.length < 2) return;
-      const maxScroll = revTrack.scrollWidth - revTrack.clientWidth;
-      const step = reviewCards[0].getBoundingClientRect().width +
-        (parseFloat(getComputedStyle(revTrack).columnGap) || 20);
-      if (revTrack.scrollLeft >= maxScroll - 2) {
-        revTrack.scrollTo({ left: 0, behavior: 'smooth' });
-      } else {
-        revTrack.scrollBy({ left: step, behavior: 'smooth' });
+    let normalizeTimer: ReturnType<typeof setTimeout> | null = null;
+    let isNormalizing = false;
+
+    const getStep = () => {
+      const firstCard = revTrack.querySelector<HTMLElement>('.review-card');
+      if (!firstCard) return 0;
+      const gap = Number.parseFloat(getComputedStyle(revTrack).columnGap) || 20;
+      return firstCard.getBoundingClientRect().width + gap;
+    };
+
+    const jumpTo = (physicalIndex: number) => {
+      const step = getStep();
+      if (!step) return;
+      isNormalizing = true;
+      revTrack.style.scrollBehavior = 'auto';
+      revTrack.scrollLeft = physicalIndex * step;
+      requestAnimationFrame(() => {
+        revTrack.style.scrollBehavior = '';
+        isNormalizing = false;
+      });
+    };
+
+    const updateDots = (index: number) => {
+      reviewDots.forEach((dot, dotIndex) => {
+        const active = dotIndex === index;
+        dot.classList.toggle('active', active);
+        dot.setAttribute('aria-current', String(active));
+      });
+    };
+
+    const normalizeLoopPosition = () => {
+      if (isNormalizing || !reviewCards.length) return;
+      const step = getStep();
+      if (!step) return;
+      const physicalIndex = Math.round(revTrack.scrollLeft / step);
+      const reviewIndex = ((physicalIndex - cloneCount) % reviewCards.length + reviewCards.length) % reviewCards.length;
+      currentReview = reviewIndex;
+      updateDots(reviewIndex);
+
+      if (physicalIndex < cloneCount || physicalIndex >= cloneCount + reviewCards.length) {
+        jumpTo(cloneCount + reviewIndex);
       }
     };
+
+    const moveToReview = (index: number) => {
+      if (reviewCards.length < 2) return;
+      currentReview = (index + reviewCards.length) % reviewCards.length;
+      updateDots(currentReview);
+      const step = getStep();
+      if (!step) return;
+
+      let physicalIndex = cloneCount + currentReview;
+      if (currentReview === 0 && index > reviewCards.length - 1) {
+        physicalIndex = cloneCount + reviewCards.length;
+      } else if (currentReview === reviewCards.length - 1 && index < 0) {
+        physicalIndex = cloneCount - 1;
+      }
+
+      revTrack.scrollTo({
+        left: physicalIndex * step,
+        behavior: reducedMotion ? 'auto' : 'smooth',
+      });
+    };
+
+    if (reviewCards.length > 1) {
+      const leadingClones = document.createDocumentFragment();
+      reviewCards.slice(-cloneCount).forEach(card => {
+        const clone = card.cloneNode(true) as HTMLElement;
+        clone.setAttribute('aria-hidden', 'true');
+        leadingClones.append(clone);
+      });
+      revTrack.prepend(leadingClones);
+
+      const trailingClones = document.createDocumentFragment();
+      reviewCards.slice(0, cloneCount).forEach(card => {
+        const clone = card.cloneNode(true) as HTMLElement;
+        clone.setAttribute('aria-hidden', 'true');
+        trailingClones.append(clone);
+      });
+      revTrack.append(trailingClones);
+      jumpTo(cloneCount);
+    }
+
+    previousButton?.addEventListener('click', () => moveToReview(currentReview - 1));
+    nextButton?.addEventListener('click', () => moveToReview(currentReview + 1));
+    reviewDots.forEach(dot => {
+      dot.addEventListener('click', () => {
+        const index = Number(dot.dataset.reviewIndex);
+        if (Number.isInteger(index)) moveToReview(index);
+      });
+    });
+
+    revTrack.addEventListener('scroll', () => {
+      if (normalizeTimer) clearTimeout(normalizeTimer);
+      normalizeTimer = setTimeout(normalizeLoopPosition, 500);
+    }, { passive: true });
+    revTrack.addEventListener('scrollend', normalizeLoopPosition);
+
     wrapper?.addEventListener('mouseenter', () => { paused = true; });
     wrapper?.addEventListener('mouseleave', () => { paused = false; });
     wrapper?.addEventListener('focusin', () => { paused = true; });
@@ -1923,7 +2037,14 @@ function attachHomeListeners() {
       const relatedTarget = event.relatedTarget;
       if (!(relatedTarget instanceof Node) || !wrapper.contains(relatedTarget)) paused = false;
     });
-    reviewsInterval = setInterval(advanceReviews, 4500);
+
+    if (!reducedMotion && reviewCards.length > 1) {
+      reviewsInterval = setInterval(() => {
+        if (!paused && !document.hidden) moveToReview(currentReview + 1);
+      }, 4500);
+    } else {
+      reviewsInterval = null;
+    }
   } else {
     reviewsInterval = null;
   }
@@ -2364,7 +2485,7 @@ function attachCartAndModalListeners() {
     if (modalBox) {
       modalBox.innerHTML = `
         <div style="padding: 36px 24px; text-align: center;">
-          <div style="width: 60px; height: 60px; background: #ECFDF5; color: #0D874C; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 26px; font-weight: 700;">
+          <div style="width: 60px; height: 60px; background: var(--green-pale); color: var(--green); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 26px; font-weight: 700;">
             ✓
           </div>
           <h3 style="font-size: 20px; font-weight: 700; color: #111827; margin-bottom: 8px;">Allocation Confirmed</h3>

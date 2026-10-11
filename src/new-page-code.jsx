@@ -5,6 +5,7 @@ import storageBanner from './assets/Storage banner.png';
 import livePricesBanner from './assets/live-prices banner.png';
 import sellToUsBanner from './assets/Sell to Us.png';
 import privateAssetsBanner from './assets/main header logo/Montague Cole Private Assets Banner.png';
+import reserveBanner from './assets/MC Reserve.png';
 import gold1g from './assets/catalogue/1 g Gold Bar.png';
 import gold5g from './assets/catalogue/5 g Gold Bar.png';
 import gold10g from './assets/catalogue/10 g Gold Bar.png';
@@ -226,8 +227,8 @@ function Storage() {
 function Reserve() {
   const [email,setEmail] = useState('');
   const [signedIn,setSignedIn] = useState(false);
-  if(signedIn) return <><Hero title="Welcome to MC Reserve" eyebrow="Private client area · Demo" copy={`Signed in as ${email} · Demo data only.`}/><section className="mc-grid">{['Orders','Documents','Owned products','Open requests'].map(label=><article className="mc-panel" key={label}><span className="mc-eyebrow">{label}</span><h2>0</h2><p>No demo {label.toLowerCase()}.</p></article>)}</section><article className="mc-panel"><h2>Demo account</h2><p>This frontend demonstration does not provide real authentication or private records.</p><button className="mc-button" onClick={()=>setSignedIn(false)}>Sign out</button></article></>;
-  return <><Hero title="MC Reserve" eyebrow="Private client area" copy="A place for documents, order and delivery tracking, and asset records."/>
+  if(signedIn) return <><Hero image={reserveBanner} title="Welcome to MC Reserve" eyebrow="Private client area · Demo" copy={`Signed in as ${email} · Demo data only.`}/><section className="mc-grid">{['Orders','Documents','Owned products','Open requests'].map(label=><article className="mc-panel" key={label}><span className="mc-eyebrow">{label}</span><h2>0</h2><p>No demo {label.toLowerCase()}.</p></article>)}</section><article className="mc-panel"><h2>Demo account</h2><p>This frontend demonstration does not provide real authentication or private records.</p><button className="mc-button" onClick={()=>setSignedIn(false)}>Sign out</button></article></>;
+  return <><Hero image={reserveBanner} title="MC Reserve" eyebrow="Private client area" copy="A place for documents, order and delivery tracking, and asset records."/>
     <section className="mc-grid">{[['Documents in one place','A demo space for order documents.'],['Order and delivery tracking','View order milestones when available.'],['Asset records','Keep personal records together.']].map(([title,copy])=><article className="mc-panel" key={title}><h2>{title}</h2><p>{copy}</p></article>)}</section>
     <form className="mc-panel mc-form" onSubmit={event=>{event.preventDefault();setSignedIn(true);}}><div className="mc-form-full"><span className="mc-eyebrow">Demo access</span><h2>Sign in</h2><p>Use the demo account shown below. This is not production authentication.</p></div><label className="mc-form-full">Email<input type="email" value={email} onChange={event=>setEmail(event.target.value)} placeholder="demo@montaguecole.example" required/></label><label className="mc-form-full">Password<input type="password" minLength="12" required/></label><button className="mc-button mc-form-full">Continue to demo</button><small className="mc-form-full">Demo account: demo@montaguecole.example · Demo data only</small></form>
     <p className="mc-disclaimer">No real-time valuation or custody claims are made. This demo sign-in is not secure authentication.</p>

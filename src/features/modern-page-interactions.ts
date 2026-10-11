@@ -1,14 +1,18 @@
 import type { ModernNavigation } from './modern-pages';
-import { moveQuoteStep, restoreCatalogueFilters, restoreDraft, saveDraft, showFormMessage, updateCatalogue, updateConverter, updateSellEstimate, updateStorageEstimate } from './modern-page-helpers';
+import { restoreCatalogueFilters, showFormMessage, updateCatalogue, updateConverter, updateStorageEstimate } from './modern-page-helpers';
 import { isPriceStale } from '../lib/pricing';
 import { initializeMarketChart } from './market-terminal/chart';
 import { catalogueWeightPreset } from './catalogue-filters';
+import { attachContactPageInteractions } from '../components/ContactPage.ts';
+import { attachSellToUsInteractions } from '../components/SellToUsInteractions.ts';
 
 export function attachModernPageHandlers(
   root: HTMLElement,
   navigate: ModernNavigation,
   addCatalogueProduct: (slug: string) => void,
 ): void {
+  if (root.querySelector('.mc-contact-page')) attachContactPageInteractions(root);
+  if (root.querySelector('.mc-sell-page')) attachSellToUsInteractions(root);
   const failDemo = import.meta.env.DEV && new URLSearchParams(location.search).get('feed') === 'fail';
   const isLivePrices = location.pathname === '/live-prices';
   if (isLivePrices) initializeMarketChart(root);
@@ -126,10 +130,6 @@ export function attachModernPageHandlers(
       }
       return;
     }
-    if (target.id === 'load-map') {
-      const slot = root.querySelector<HTMLElement>('#map-slot');
-      if (slot) slot.innerHTML = '<p>Map unavailable until the business address is confirmed. [PENDING CLIENT]</p>';
-    }
     if (hasCatalogue && target.closest('#catalogue-filter-open')) {
       setCatalogueSheetOpen(true);
     }
@@ -210,12 +210,6 @@ export function attachModernPageHandlers(
       }
       applyCatalogueChange(true);
     }
-    if (target.id === 'quote-next' || target.id === 'quote-back') moveQuoteStep(root, target.id === 'quote-next' ? 1 : -1);
-    if (target.id === 'quote-clear') {
-      localStorage.removeItem('mc-quote-draft');
-      root.querySelector<HTMLFormElement>('#sell-quote-form')?.reset();
-      showFormMessage(root.querySelector<HTMLElement>('#quote-status'), 'Draft cleared.');
-    }
     if (target.id === 'reserve-logout') {
       sessionStorage.removeItem('mc-demo-user');
       navigate('/mc-reserve');
@@ -226,19 +220,13 @@ export function attachModernPageHandlers(
     const target = event.target;
     if (!(target instanceof HTMLInputElement || target instanceof HTMLSelectElement || target instanceof HTMLTextAreaElement)) return;
     if (target.id.startsWith('convert-')) updateConverter(root);
-    if (target.id.startsWith('sell-')) updateSellEstimate(root);
     if (hasCatalogue && (target.id === 'catalogue-search' || target.id === 'filter-weight-min' || target.id === 'filter-weight-max')) {
       if (catalogueDebounce !== undefined) window.clearTimeout(catalogueDebounce);
       catalogueDebounce = window.setTimeout(() => {
         updateCatalogue(root, { history: catalogueSheetOpen ? 'none' : 'push', resetPage: true });
       }, 300);
     }
-    if (target.name === 'message') {
-      const count = root.querySelector<HTMLElement>('#message-count');
-      if (count) count.textContent = `${target.value.length} / 1000`;
-    }
     if (target.id.startsWith('storage-')) updateStorageEstimate(root);
-    if (target.name && target.form?.id === 'sell-quote-form' && target.type !== 'file') saveDraft(target.form);
   });
   root.addEventListener('change', event => {
     const target = event.target;
@@ -246,14 +234,6 @@ export function attachModernPageHandlers(
     if (hasCatalogue && (target.id.startsWith('catalogue-') || target.id.startsWith('filter-'))) {
       applyCatalogueChange(target.id !== 'catalogue-sort' && target.id !== 'filter-weight-unit');
     }
-    if (target.type === 'file' && target.form?.id === 'sell-quote-form') {
-      const files = target.files;
-      if (files && (files.length > 5 || [...files].some(file => !file.type.startsWith('image/') || file.size > 5 * 1024 * 1024))) {
-        target.value = '';
-        showFormMessage(root.querySelector<HTMLElement>('#quote-status'), 'Choose up to five image files, each smaller than 5 MB.');
-      }
-    }
-    if (target.name && target.form?.id === 'sell-quote-form') saveDraft(target.form);
   });
   root.addEventListener('keydown', event => {
     if (!hasCatalogue) return;
@@ -287,24 +267,7 @@ export function attachModernPageHandlers(
   root.addEventListener('submit', event => {
     const form = event.target;
     if (!(form instanceof HTMLFormElement)) return;
-    if (form.matches('[data-contact-form]')) {
-      event.preventDefault();
-      const status = form.querySelector<HTMLElement>('.mc-form-status');
-      const honeypot = form.elements.namedItem('website');
-      if (honeypot instanceof HTMLInputElement && honeypot.value) return;
-      const limitKey = 'mc-contact-last-submit';
-      const lastSubmit = Number(localStorage.getItem(limitKey) ?? 0);
-      if (Date.now() - lastSubmit < 30_000) {
-        showFormMessage(status, 'Please wait briefly before sending another enquiry.');
-        return;
-      }
-      localStorage.setItem(limitKey, String(Date.now()));
-      showFormMessage(status, `Thank you. Your enquiry has been received in this demo. Reference: MC-${new Date().toISOString().slice(0,10).replaceAll('-','')}-${Math.random().toString(36).slice(2,6).toUpperCase()}`);
-      form.reset();
-    } else if (form.id === 'appointment-form') {
-      event.preventDefault();
-      showFormMessage(form.querySelector('.mc-form-status'), 'Appointment request saved in this demo. A time is not reserved until confirmed.');
-    } else if (form.id === 'reserve-login') {
+    if (form.id === 'reserve-login') {
       event.preventDefault();
       const email = String(new FormData(form).get('email') ?? '');
       if (email !== 'demo@montaguecole.example') {
@@ -313,22 +276,10 @@ export function attachModernPageHandlers(
       }
       sessionStorage.setItem('mc-demo-user', email);
       navigate('/mc-reserve/dashboard');
-    } else if (form.id === 'sell-quote-form') {
-      event.preventDefault();
-      const step = Number(root.querySelector<HTMLProgressElement>('#quote-progress')?.value ?? 1);
-      if (step < 4) {
-        moveQuoteStep(root, 1);
-        return;
-      }
-      if (!form.reportValidity()) return;
-      showFormMessage(form.querySelector('#quote-status'), `Quote request submitted in this demo. No offer or instant payout is created. Reference: SQ-${new Date().toISOString().slice(0,10).replaceAll('-','')}-${Math.random().toString(36).slice(2,6).toUpperCase()}`);
-      localStorage.removeItem('mc-quote-draft');
     }
   });
   restoreCatalogueFilters(root);
-  restoreDraft(root);
   updateCatalogue(root, { history: 'replace' });
   updateConverter(root);
-  updateSellEstimate(root);
   updateStorageEstimate(root);
 }

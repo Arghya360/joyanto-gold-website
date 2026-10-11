@@ -2,10 +2,14 @@ import { catalogueImages, catalogueItems, formatCataloguePriceAed } from './mode
 import catalogueBanner from '../assets/Catalogue banner.png';
 import livePricesBanner from '../assets/live-prices banner.png';
 import storageBanner from '../assets/Storage banner.png';
-import sellToUsBanner from '../assets/Sell to Us.png';
 import aboutBanner from '../assets/about.png';
 import privateAssetsBanner from '../assets/main header logo/Montague Cole Private Assets Banner.png';
+import reserveBanner from '../assets/MC Reserve.png';
 import { SHOW_BRAND_FILTER } from '../config/catalogue';
+import { contactContent } from '../content/contact.ts';
+import { renderContactPage } from '../components/ContactPage.ts';
+import { renderSellToUsPage } from '../components/SellToUsPage.ts';
+import { sellToUsContent } from '../content/sellToUs.ts';
 import {
   computeCatalogueFacets,
   createEmptyCatalogueFilters,
@@ -55,7 +59,18 @@ function shell(path: string, body: string): string {
   const title = pageTitles[path] ?? (path.startsWith('/catalogue/') ? 'Product details' : 'Page not found');
   document.title = `${title} | Montague Cole Bullion`;
   const description = document.querySelector<HTMLMetaElement>('meta[name="description"]');
-  if (description) description.content = `${title} from Montague Cole Bullion.`;
+  if (description) description.content = path === '/contact'
+    ? contactContent.description
+    : path === '/sell-to-us' ? sellToUsContent.description
+    : `${title} from Montague Cole Bullion.`;
+  const ogTitle = document.querySelector<HTMLMetaElement>('meta[property="og:title"]');
+  const ogDescription = document.querySelector<HTMLMetaElement>('meta[property="og:description"]');
+  if (ogTitle) ogTitle.content = path === '/contact' ? 'Contact | Montague Cole Bullion'
+    : path === '/sell-to-us' ? sellToUsContent.title : 'Montague Cole Bullion';
+  if (ogDescription) ogDescription.content = path === '/contact'
+    ? contactContent.description
+    : path === '/sell-to-us' ? sellToUsContent.description
+    : 'Certified gold and silver bars, sovereign coins, Dubai Collection, and allocated vault custody.';
   if (path.startsWith('/mc-reserve')) {
     let robots = document.querySelector<HTMLMetaElement>('meta[name="robots"]');
     if (!robots) {
@@ -322,47 +337,6 @@ function storagePage(): string {
   <p class="mc-disclaimer">Storage terms, including insurance, fees, ownership and custody, are subject to final terms [PENDING LEGAL REVIEW].</p>`;
 }
 
-function sellPage(): string {
-  return `<section class="mc-hero mc-sell-hero"><img class="mc-price-hero-image" src="${sellToUsBanner}" alt="" aria-hidden="true"><div class="mc-price-hero-content"><span class="mc-eyebrow">Gold Depot · Quote requests</span><h1>Sell to Us</h1><p>A private, transparent route to sell your gold and silver.</p></div></section>
-  <section class="mc-timeline">${['Request a quote', 'Bring your metal for inspection', 'Testing and valuation', 'Settlement'].map((label, i) => `<article><span>0${i + 1}</span><h3>${label}</h3><p>${i === 3 ? '[PENDING LEGAL REVIEW]' : 'The next step will be confirmed with you.'}</p></article>`).join('')}</section>
-  ${section('What we consider', 'Gold and silver items', 'Eligibility is confirmed after inspection and testing.')}
-  <section class="mc-option-grid">${[['Gold bars and coins', 'Bring any available purchase or product documentation.'], ['Silver bars and coins', 'Bring the item and any available product details.'], ['Scrap gold and jewellery', 'Metal content is assessed after inspection.'], ['Scrap silver', 'Metal content is assessed after inspection.']].map(([a,b]) => `<article class="mc-panel"><h2>${a}</h2><p>${b}</p></article>`).join('')}</section>
-  ${section('Indicative only', 'Estimate a metal value', 'The demo price feed and buy-back rate are placeholders; no offer or payout is generated.')}
-  <form class="mc-panel mc-converter" id="sell-calculator"><label>Metal<select id="sell-metal"><option>Gold</option><option>Silver</option></select></label><label>Item type<select><option>Bar or coin</option><option>Scrap jewellery</option><option>Other</option></select></label>
-  <label>Weight<input id="sell-weight" type="number" min="0.001" step="any" value="10"></label><label>Unit<select id="sell-unit"><option value="g">Grams</option><option value="oz">Troy ounces</option><option value="kg">Kilograms</option><option value="tola">Tola</option></select></label>
-  <label>Purity<select><option>Not sure</option><option>24 karat</option><option>22 karat</option><option>18 karat</option><option>Fineness not known</option></select></label><output id="sell-estimate">Live pricing unavailable · indicative only</output></form>
-  ${section('Get in touch', 'Request a quote', 'No instant payout. Any settlement follows inspection and testing.')}
-  <section class="mc-panel mc-sell-quote-panel"><div class="mc-wizard-progress" aria-label="Quote request progress"><span id="quote-step-label">Step 1 of 4 · Item details</span><progress id="quote-progress" max="4" value="1"></progress></div>
-  <form id="sell-quote-form" class="mc-form-grid">
-  <fieldset data-quote-panel><legend>1. Item details</legend><label>Metal<select name="metal" required><option>Gold</option><option>Silver</option></select></label><label>Item type<select name="type"><option>Bar</option><option>Coin</option><option>Scrap</option></select></label><label>Estimated weight (g)<input name="weight" type="number" min="0.001" required></label><label>Purity<input name="purity" placeholder="Not sure"></label><label>Quantity<input name="quantity" type="number" min="1" value="1"></label><label>Photos (up to 5, max 5 MB each)<input name="photos" type="file" accept="image/*" multiple></label></fieldset>
-  <fieldset data-quote-panel hidden><legend>2. Your details</legend><label>Name<input name="name" autocomplete="name" required></label><label>Email<input name="email" type="email" autocomplete="email" required></label><label>Phone<input name="phone" type="tel" required></label><label>Country<input name="country" autocomplete="country-name" required></label><label>Preferred contact<select name="preferred"><option>Email</option><option>Phone</option></select></label></fieldset>
-  <fieldset data-quote-panel hidden><legend>3. Preferred route</legend><label>Route<select name="route"><option>Visit by appointment</option><option>Insured shipping [PENDING CLIENT]</option></select></label><label>Preferred date<input type="date" name="date" id="quote-date"></label><label>Preferred time<input type="time" name="time"></label><p>Appointment availability will be confirmed by our team. Slots shown here are not a booking.</p></fieldset>
-  <fieldset data-quote-panel hidden><legend>4. Review and consent</legend><p>Your request is not an offer to buy or a commitment to pay.</p><label class="mc-check"><input type="checkbox" name="accuracy" required> I confirm the details are accurate.</label><label class="mc-check"><input type="checkbox" name="verification" required> I understand identity verification may be required.</label></fieldset>
-  <div class="mc-form-actions mc-form-full"><button type="button" class="mc-button mc-button-outline" id="quote-back" disabled>Back</button><button type="button" class="mc-button" id="quote-next">Next</button><button type="submit" class="mc-button" id="quote-submit" hidden>Submit quote request</button><button type="button" class="mc-text-button" id="quote-clear">Clear draft</button></div><p id="quote-status" class="mc-form-status mc-form-full" aria-live="polite"></p></form></section>
-  ${section('Prepare for an appointment', 'What to bring')}
-  <div class="mc-info-box"><ul><li>The items you want assessed</li><li>Any available purchase or product documents</li><li>Photo identification if requested [PENDING LEGAL REVIEW]</li></ul></div>
-  <p class="mc-disclaimer">Identity verification and source-of-funds checks may apply [PENDING LEGAL REVIEW]. No instant payouts. Settlement follows inspection and testing.</p>`;
-}
-
-function contactPage(): string {
-  const details = [['Phone', '[PENDING CLIENT]'], ['Email', '[PENDING CLIENT]'], ['WhatsApp', '[PENDING CLIENT]'], ['Address', '[PENDING CLIENT]'], ['Opening hours', '[PENDING CLIENT]']];
-  const requestedProduct = catalogueItems.find(product => product.slug === new URLSearchParams(location.search).get('product'));
-  const requestedType = requestedProduct?.category === 'Dubai Collection' ? 'Dubai Collection' : 'Buying';
-  const initialMessage = requestedProduct ? `I am enquiring about ${requestedProduct.name}.` : '';
-  return `<section class="mc-hero"><span class="mc-eyebrow">Private client team</span><h1>Contact</h1><p>Speak to a member of our private-client team.</p></section>
-  <section class="mc-contact-cards">${details.map(([name, value]) => `<article class="mc-panel"><span class="mc-eyebrow">${name}</span><h2>${value}</h2></article>`).join('')}</section>
-  <section class="mc-contact-layout"><div>${section('Send us a note', 'Contact form')}
-  <form class="mc-panel mc-form-grid" data-contact-form><label>Name<input name="name" autocomplete="name" required></label><label>Email<input name="email" type="email" autocomplete="email" required></label><label>Phone<input name="phone" type="tel" required></label><label>Country<input name="country" autocomplete="country-name"></label>
-  <label>Enquiry type<select name="type">${['General', 'Buying', 'Selling', 'Storage', 'MC Reserve', 'Private Assets', 'Corporate gifting', 'Dubai Collection', 'Complaint'].map(x => `<option${requestedProduct && x === requestedType ? ' selected' : ''}>${x}</option>`).join('')}</select></label>
-  <label>Preferred contact<select name="contact"><option>Email</option><option>Phone</option><option>WhatsApp</option></select></label><label class="mc-form-full">Message <span id="message-count">0 / 1000</span><textarea name="message" minlength="20" maxlength="1000" rows="5" required>${escapeHtml(initialMessage)}</textarea></label>
-  <label class="mc-check mc-form-full"><input type="checkbox" required> I agree to be contacted regarding this enquiry.</label><label class="mc-honeypot" aria-hidden="true">Leave this empty<input name="website" tabindex="-1" autocomplete="off"></label>
-  <button class="mc-button mc-form-full">Send enquiry</button><p class="mc-form-status mc-form-full" aria-live="polite"></p></form></div>
-  <div>${section('By appointment', 'Book a private meeting', 'This request is subject to confirmation.')}
-  <form class="mc-panel mc-form-grid" id="appointment-form"><label>Date<input type="date" name="date" id="appointment-date" required></label><label>Time preference<select name="time"><option>Morning [PENDING CLIENT]</option><option>Afternoon [PENDING CLIENT]</option></select></label><label>Purpose<select name="purpose"><option>Buying</option><option>Selling</option><option>Storage</option><option>Other</option></select></label><label>Meeting format<select name="format"><option>In person [PENDING CLIENT]</option><option>Video [PENDING CLIENT]</option></select></label><button class="mc-button mc-form-full">Request appointment</button><p class="mc-form-status mc-form-full" aria-live="polite"></p></form>
-  <div class="mc-map-placeholder"><span>Location details pending confirmation</span><button type="button" class="mc-button mc-button-outline" id="load-map">Load map</button><div id="map-slot"></div></div></div></section>
-  <p class="mc-disclaimer">Contact details, address, hours and complaint process are pending confirmation. Complaints procedure: [PENDING LEGAL REVIEW].</p>`;
-}
-
 function aboutPage(): string {
   return `<section class="mc-hero mc-about-hero"><img class="mc-price-hero-image" src="${aboutBanner}" alt="" aria-hidden="true"><div class="mc-price-hero-content"><span class="mc-eyebrow">Montague Cole Bullion</span><h1>About Montague Cole</h1></div></section>
   <section class="mc-about-intro"><div><span class="mc-eyebrow">Our story</span><h2>A Dubai house for physical precious metals.</h2><p>Montague Cole Bullion is the online precious-metals arm of Montague Cole Private Assets. It is being developed to serve retail investors, international buyers, collectors, Dubai visitors, corporate gifting buyers and private clients.</p><p>Founded [PENDING CLIENT]. Founders and team [PENDING CLIENT].</p></div><img class="mc-about-image" src="${privateAssetsBanner}" alt="Montague Cole Private Assets banner showcasing precious metals, diamonds, fine art and luxury watches"></section>
@@ -380,11 +354,11 @@ function aboutPage(): string {
 
 function reservePage(): string {
   const email = sessionStorage.getItem('mc-demo-user') ?? '';
-  if (email) return `<section class="mc-hero"><span class="mc-eyebrow">Private client area · Demo</span><h1>Welcome to MC Reserve</h1><p>Signed in as ${escapeHtml(email)} · Demo data only.</p><span class="mc-status">Indicative valuations are not shown in this release.</span></section>
+  if (email) return `<section class="mc-hero mc-reserve-hero"><img class="mc-price-hero-image" src="${reserveBanner}" alt="" aria-hidden="true"><div class="mc-price-hero-content"><span class="mc-eyebrow">Private client area · Demo</span><h1>Welcome to MC Reserve</h1><p>Signed in as ${escapeHtml(email)} · Demo data only.</p><span class="mc-status">Indicative valuations are not shown in this release.</span></div></section>
     <section class="mc-dashboard-grid">${[['Orders','No demo orders'],['Documents','No demo documents'],['Owned products','No demo products'],['Open requests','No demo requests']].map(([a,b]) => `<article class="mc-panel"><span class="mc-eyebrow">${a}</span><h2>0</h2><p>${b}</p></article>`).join('')}</section>
     <section class="mc-panel"><h2>Total purchase value</h2><p>Purchase value [PENDING CLIENT]. Indicative valuations are not shown in this release.</p></section>
     <section class="mc-panel"><h2>Demo account</h2><p>This private area is a frontend demonstration; it does not provide real authentication or private records.</p><button type="button" class="mc-button mc-button-outline" id="reserve-logout">Sign out</button></section>`;
-  return `<section class="mc-hero"><span class="mc-eyebrow">Private client area</span><h1>MC Reserve</h1><p>A place for documents, order and delivery tracking, and asset records.</p></section>
+  return `<section class="mc-hero mc-reserve-hero"><img class="mc-price-hero-image" src="${reserveBanner}" alt="" aria-hidden="true"><div class="mc-price-hero-content"><span class="mc-eyebrow">Private client area</span><h1>MC Reserve</h1><p>A place for documents, order and delivery tracking, and asset records.</p></div></section>
   <section class="mc-reserve-login"><div class="mc-reserve-benefits">${[['Documents in one place','A demo space for order documents.'],['Order and delivery tracking','View order milestones when available.'],['Asset records','Keep personal records together.']].map(([h,p]) => `<article class="mc-panel"><h2>${h}</h2><p>${p}</p></article>`).join('')}</div>
   <form class="mc-panel mc-login-form" id="reserve-login"><span class="mc-eyebrow">Demo access</span><h2>Sign in</h2><p>Use the demo account shown below. This is not production authentication.</p>
   <label>Email<input name="email" type="email" autocomplete="email" value="demo@montaguecole.example" required></label><label>Password<input name="password" type="password" minlength="12" required></label>
@@ -399,8 +373,8 @@ export function renderModernPage(path: string): string {
     case '/catalogue': body = cataloguePage(); break;
     case '/shop': body = cataloguePage('Shop'); break;
     case '/storage': body = storagePage(); break;
-    case '/sell-to-us': body = sellPage(); break;
-    case '/contact': body = contactPage(); break;
+    case '/sell-to-us': body = renderSellToUsPage(); break;
+    case '/contact': body = renderContactPage(); break;
     case '/about': body = aboutPage(); break;
     case '/mc-reserve': case '/mc-reserve/dashboard': body = reservePage(); break;
     default: body = path.startsWith('/catalogue/') ? productDetailsPage(path) : `<section class="mc-hero"><span class="mc-eyebrow">Montague Cole Bullion</span><h1>Page not found</h1><p>The page you requested is not available.</p><a class="mc-button" href="/" data-modern-path="/">Return home</a></section>`;

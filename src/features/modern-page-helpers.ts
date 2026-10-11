@@ -49,11 +49,6 @@ export function updateConverter(root: HTMLElement): void {
   if (out) out.value = weight > 0 ? `${formatMoney(pricePerGram(metal) * convertWeight(weight, unit))} indicative metal value` : 'Enter a positive weight';
 }
 
-export function updateSellEstimate(root: HTMLElement): void {
-  const out = root.querySelector<HTMLOutputElement>('#sell-estimate');
-  if (out) out.value = 'Live pricing unavailable · [PENDING CLIENT: buy-back rate] · quote request only';
-}
-
 export function updateStorageEstimate(root: HTMLElement): void {
   const out = root.querySelector<HTMLOutputElement>('#storage-estimate');
   if (out) out.value = 'Illustrative estimate only · [PENDING CLIENT: fee schedule]';
@@ -289,56 +284,4 @@ export function restoreCatalogueFilters(root: HTMLElement): void {
   if (overlay) overlay.hidden = true;
   document.body.classList.remove('mc-catalogue-sheet-open');
   document.documentElement.classList.remove('mc-catalogue-sheet-open');
-}
-
-export function moveQuoteStep(root: HTMLElement, direction: number): void {
-  const panels = [...root.querySelectorAll<HTMLFieldSetElement>('[data-quote-panel]')];
-  const progress = root.querySelector<HTMLProgressElement>('#quote-progress');
-  if (!progress || !panels.length) return;
-  const current = progress.value;
-  if (direction > 0) {
-    const invalid = panels[current - 1].querySelector<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>(':invalid');
-    if (invalid) {
-      invalid.reportValidity();
-      return;
-    }
-  }
-  const next = Math.max(1, Math.min(panels.length, current + direction));
-  panels.forEach((panel, index) => panel.hidden = index !== next - 1);
-  progress.value = next;
-  const labels = ['Item details', 'Your details', 'Preferred route', 'Review and consent'];
-  const label = root.querySelector<HTMLElement>('#quote-step-label');
-  if (label) label.textContent = `Step ${next} of ${panels.length} · ${labels[next - 1]}`;
-  const back = root.querySelector<HTMLButtonElement>('#quote-back');
-  const forward = root.querySelector<HTMLButtonElement>('#quote-next');
-  const submit = root.querySelector<HTMLButtonElement>('#quote-submit');
-  if (back) back.disabled = next === 1;
-  if (forward) forward.hidden = next === panels.length;
-  if (submit) submit.hidden = next !== panels.length;
-}
-
-export function saveDraft(form: HTMLFormElement): void {
-  const data: Record<string, string> = {};
-  new FormData(form).forEach((value, key) => {
-    if (typeof value === 'string') data[key] = value;
-  });
-  localStorage.setItem('mc-quote-draft', JSON.stringify(data));
-}
-
-export function restoreDraft(root: HTMLElement): void {
-  const form = root.querySelector<HTMLFormElement>('#sell-quote-form');
-  if (!form) return;
-  const stored = localStorage.getItem('mc-quote-draft');
-  if (!stored) return;
-  try {
-    const draft: unknown = JSON.parse(stored);
-    if (!draft || typeof draft !== 'object') return;
-    for (const [key, value] of Object.entries(draft)) {
-      const field = form.elements.namedItem(key);
-      if (field instanceof HTMLInputElement || field instanceof HTMLSelectElement || field instanceof HTMLTextAreaElement) field.value = String(value);
-    }
-  } catch (error) {
-    console.error('Unable to restore quote form draft', error);
-    localStorage.removeItem('mc-quote-draft');
-  }
 }
